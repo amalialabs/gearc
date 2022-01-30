@@ -1,9 +1,10 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.zip.GZIPInputStream;
+import java.util.stream.Stream;
 
 /**
  * @author hadziahmetovic on 23.01.22
@@ -15,22 +16,57 @@ public class Reader {
      diff-output reader -> flexible with col selector -> make gene, fc, label format??
      */
 
-    public List<Gene> readExpressionFile(File expressionFile) {
-        List<Gene> gene = new ArrayList<Gene>();
-
-
-        return gene;
+    /**
+     * Has to have header
+     * id      fc      signif
+     * DNAJC25-GNG10   -1.3420 false
+     * IGKV2-28        -2.3961 false
+     * @param expressionFile
+     * @return
+     */
+    public List<Gene> readExpressionFile(File expressionFile, boolean isEnsembl, HashMap<String, String> hgnc2ensembl) {
+        List<Gene> genes = new ArrayList<Gene>();
+        try (Stream<String> stream = Files.lines(Paths.get(expressionFile.getAbsolutePath()))) {
+            stream.skip(1).forEach(_line -> {
+                String[] elems = _line.split("\t");
+                String gene_id;
+                if (isEnsembl) {
+                    gene_id = elems[0];
+                } else {
+                    gene_id = hgnc2ensembl.get(elems[0]);
+                }
+                double fc = Double.parseDouble(elems[1]);
+                boolean is_signif = Boolean.parseBoolean(elems[2]);
+                Gene g = new Gene(gene_id, fc, is_signif);
+                genes.add(g);
+            });
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading expression file: ", e);
+        }
+        return genes;
     }
 
+    public List<Gene> readExpressionFile(File expressionFile) {
+        return readExpressionFile(expressionFile, true, null);
+    }
+
+    /**
+     * [Term]
+     * id: GO:0000001
+     * name: mitochondrion inheritance
+     * namespace: biological_process
+     * def: "The distribution of mitochondria, including the mitochondrial genome, into daughter cells after mitosis or meiosis, mediated by interactions between mitochondria and the cytoskeleton." [GOC:mcc, PMID:10873824, PMID:11389764]
+     * synonym: "mitochondrial inheritance" EXACT []
+     * is_a: GO:0048308 ! organelle inheritance
+     * is_a: GO:0048311 ! mitochondrion distribution
+     *
+     * @param oboFile
+     * @return
+     */
     public List<Node> readOboFile(File oboFile) {
         List<Node> nodes = new ArrayList<Node>();
 
 
-        return nodes;
-    }
-
-//    private void readObo(){
-//
 //        String line, id = null, name, namespace = null;
 //        Set<String> set = null;
 //        BufferedReader br = null;
@@ -76,7 +112,9 @@ public class Reader {
 //        } catch (IOException e) {
 //            System.out.println("IOexception at obo file");
 //        }
-//    }
+
+        return nodes;
+    }
 //
 //    private void readMappringGAF(){
 //

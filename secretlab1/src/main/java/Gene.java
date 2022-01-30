@@ -4,6 +4,11 @@ public class Gene {
     double weighted_score;
     double fdr;
     double fc;
-    Boolean simulatedTrue; //null for normal experiments; for simulations set to true/false
+    boolean is_significant;
 
+    public Gene(String gene_id, double fc, boolean is_significant) {
+        this.gene_id = gene_id;
+        this.fc = fc;
+        this.is_significant = is_significant;
+    }
 }
