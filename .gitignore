@@ -29,3 +29,6 @@ hs_err_pid*
 .idea/modules.xml
 .idea/vcs.xml
 secretlab.iml
+secretlab1.iml
+src/main/resources/
+src/test/
