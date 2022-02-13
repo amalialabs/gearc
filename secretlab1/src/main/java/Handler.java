@@ -22,6 +22,22 @@ public class Handler {
         assertTrue(params.has("genelist"));
 
         File genelist = (File) params.valueOf("genelist");
+        //TODO
+        //read Input, init gene object thereby -> hashset<gene>
+        //define_FDR_and_FC_cutoff_interval()
+        //filter_unclear()
+        //score_genes()
+        //assign_genes_to_sets()
+        // for (i in 1:1000)
+        //      sample_genes(0.2)
+        //      enrich()
+        // percent = extend_flex_set()
+        // do following only if percent > 0.2
+        // for (i in 1:1000)
+        //      sample_genes(percent)
+        //      enrich()
+        //gather enrich results in table
+        //plots
 
         try {
             optionParser.printHelpOn(System.out);
