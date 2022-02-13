@@ -17,8 +17,8 @@ public class Functions {
     public double[] define_FDR_and_FC_cutoff_interval(HashSet<Gene> gene2FDRandFC, String type) {
         int num_sig_genes = (int) gene2FDRandFC.stream().filter(_gene -> _gene.is_significant).count();
         int num_nonsig_genes = (int) gene2FDRandFC.stream().filter(_gene -> !_gene.is_significant).count();
-        int num_one_percent_ontop = Math.max((int) 0.01 * num_sig_genes, 5); //LATER at least 5? more genes
-        int num_five_percent = (int) 0.05 * num_nonsig_genes;
+        int num_one_percent_ontop = Math.max((int) (0.01 * num_sig_genes), 5); //LATER at least 5? more genes
+        int num_five_percent = (int) (0.05 * num_nonsig_genes);
         ArrayList<Gene> sorted_genes;
         if (type.equals("FDR")) {
             sorted_genes = (ArrayList<Gene>) gene2FDRandFC.stream().
@@ -42,7 +42,7 @@ public class Functions {
     @return same set without entries of unclear genes
      */
     public void filter_unclear(HashSet<Gene> gene2FCandFDR) {
-        gene2FCandFDR.stream().
+        HashSet<Gene> sig_genes = (HashSet<Gene>) gene2FCandFDR.stream().
                 filter(gene -> gene.fdr <= FDR_cutoff && Math.abs(gene.fc) >= FC_cutoff).
                 collect(Collectors.toSet());
         //TODO hier fehlt noch das von Gergely zum abschätzen der FDR von FC element von (a,b) für sig. nicht reguliert
@@ -58,14 +58,13 @@ public class Functions {
         double fdr_interval_width = FDR_interval[1]-FDR_interval[0];
         double[] FC_interval = define_FDR_and_FC_cutoff_interval(gene2FCandFDR, "FC");
         double fc_interval_width = FC_interval[1]-FC_interval[0];
-        gene2FCandFDR.stream().forEach(_obj -> {
+        gene2FCandFDR.forEach(_obj -> {
             if (_obj.fdr <= FDR_cutoff && Math.abs(_obj.fc) >= FC_cutoff) {
                 _obj.weighted_score = 1.0;
             } else {
                 double fdr_score = (_obj.fdr-FDR_interval[0])/fdr_interval_width; //FIXME look up which bound is used
                 double fc_score = (_obj.fc-FC_interval[0])/fc_interval_width; //FIXME
-                double weighted_score = 0.5*(fdr_score+fc_score);
-                _obj.weighted_score = weighted_score;
+                _obj.weighted_score = 0.5*(fdr_score+fc_score);
             }
         });
         return(gene2FCandFDR);
@@ -82,14 +81,14 @@ public class Functions {
         int sig_core;
         int flex;
         if (expected_change == Handler.expected_change.AVERAGE) { //30%-40%-30%
-            sig_core = (int) 0.3 * gene2weightedscore.size();
-            flex = (int) 0.4 * gene2weightedscore.size();
+            sig_core = (int) (0.3 * gene2weightedscore.size());
+            flex = (int) (0.4 * gene2weightedscore.size());
         } else if (expected_change == Handler.expected_change.HIGH) { //50%-40%-10%
-            sig_core = (int) 0.5 * gene2weightedscore.size();
-            flex = (int) 0.4 * gene2weightedscore.size();
+            sig_core = (int) (0.5 * gene2weightedscore.size());
+            flex = (int) (0.4 * gene2weightedscore.size());
         } else { //10%-40%-50%
-            sig_core = (int) 0.1 * gene2weightedscore.size();
-            flex = (int) 0.5 * gene2weightedscore.size();
+            sig_core = (int) (0.1 * gene2weightedscore.size());
+            flex = (int) (0.5 * gene2weightedscore.size());
         }
         sorted_genes.subList(0,sig_core).forEach(_gene -> _gene.set = Gene.corresponding_set.SIG_CORE);
         sorted_genes.subList(sig_core, sig_core+flex).forEach(_gene -> _gene.set = Gene.corresponding_set.FLEX);
@@ -119,9 +118,8 @@ public class Functions {
             penalty = Math.abs(sorted_genes.get(idx_current_gene).weighted_score-z);
         }
         int idx_profitable_extension = idx_current_gene - 1;
-        double new_percentage = idx_profitable_extension / sorted_genes.size();
-        double percentage = idx_profitable_extension > idx_last_flex ? new_percentage : 0.2;  //if not at all profitable return default 20%
-        return(percentage);
+        double new_percentage = (idx_profitable_extension*1.0) / sorted_genes.size();
+        return(idx_profitable_extension > idx_last_flex ? new_percentage : 0.2);  //if not at all profitable return default 20%
     }
 
     /*
@@ -133,19 +131,22 @@ public class Functions {
         HashSet<Gene> sampled_genes = new HashSet<>();
         Set<Gene> sig_core_genes = gene2set.stream().
                 filter(_gene -> _gene.set == Gene.corresponding_set.SIG_CORE).collect(Collectors.toSet());
-        Collections.shuffle((List) sig_core_genes);
-        int seventy_percent = (int) 0.7 * sig_core_genes.size();
-        sampled_genes.addAll(((List) sig_core_genes).subList(0, seventy_percent));
+        ArrayList<Gene> sigs = new ArrayList<>(){{addAll(sig_core_genes);}};
+        Collections.shuffle(sigs);
+        int seventy_percent = (int) (0.7 * sigs.size());
+        sampled_genes.addAll(sigs.subList(0, seventy_percent));
         Set<Gene> flex_genes = gene2set.stream().
                 filter(_gene -> _gene.set == Gene.corresponding_set.FLEX).collect(Collectors.toSet());
-        Collections.shuffle((List) flex_genes);
-        int flex_percent = (int) flex_percentage * sig_core_genes.size(); //TODO insert the boundyra extension here
-        sampled_genes.addAll(((List) flex_genes).subList(0, flex_percent));
+        ArrayList<Gene> flexs = new ArrayList<>(){{addAll(flex_genes);}};
+        Collections.shuffle(flexs);
+        int flex_percent = (int) (flex_percentage * flexs.size());
+        sampled_genes.addAll(flexs.subList(0, flex_percent));
         Set<Gene> signon_core_genes = gene2set.stream().
                 filter(_gene -> _gene.set == Gene.corresponding_set.SIGNON_CORE).collect(Collectors.toSet());
-        Collections.shuffle((List) signon_core_genes);
-        int ninety_percent = (int) 0.9 * signon_core_genes.size();
-        sampled_genes.addAll(((List) signon_core_genes).subList(0, ninety_percent));
+        ArrayList<Gene> signons = new ArrayList<>(){{addAll(signon_core_genes);}};
+        Collections.shuffle(signons);
+        int ninety_percent = (int) (0.9 * signons.size());
+        sampled_genes.addAll(signons.subList(0, ninety_percent));
         return(sampled_genes);
     }
 
