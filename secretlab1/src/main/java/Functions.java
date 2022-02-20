@@ -46,6 +46,9 @@ public class Functions {
                 filter(gene -> gene.fdr <= FDR_cutoff && Math.abs(gene.fc) >= FC_cutoff).
                 collect(Collectors.toSet());
         //TODO hier fehlt noch das von Gergely zum abschätzen der FDR von FC element von (a,b) für sig. nicht reguliert
+        //TODO vielleicht einfach gene mit zu kleinen signals wegfiltern und gene mit zu großer replikatvarianz -> info fehlt aber
+        //TODO vielleicht gene wegfiltern wo fc sig aber fdr nciht sig ist oder andersrum?
+        //LATER wenn empire auf microarray publiziert kann man dasw hier einbauen
     }
 
     /*

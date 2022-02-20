@@ -1,8 +1,13 @@
+import org.apache.commons.math3.distribution.HypergeometricDistribution;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public class Enrichment {
 
-    public void enrich(HashSet<Gene> sampled_genes) {
+    public HashMap<String, Double> enrich(HashSet<Gene> sampled_genes) {
         HashSet<Gene> foreground_genes = new HashSet<>();
         HashSet<Gene> background_genes = new HashSet<>();
         sampled_genes.stream().forEach(_gene -> {
@@ -13,8 +18,41 @@ public class Enrichment {
             }
         });
 
-        //TODO start enrichment
-        //gather GO node - FDR as result
+        HashMap<String, Double> node2FDR = new HashMap<>();
+        //
+        // lATER vielleicht beschränkt man die nodes bzgl Anzahl Gene also nodes mit #genes > x und < y
+        for (String node : GOnodes) {
+            double pvalue = hypergeometric(node);
+            node2FDR.put(node, pvalue);
+        }
+        benjamini(node2FDR); // sollte die FDRs überschreiben
+        return(node2FDR);
+    }
+
+    public double hypergeometric(String node) {
+        int numMeasuredGenesInSet = genes.retainAll(go2genes.get(node)).size();
+        int numSignificantGenesInSet = genes.retainAll(go2genes.get(node)).stream.filter(_g -> _g.is_significant).count();
+        double hg_pval = new HypergeometricDistribution(numGenesTotal, deGenes, numMeasuredGenesInSet).upperCumulativeProbability(numSignificantGenesInSet);
+        return(hg_pval);
+    }
+
+    public void benjamini(HashMap<String, Double> pval) {
+        Double[] pvalues = new Double[pval.size()];
+        String[] keys = new String[pval.size()];
+        int counter = 0;
+        for (Map.Entry<String, Double> entry : pval.entrySet()) {
+            pvalues[counter] = entry.getValue();
+            keys[counter] = entry.getKey();
+            counter++;
+        }
+        //FIXME entweder eigene BH Klasse oder nur eine kleine Funktion hier
+        BenjaminiHochbergFDR bh = new BenjaminiHochbergFDR(pvalues);
+        int[] index = bh.createIndex(pvalues);
+        bh.calculate();
+        Double[] result = bh.getAdjustedPvalues();
+        for (int i = 0; i < result.length; i++) {
+            benjaminipvalue.put(keys[index[i]], result[i]);
+        }
     }
 
 }
