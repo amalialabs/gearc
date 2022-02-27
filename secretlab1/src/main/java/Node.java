@@ -1,4 +1,3 @@
-import java.util.HashSet;
 import java.util.Set;
 
 public class Node {
@@ -6,7 +5,7 @@ public class Node {
     String node_id;
     String node_name;
     Set<Gene> genes;
-    Set<String> geneIds;
+//    Set<String> geneIds;
     double enrichment_score;
     Set<String> parents;
 
@@ -30,7 +29,7 @@ public class Node {
         return genes;
     }
 
-    public void setGenes(HashSet<Gene> genes) {
+    public void setGenes(Set<Gene> genes) {
         this.genes = genes;
     }
 
@@ -50,11 +49,11 @@ public class Node {
         this.parents = parents;
     }
 
-    public Set<String> getGeneIds() {
-        return geneIds;
-    }
-
-    public void setGeneIds(Set<String> geneIds) {
-        this.geneIds = geneIds;
-    }
+//    public Set<String> getGeneIds() {
+//        return geneIds;
+//    }
+//
+//    public void setGeneIds(Set<String> geneIds) {
+//        this.geneIds = geneIds;
+//    }
 }

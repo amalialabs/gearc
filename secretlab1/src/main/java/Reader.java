@@ -15,7 +15,8 @@ public class Reader {
      diff-output reader -> flexible with col selector -> make gene, fc, label format??
      */
 
-    //fixme add loop over all GO nodes to add genes for each geneId that is present
+    HashMap<String, Gene> geneMap;
+
 
     /**
      * Has to have header
@@ -46,6 +47,7 @@ public class Reader {
         } catch (IOException e) {
             throw new RuntimeException("Error reading expression file: ", e);
         }
+        geneMap = genes;
         return genes;
     }
 
@@ -162,11 +164,11 @@ public class Reader {
 //                System.out.println("Go\t"+go);
 //                System.out.println(++c);
                 if (node.getGenes() == null) {
-                    Set<String> set = new HashSet<>();
-                    set.add(geneId);
-                    node.setGeneIds(set);
+                    Set<Gene> set = new HashSet<>();
+                    set.add(geneMap.get(geneId));
+                    node.setGenes(set);
                 } else {
-                    node.getGeneIds().add(geneId);
+                    node.getGenes().add(geneMap.get(geneId));
                 }
 
                 //todo assignment for up/downregulation targets -> will se e later how to handle
