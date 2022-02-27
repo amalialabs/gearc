@@ -1,10 +1,9 @@
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
 
 /**
  * @author hadziahmetovic on 23.01.22
@@ -16,16 +15,18 @@ public class Reader {
      diff-output reader -> flexible with col selector -> make gene, fc, label format??
      */
 
+    //fixme add loop over all GO nodes to add genes for each geneId that is present
+
     /**
      * Has to have header
-     * id      fc      signif
-     * DNAJC25-GNG10   -1.3420 false
-     * IGKV2-28        -2.3961 false
+     * id      fc   fdr      signif
+     * DNAJC25-GNG10   -1.3420  0.1 false
+     * IGKV2-28        -2.3961 0.12  false
      * @param expressionFile
      * @return
      */
-    public List<Gene> readExpressionFile(File expressionFile, boolean isEnsembl, HashMap<String, String> hgnc2ensembl) {
-        List<Gene> genes = new ArrayList<Gene>();
+    public HashMap<String, Gene> readExpressionFile(File expressionFile, boolean isEnsembl, HashMap<String, String> hgnc2ensembl) {
+        HashMap<String, Gene> genes = new HashMap<>();
         try (Stream<String> stream = Files.lines(Paths.get(expressionFile.getAbsolutePath()))) {
             stream.skip(1).forEach(_line -> {
                 String[] elems = _line.split("\t");
@@ -36,9 +37,11 @@ public class Reader {
                     gene_id = hgnc2ensembl.get(elems[0]);
                 }
                 double fc = Double.parseDouble(elems[1]);
-                boolean is_signif = Boolean.parseBoolean(elems[2]);
-                Gene g = new Gene(gene_id, fc, is_signif);
-                genes.add(g);
+                double fdr = Double.parseDouble(elems[2]);
+                boolean is_signif = Boolean.parseBoolean(elems[3]);
+
+                Gene g = new Gene(gene_id, fc, fdr, is_signif);
+                genes.put(gene_id, g);
             });
         } catch (IOException e) {
             throw new RuntimeException("Error reading expression file: ", e);
@@ -46,7 +49,7 @@ public class Reader {
         return genes;
     }
 
-    public List<Gene> readExpressionFile(File expressionFile) {
+    public HashMap<String, Gene>readExpressionFile(File expressionFile) {
         return readExpressionFile(expressionFile, true, null);
     }
 
@@ -63,109 +66,110 @@ public class Reader {
      * @param oboFile
      * @return
      */
-    public List<Node> readOboFile(File oboFile) {
-        List<Node> nodes = new ArrayList<Node>();
+    public GO readOboFile(File oboFile, String root) {
+        GO gos = new GO();
+        String line, id = null, name, namespace = null;
+        Set<String> set = null;
+        boolean good = true;
+        Node node = null;
 
+        BufferedReader br = null;
+        try {br = new BufferedReader(new FileReader(oboFile));} catch (FileNotFoundException e) {}
+        try {
+            while ((line = br.readLine()) != null) {
+                if (line.length() > 1) {
+                    if (line.charAt(0) == '[' && line.charAt(2) == 'y') break;
 
-//        String line, id = null, name, namespace = null;
-//        Set<String> set = null;
-//        BufferedReader br = null;
-//        boolean good = true;
-//
-//        try {br = new BufferedReader(new FileReader(obo));} catch (FileNotFoundException e) {}
-//        try {
-//            while ((line = br.readLine()) != null) {
-//                if (line.length() > 1) {
-//                    if (line.charAt(0) == '[' && line.charAt(2) == 'y') break;
-//
-//                    else if (line.charAt(0) == 'i' && line.charAt(1) == 'd') {
-//                        if (!good) { }  //TODO nice if man
-//                        else if (set != null) {
-//                            goParent.put(id, set);
-//                            allGO.add(id);
-//                            allGO.addAll(set);
-//                        }
-//                        id = line.substring(4);
-//                        set = new HashSet<>();
-//                        good = true;
-//                    } else if (line.charAt(0) == 'n' && line.charAt(4) == ':') {
-//                        name = line.substring(6);
-//                        if (name.contains("obsolete")) good = false;
-//                        else goName.put(id, name);
-//                    } else if (line.charAt(0) == 'n' && line.charAt(4) == 's') {
-//                        namespace = line.substring(11);
-//                        if (!namespace.equals(root)) {
-//                            good = false;
-//                        }
-//                    } else if (line.charAt(1) == 's' && line.charAt(2) == '_' && line.charAt(3) == 'a') {
-//                        if (namespace.equals(root)) {
-//                            set.add(line.substring(6, line.indexOf("!", 7) - 1));
-//                        }
-//                    }
-//                }
-//            }
-//            br.close();
-//
-//            if (set != null) {
-//                goParent.put(id, set);          //TODO this might be a problem because no check if good
-//            }
-//        } catch (IOException e) {
-//            System.out.println("IOexception at obo file");
-//        }
+                    else if (line.charAt(0) == 'i' && line.charAt(1) == 'd') {
+                        if (!good) { }  //TODO nice if man
+                        else if (set != null) {
+                            if (node != null) {
+                                node.setParents(set);
+                            }
+                            gos.getGoNodes().put(id, node);
+                        }
+                        id = line.substring(4);
+                        set = new HashSet<>();
+                        good = true;
+                        node = new Node();
+                        node.setNode_id(id);
+                    } else if (line.charAt(0) == 'n' && line.charAt(4) == ':') {
+                        name = line.substring(6);
+                        if (name.contains("obsolete")) good = false;
+                        else node.setNode_name(name);
+                    } else if (line.charAt(0) == 'n' && line.charAt(4) == 's') {
+                        namespace = line.substring(11);
+                        if (!namespace.equals(root)) {
+                            good = false;
+                        }
+                    } else if (line.charAt(1) == 's' && line.charAt(2) == '_' && line.charAt(3) == 'a') {
+                        if (namespace.equals(root)) {
+                            set.add(line.substring(6, line.indexOf("!", 7) - 1));
+                        }
+                    }
+                }
+            }
+            br.close();
 
-        return nodes;
+            if (set != null) {
+                if (node != null) {
+                    node.setParents(set);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("IOexception at obo file");
+            throw new RuntimeException(e);
+        }
+
+        return gos;
     }
-//
-//    private void readMappringGAF(){
-//
-//        int c = 0;
-//        String line;
-//        BufferedReader br = null;
-//        int one, two, three, four, five;
-//        String gene, go;
-//
-//        try {br = new BufferedReader(new InputStreamReader( new GZIPInputStream(new FileInputStream(mapping))));} catch (Exception e) {}
-//        try {
-//            while ((line = br.readLine()) != null){
-//                if (line.charAt(0) == '!') continue;
-//                one = line.indexOf("\t");
-//                two = line.indexOf("\t", one+1);
-//                three = line.indexOf("\t", two+1);
-//                four = line.indexOf("\t", three+1);
-//                five = line.indexOf("\t", four+1);
-//                //System.out.println(line);
-//
-//
-//                if (four-three > 1) {
-//                    //System.out.println(line);
-//                    continue;
-//                }
-//
-//
-//
-//                gene = line.substring(two+1, three);
-//
+
+    private void readMappringGAF(File mappingFile, GO gos){
+        int c = 0;
+        String line;
+        BufferedReader br = null;
+        int one, two, three, four, five;
+        String gene, go;
+
+        try {br = new BufferedReader(new InputStreamReader( new GZIPInputStream(new FileInputStream(mappingFile))));} catch (Exception e) {}
+        try {
+            while ((line = br.readLine()) != null){
+                if (line.charAt(0) == '!') continue;
+                one = line.indexOf("\t");
+                two = line.indexOf("\t", one+1);
+                three = line.indexOf("\t", two+1);
+                four = line.indexOf("\t", three+1);
+                five = line.indexOf("\t", four+1);
+                //System.out.println(line);
+
+                if (four-three > 1) {
+                    //System.out.println(line);
+                    continue;
+                }
+                gene = line.substring(two+1, three);
+
+                //todo add this check for later -> redundant info removal
 //                if (geneSignif.get(gene) == null) {
 //                    continue;
 //                }
-//
-//                go = line.substring(four+1, five);
-//
-//                if (!allGO.contains(go)) {
-//                    continue;
-//                }
-//
-////                System.out.println("Gene\t"+gene);
-////                System.out.println("Go\t"+go);
-//                //System.out.println(++c);
-////                if (geneGO.get(line.substring(two+1, three)) == null) {
-////                    Set<String> set = new HashSet<>();
-////                    set.add(line.substring(four+1, five));
-////                    geneGO.put(line.substring(two+1, three), set);
-////                } else {
-////                    geneGO.get(line.substring(two+1, three)).add(line.substring(four+1, five));
-////                }
-//
+                go = line.substring(four+1, five);
+                Node node = gos.getGoNodes().get(go);
+                if (node == null) {
+                    continue;
+                }
+                String geneId = line.substring(four + 1, five);
+//                System.out.println("Gene\t"+gene);
+//                System.out.println("Go\t"+go);
+//                System.out.println(++c);
+                if (node.getGenes() == null) {
+                    Set<String> set = new HashSet<>();
+                    set.add(geneId);
+                    node.setGeneIds(set);
+                } else {
+                    node.getGeneIds().add(geneId);
+                }
+
+                //todo assignment for up/downregulation targets -> will se e later how to handle
 //                if (!geneSignif.get(gene)) { //TODO my bad, should be true but its just for consistency now
 //                    if (goPositive.get(go) != null) {
 //                        goPositive.get(go).add(gene);
@@ -183,15 +187,17 @@ public class Reader {
 //                        goNegative.put(go, set);
 //                    }
 //                }
-//
-//            }
-//            br.close();
-//        }
-//        catch (IOException e) {
-//            System.out.println("IOexception gaf reader");
-//        }
-//    }
-//
+
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            System.out.println("IOexception gaf reader");
+        }
+    }
+
+
+    //todo get creator functions from gergely
 //    private void readMappringEnsebl(){
 //
 //        String line, name;
@@ -253,39 +259,4 @@ public class Reader {
 //            }
 //        } catch (Exception e) {}
 //    }
-//
-//    private void readEnrich(){
-//
-//        String line, name;
-//        BufferedReader br = null;
-//        int one, two;
-//
-//        try {br = new BufferedReader(new FileReader(enrich));} catch (FileNotFoundException e) {}
-//        try {
-//            while ((line = br.readLine()) != null) {
-//                if (line.charAt(0) == '#') isTrue.add(line.substring(1));
-//                else break;
-//            }
-//
-//            while ((line = br.readLine()) != null) {
-//                one = line.indexOf("\t");
-//                two = line.indexOf("\t", one + 1);
-//                name = line.substring(0, one);
-//                if (geneFC.keySet().contains(name)) {
-//                    System.out.println(name);
-//                }
-//                geneFC.put(name, Double.parseDouble(line.substring(one + 1, two)));
-//                if (line.charAt(two + 1) == 'f') {
-//                    geneSignif.put(name, false);
-//                } else {
-//                    geneSignif.put(name, true);
-//                }
-//            }
-//            br.close();
-//        }
-//        catch (IOException e) {
-//            System.out.println("IOexception in enrich");
-//        }
-//    }
-
 }

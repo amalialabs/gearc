@@ -15,6 +15,8 @@ public class Gene {
         this.is_significant = is_significant;
     }
 
+
+
     public double get_FDR_value() {
         return this.fdr;
     }

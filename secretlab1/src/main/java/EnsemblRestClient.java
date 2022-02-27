@@ -1,7 +1,7 @@
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,6 +18,7 @@ public class EnsemblRestClient {
     public static int requestCount = 0;
     public static long lastRequestTime = System.currentTimeMillis();
 
+
     public static void main(String[] args) throws Exception {
 
         System.out.println(">ENSG00000105939");
@@ -25,6 +26,7 @@ public class EnsemblRestClient {
 
         System.out.println(getGeneID("homo_sapiens", "ZC3HAV1"));
 
+        getRegions("ENSP00000242351", 1, 902);
     }
 
     public static void testVariants() throws ParseException, InterruptedException, IOException {
@@ -44,6 +46,46 @@ public class EnsemblRestClient {
             String output = String.format("%s:%d-%d:%d ==> %s (%s)", srName, start, end, strand, id, consequence);
             System.out.println(output);
         }
+    }
+
+    public static void getRegions(String protein_id, int start, int end) throws IOException {
+        String server = "http://rest.ensembl.org";
+        String ext = "/map/translation/"+protein_id+"/"+start+".."+end+"?";
+        URL url = new URL(server + ext);
+
+        URLConnection connection = url.openConnection();
+        HttpURLConnection httpConnection = (HttpURLConnection) connection;
+
+        httpConnection.setRequestProperty("Content-Type", "application/json");
+
+
+        InputStream response = connection.getInputStream();
+        int responseCode = httpConnection.getResponseCode();
+
+        if (responseCode != 200) {
+            throw new RuntimeException("Response code was not 200. Detected response was " + responseCode);
+        }
+
+        String output;
+        Reader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(response, "UTF-8"));
+            StringBuilder builder = new StringBuilder();
+            char[] buffer = new char[8192];
+            int read;
+            while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
+                builder.append(buffer, 0, read);
+            }
+            output = builder.toString();
+        } finally {
+            if (reader != null) try {
+                reader.close();
+            } catch (IOException logOrIgnore) {
+                logOrIgnore.printStackTrace();
+            }
+        }
+
+        System.out.println(output);
     }
 
 
@@ -79,7 +121,7 @@ public class EnsemblRestClient {
         return (String) entry.get("seq");
     }
 
-    public static JSONArray getVariants(String species, String symbol) throws ParseException, MalformedURLException, IOException, InterruptedException {
+    public static JSONArray getVariants(String species, String symbol) throws ParseException, IOException, InterruptedException {
         String id = getGeneID(species, symbol);
         return (JSONArray) getJSON("/overlap/id/"+id+"?feature=variation");
     }
