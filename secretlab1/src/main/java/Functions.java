@@ -22,7 +22,7 @@ public class Functions {
         ArrayList<Gene> sorted_genes;
         if (type.equals("FDR")) {
             sorted_genes = (ArrayList<Gene>) gene2FDRandFC.stream().
-                    sorted(Comparator.comparing(Gene::get_FDR_value)).collect(Collectors.toList()); //FIXME check if it is really ascending
+                    sorted(Comparator.comparing(Gene::get_FDR_value)).collect(Collectors.toList()); //TODO check if it is really ascending
         } else { //FC
             sorted_genes = (ArrayList<Gene>) gene2FDRandFC.stream().
                     sorted(Comparator.comparing(Gene::get_FC_value)).collect(Collectors.toList());
@@ -45,10 +45,9 @@ public class Functions {
         HashSet<Gene> sig_genes = (HashSet<Gene>) gene2FCandFDR.stream().
                 filter(gene -> gene.fdr <= FDR_cutoff && Math.abs(gene.fc) >= FC_cutoff).
                 collect(Collectors.toSet());
-        //TODO hier fehlt noch das von Gergely zum abschätzen der FDR von FC element von (a,b) für sig. nicht reguliert
-        //TODO vielleicht einfach gene mit zu kleinen signals wegfiltern und gene mit zu großer replikatvarianz -> info fehlt aber
-        //TODO vielleicht gene wegfiltern wo fc sig aber fdr nciht sig ist oder andersrum?
-        //LATER wenn empire auf microarray publiziert kann man dasw hier einbauen
+        sig_genes.addAll(gene2FCandFDR.stream().filter(_gene -> _gene.fdr > FDR_cutoff &&
+                Math.abs(_gene.fc) < FC_cutoff).collect(Collectors.toSet())); // Gene wo nur 1 sig ist von FDR/FC fliegen raus
+        //LATER Gergely: FDR(Gene in [-1,1])<=0.05
     }
 
     /*
@@ -62,12 +61,12 @@ public class Functions {
         double[] FC_interval = define_FDR_and_FC_cutoff_interval(gene2FCandFDR, "FC");
         double fc_interval_width = FC_interval[1]-FC_interval[0];
         gene2FCandFDR.forEach(_obj -> {
-            if (_obj.fdr <= FDR_cutoff && Math.abs(_obj.fc) >= FC_cutoff) {
-                _obj.weighted_score = 1.0;
-            } else {
-                double fdr_score = (_obj.fdr-FDR_interval[0])/fdr_interval_width; //FIXME look up which bound is used
-                double fc_score = (_obj.fc-FC_interval[0])/fc_interval_width; //FIXME
+            if (_obj.fdr <= FDR_interval[1] && Math.abs(_obj.fc) >= FC_interval[0]) {
+                double fdr_score = _obj.fdr<=FDR_interval[0] ? 1.0 : (_obj.fdr - FDR_interval[0]) / fdr_interval_width;
+                double fc_score = _obj.fc>=FC_interval[1] ? 1.0 : (_obj.fc - FC_interval[0]) / fc_interval_width;
                 _obj.weighted_score = 0.5*(fdr_score+fc_score);
+            } else {
+                _obj.weighted_score = 0.0;
             }
         });
         return(gene2FCandFDR);
