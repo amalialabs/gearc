@@ -1,9 +1,6 @@
 import org.apache.commons.math3.distribution.HypergeometricDistribution;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class Enrichment {
 
@@ -11,7 +8,12 @@ public class Enrichment {
     int numGenesTotal;
     int deGenes;
 
-    public HashMap<Node, Double> enrich(HashSet<Gene> sampled_genes, GO gos) {
+    public Enrichment(int numGenesTotal, int deGenes) {
+        this.numGenesTotal = numGenesTotal;
+        this.deGenes = deGenes;
+    }
+
+    public HashMap<Node, Double> enrich(Set<Gene> sampled_genes, GO gos) {
         HashSet<Gene> foreground_genes = new HashSet<>();
         HashSet<Gene> background_genes = new HashSet<>();
         sampled_genes.stream().forEach(_gene -> {
@@ -26,7 +28,11 @@ public class Enrichment {
         //
         // lATER vielleicht beschränkt man die nodes bzgl Anzahl Gene also nodes mit #genes > x und < y
         for (Node node : gos.getGoNodes().values()) {
-            double pvalue = hypergeometric(node);
+            double pvalue = 1.0;
+            //todo resolve if no genes for node
+            if (node.getGenes() != null && node.getGenes().size() != 0) {
+                pvalue = hypergeometric(node);
+            }
             node2FDR.put(node, pvalue);
         }
         benjamini(node2FDR); // sollte die FDRs überschreiben
@@ -34,10 +40,15 @@ public class Enrichment {
     }
 
     public double hypergeometric(Node node) {
+        System.out.println(node);
         int numMeasuredGenesInSet = node.getGenes().size();
-        int numSignificantGenesInSet = (int) node.getGenes().stream().filter(_g -> _g.is_significant).count();
-        double hg_pval = new HypergeometricDistribution(numGenesTotal, deGenes,
-                numMeasuredGenesInSet).upperCumulativeProbability(numSignificantGenesInSet);
+        //todo remove null catch
+        int numSignificantGenesInSet = (int) node.getGenes().stream().filter(_g -> _g != null && _g.is_significant).count();
+        double hg_pval = 1.0;
+        if (numMeasuredGenesInSet != 0) {
+            hg_pval = new HypergeometricDistribution(numGenesTotal, deGenes,
+                    numMeasuredGenesInSet).upperCumulativeProbability(numSignificantGenesInSet);
+        }
         return(hg_pval);
     }
 

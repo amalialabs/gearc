@@ -1,18 +1,15 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Result {
 
-    public HashMap<String, ArrayList<Double>> GOnode2FDRruns = new HashMap<>();
+    public HashMap<Node, ArrayList<Double>> GOnode2FDRruns = new HashMap<>();
 
     /*
     collects FDR values for every 1000 runs to each GO node, sorts FDRS each time
     @param map of GO node to FDR value
      */
-    public void gather_runs(HashMap<String, Double> GOnode2FDR) {
+    public void gather_runs(HashMap<Node, Double> GOnode2FDR) {
         GOnode2FDR.keySet().forEach(_node -> {
             if (GOnode2FDRruns.containsKey(_node)) {
                 GOnode2FDRruns.get(_node).add(GOnode2FDR.get(_node));
@@ -37,12 +34,12 @@ public class Result {
     @param specified quantile in double format eg 0.95
     @return list of robust GO nodes to specified quantile
      */
-    public HashSet<String> getXquantileGOnodes(double quantile) {
+    public Set<Node> getXquantileGOnodes(double quantile) {
         double FDR_cutoff = 0.05; //LATER may be defined by user too
-        String node = GOnode2FDRruns.entrySet().iterator().next().getKey();
+        Node node = GOnode2FDRruns.entrySet().iterator().next().getKey();
         int num_runs = GOnode2FDRruns.get(node).size();
         int position = (int) quantile*num_runs;
-        HashSet<String> robustGOs = (HashSet<String>) GOnode2FDRruns.keySet().stream().
+        Set<Node> robustGOs = GOnode2FDRruns.keySet().stream().
                 filter(_go -> GOnode2FDRruns.get(_go).get(position)<=FDR_cutoff).
                 collect(Collectors.toSet());
         return(robustGOs);
@@ -53,7 +50,7 @@ public class Result {
     @param GO node
     @return double mean FDR over all runs
      */
-    public double getMeanFDRofGO(String GO) {
+    public double getMeanFDRofGO(Node GO) {
         ArrayList<Double> fdrs = GOnode2FDRruns.get(GO);
         double sum = fdrs.stream().mapToDouble(a -> a).sum();
         return(sum/fdrs.size());
@@ -63,10 +60,11 @@ public class Result {
     prints robust GOs of a specified quantile
     @param list of GOs of quantile
      */
-    public void writeRobustGOs(HashSet<String> robustGOs) {
+    public void writeRobustGOs(Set<Node> robustGOs) {
         //LATER output in file or html table -> need optional arguments in handler
         System.out.println("GOnode\tmeanFDR");
-        robustGOs.forEach(_go -> System.out.println(_go + "\t" + getMeanFDRofGO(_go)));
+        robustGOs.forEach(_go -> System.out.println(_go.node_id + "\t" + getMeanFDRofGO(_go)));
+        System.out.println(robustGOs.size() + " GOs in total.");
     }
 
 }

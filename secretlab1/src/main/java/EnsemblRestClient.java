@@ -12,6 +12,8 @@ import net.minidev.json.parser.*;
 
 public class EnsemblRestClient {
 
+    //fixme resolve gene mappings and obo etc to be available as resource with program
+    // compute on demand, else have structure for each month?
     public static final String SERVER = "http://rest.ensembl.org";
     public static final JSONParser PARSER = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
 

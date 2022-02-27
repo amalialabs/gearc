@@ -8,14 +8,12 @@ public class Gene {
     public enum corresponding_set {SIG_CORE, FLEX, SIGNON_CORE};
     corresponding_set set;
 
-    public Gene(String gene_id, double fc, double fdr, boolean is_significant) {
+    public Gene(String gene_id, double fc, double fdr) {
         this.gene_id = gene_id;
         this.fc = fc;
         this.fdr = fdr;
-        this.is_significant = is_significant;
+        this.is_significant = Math.abs(fc) > Functions.FC_cutoff && fdr <= Functions.FDR_cutoff;
     }
-
-
 
     public double get_FDR_value() {
         return this.fdr;
@@ -29,4 +27,15 @@ public class Gene {
         return this.weighted_score;
     }
 
+    @Override
+    public String toString() {
+        return "Gene{" +
+                "gene_id='" + gene_id + '\'' +
+                ", weighted_score=" + weighted_score +
+                ", fdr=" + fdr +
+                ", fc=" + fc +
+                ", is_significant=" + is_significant +
+                ", set=" + set +
+                '}';
+    }
 }

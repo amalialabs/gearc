@@ -56,4 +56,16 @@ public class Node {
 //    public void setGeneIds(Set<String> geneIds) {
 //        this.geneIds = geneIds;
 //    }
+
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "node_id='" + node_id + '\'' +
+                ", node_name='" + node_name + '\'' +
+                ", genes=" + genes +
+                ", enrichment_score=" + enrichment_score +
+                ", parents=" + parents +
+                '}';
+    }
 }

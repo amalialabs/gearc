@@ -4,8 +4,8 @@ import java.util.stream.Collectors;
 
 public class Functions {
 
-    public double FDR_cutoff = 0.05; //LATER where will it be defined?
-    public double FC_cutoff = 1.0;
+    public static double FDR_cutoff = 0.05; //LATER where will it be defined?
+    public static double FC_cutoff = 1.0;
 
     /*
     calculates FDR and FC interval based on input distribution
@@ -14,7 +14,7 @@ public class Functions {
     @param set of gene objects (gene, FC, FDR)
     @return double[] interval with lower and upper bound
      */
-    public double[] define_FDR_and_FC_cutoff_interval(HashSet<Gene> gene2FDRandFC, String type) {
+    public static double[] define_FDR_and_FC_cutoff_interval(Set<Gene> gene2FDRandFC, String type) {
         int num_sig_genes = (int) gene2FDRandFC.stream().filter(_gene -> _gene.is_significant).count();
         int num_nonsig_genes = (int) gene2FDRandFC.stream().filter(_gene -> !_gene.is_significant).count();
         int num_one_percent_ontop = Math.max((int) (0.01 * num_sig_genes), 5); //LATER at least 5? more genes
@@ -33,7 +33,7 @@ public class Functions {
         double diff_to_center = type.equals("FDR") ? Math.abs(FDR_cutoff-upper_bound) : Math.abs(FC_cutoff-upper_bound); //centered interval around FDR_cutoff
         double lower_bound = type.equals("FDR") ? FDR_cutoff-diff_to_center : FC_cutoff-diff_to_center;
         double[] interval = {lower_bound, upper_bound}; //LATER maybe we have to round it to x.xxx
-        return(interval);
+        return interval;
     }
 
     /*
@@ -41,21 +41,23 @@ public class Functions {
     @param set of gene object (gene, FC, FDR)
     @return same set without entries of unclear genes
      */
-    public void filter_unclear(HashSet<Gene> gene2FCandFDR) {
-        HashSet<Gene> sig_genes = (HashSet<Gene>) gene2FCandFDR.stream().
+    public static Set<Gene> filter_unclear(Set<Gene> gene2FCandFDR) {
+        Set<Gene> sig_genes = (HashSet<Gene>) gene2FCandFDR.stream().
                 filter(gene -> gene.fdr <= FDR_cutoff && Math.abs(gene.fc) >= FC_cutoff).
                 collect(Collectors.toSet());
         sig_genes.addAll(gene2FCandFDR.stream().filter(_gene -> _gene.fdr > FDR_cutoff &&
                 Math.abs(_gene.fc) < FC_cutoff).collect(Collectors.toSet())); // Gene wo nur 1 sig ist von FDR/FC fliegen raus
         //LATER Gergely: FDR(Gene in [-1,1])<=0.05
+        return sig_genes;
     }
 
     /*
     computes weighted score per gene based on FDR and FC
     @param set of gene object (gene, FC, FDR)
     @return same set with now computed values
+    LATER remove return??
      */
-    public HashSet<Gene> score_genes(HashSet<Gene> gene2FCandFDR) {
+    public static Set<Gene> score_genes(Set<Gene> gene2FCandFDR) {
         double[] FDR_interval = define_FDR_and_FC_cutoff_interval(gene2FCandFDR, "FDR");
         double fdr_interval_width = FDR_interval[1]-FDR_interval[0];
         double[] FC_interval = define_FDR_and_FC_cutoff_interval(gene2FCandFDR, "FC");
@@ -69,7 +71,7 @@ public class Functions {
                 _obj.weighted_score = 0.0;
             }
         });
-        return(gene2FCandFDR);
+        return gene2FCandFDR;
     }
 
     /*
@@ -77,7 +79,7 @@ public class Functions {
     @param set of gene objects (gene, weighted_score), enum expected change (high, average, low)
     @return set of gene objects with defined set belonging
      */
-    public HashSet<Gene> assign_genes_to_sets(HashSet<Gene> gene2weightedscore, Enum expected_change) {
+    public static Set<Gene> assign_genes_to_sets(Set<Gene> gene2weightedscore, Enum expected_change) {
         ArrayList<Gene> sorted_genes = (ArrayList<Gene>) gene2weightedscore.stream().
                 sorted(Comparator.comparing(Gene::get_weighted_score)).collect(Collectors.toList()); //TODO chech if ascending
         int sig_core;
@@ -95,7 +97,7 @@ public class Functions {
         sorted_genes.subList(0,sig_core).forEach(_gene -> _gene.set = Gene.corresponding_set.SIG_CORE);
         sorted_genes.subList(sig_core, sig_core+flex).forEach(_gene -> _gene.set = Gene.corresponding_set.FLEX);
         sorted_genes.subList(sig_core+flex, sorted_genes.size()).forEach(_gene -> _gene.set = Gene.corresponding_set.SIGNON_CORE);
-        return(new HashSet<>(sorted_genes));
+        return new HashSet<>(sorted_genes);
     }
 
     /*
@@ -103,7 +105,7 @@ public class Functions {
     @param set of gene objects (gene, weighted_score)
     @return percentage (optimally > 0.2) which could be tested
      */
-    public double extend_flex_set(HashSet<Gene> genes2sets) {
+    public static double extend_flex_set(HashSet<Gene> genes2sets) {
         ArrayList<Gene> sorted_genes = (ArrayList<Gene>) genes2sets.stream().
                 sorted(Comparator.comparing(Gene::get_weighted_score)).collect(Collectors.toList()); //TODO chech if ascending
         int idx_last_flex = sorted_genes.stream().
@@ -129,7 +131,7 @@ public class Functions {
     @param set of gene objects (gene,corresponding_set)
     @return random sampled subset of gene objects
      */
-    public HashSet<Gene> sample_genes(HashSet<Gene> gene2set, double flex_percentage) {
+    public static Set<Gene> sample_genes(Set<Gene> gene2set, double flex_percentage) {
         HashSet<Gene> sampled_genes = new HashSet<>();
         Set<Gene> sig_core_genes = gene2set.stream().
                 filter(_gene -> _gene.set == Gene.corresponding_set.SIG_CORE).collect(Collectors.toSet());
@@ -149,7 +151,7 @@ public class Functions {
         Collections.shuffle(signons);
         int ninety_percent = (int) (0.9 * signons.size());
         sampled_genes.addAll(signons.subList(0, ninety_percent));
-        return(sampled_genes);
+        return sampled_genes;
     }
 
 }

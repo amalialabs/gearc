@@ -1,3 +1,5 @@
+import net.minidev.json.parser.ParseException;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -16,6 +18,9 @@ public class Reader {
      */
 
     HashMap<String, Gene> geneMap;
+    //fixme need to be set before calling
+    int numGenesTotal;
+    int deGenes;
 
 
     /**
@@ -26,32 +31,35 @@ public class Reader {
      * @param expressionFile
      * @return
      */
-    public HashMap<String, Gene> readExpressionFile(File expressionFile, boolean isEnsembl, HashMap<String, String> hgnc2ensembl) {
-        HashMap<String, Gene> genes = new HashMap<>();
+    public Set<Gene> readExpressionFile(File expressionFile, boolean toConvert, HashMap<String, String> nameMapping) {
+        Set<Gene> genes = new HashSet<>();
+
+        SplittableRandom r = new SplittableRandom();
         try (Stream<String> stream = Files.lines(Paths.get(expressionFile.getAbsolutePath()))) {
             stream.skip(1).forEach(_line -> {
-                String[] elems = _line.split("\t");
-                String gene_id;
-                if (isEnsembl) {
-                    gene_id = elems[0];
-                } else {
-                    gene_id = hgnc2ensembl.get(elems[0]);
-                }
-                double fc = Double.parseDouble(elems[1]);
-                double fdr = Double.parseDouble(elems[2]);
-                boolean is_signif = Boolean.parseBoolean(elems[3]);
+                if (_line.charAt(0) != '#' && _line.charAt(0) != 'i') {
+//                    System.out.println(_line);
+                    String[] elems = _line.split("\t");
+                    String gene_id;
+                    if (toConvert) {
+                        gene_id = elems[0];
+                    } else {
+                        gene_id = nameMapping.get(elems[0]);
+                    }
+                    double fc = Double.parseDouble(elems[1]);
+                    double fdr = r.nextDouble(1); //Double.parseDouble(elems[2]);
 
-                Gene g = new Gene(gene_id, fc, fdr, is_signif);
-                genes.put(gene_id, g);
+                    Gene g = new Gene(gene_id, fc, fdr);
+                    genes.add(g);
+                }
             });
         } catch (IOException e) {
             throw new RuntimeException("Error reading expression file: ", e);
         }
-        geneMap = genes;
         return genes;
     }
 
-    public HashMap<String, Gene>readExpressionFile(File expressionFile) {
+    public Set<Gene>readExpressionFile(File expressionFile) {
         return readExpressionFile(expressionFile, true, null);
     }
 
@@ -126,12 +134,25 @@ public class Reader {
         return gos;
     }
 
-    private void readMappringGAF(File mappingFile, GO gos){
+    /**
+     * 3. column = geneName
+     * 4. column = goName
+     * UniProtKB       A0A024R161      DNAJC25-GNG10           GO:0004871      GO_REF:0000038  IEA     UniProtKB-KW:KW-0807    F       Guanine nucleotide-binding protein subunit gamma
+     * UniProtKB       A0A024R161      DNAJC25-GNG10           GO:0005834      GO_REF:0000002  IEA     InterPro:IPR001770|InterPro:IPR015898   C       Guanine nucleotide-binding protei
+     * UniProtKB       A0A024R161      DNAJC25-GNG10           GO:0007186      GO_REF:0000002  IEA     InterPro:IPR001770|InterPro:IPR015898   P       Guanine nucleotide-binding protei
+     * UniProtKB       A0A075B6P5      IGKV2-28                GO:0002250      GO_REF:0000037  IEA     UniProtKB-KW:KW-1064    P       Immunoglobulin kappa variable 2-28      KV228_H
+     * @param mappingFile
+     * @param gos
+     * FIXME chnage ensembl rest to automatically map names
+     */
+    public void readMappringGAF(File mappingFile, GO gos){
         int c = 0;
         String line;
         BufferedReader br = null;
         int one, two, three, four, five;
         String gene, go;
+
+        int lines = 2000;
 
         try {br = new BufferedReader(new InputStreamReader( new GZIPInputStream(new FileInputStream(mappingFile))));} catch (Exception e) {}
         try {
@@ -143,6 +164,11 @@ public class Reader {
                 four = line.indexOf("\t", three+1);
                 five = line.indexOf("\t", four+1);
                 //System.out.println(line);
+
+
+                if(c++ > lines) break;
+
+
 
                 if (four-three > 1) {
                     //System.out.println(line);
@@ -159,16 +185,25 @@ public class Reader {
                 if (node == null) {
                     continue;
                 }
-                String geneId = line.substring(four + 1, five);
+                //TODO catch unmappable ids
+                String geneId = "";
+                try {
+                    geneId = EnsemblRestClient.getGeneID("human", gene);
+                } catch (Exception e) {
+                    continue;
+                }
+//                System.out.println(gene + "\t" + geneId);
 //                System.out.println("Gene\t"+gene);
 //                System.out.println("Go\t"+go);
 //                System.out.println(++c);
-                if (node.getGenes() == null) {
-                    Set<Gene> set = new HashSet<>();
-                    set.add(geneMap.get(geneId));
-                    node.setGenes(set);
-                } else {
-                    node.getGenes().add(geneMap.get(geneId));
+                if(geneMap.get(geneId) != null) {
+                    if (node.getGenes() == null) {
+                        Set<Gene> set = new HashSet<>();
+                        set.add(geneMap.get(geneId));
+                        node.setGenes(set);
+                    } else {
+                        node.getGenes().add(geneMap.get(geneId));
+                    }
                 }
 
                 //todo assignment for up/downregulation targets -> will se e later how to handle
