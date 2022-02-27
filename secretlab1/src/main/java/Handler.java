@@ -3,7 +3,6 @@ import joptsimple.OptionSet;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
@@ -12,6 +11,8 @@ public class Handler {
 
     public enum expected_change {LOW, AVERAGE, HIGH};
 
+    //todo parse arguments
+    //todo insert all optional args
     public static void main(String[] args) {
         OptionParser optionParser = new OptionParser() {{
         accepts("genelist").withRequiredArg().required().ofType(File.class).describedAs("diffexp output");
