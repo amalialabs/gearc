@@ -42,7 +42,7 @@ public class Functions {
     @return same set without entries of unclear genes
      */
     public static Set<Gene> filter_unclear(Set<Gene> gene2FCandFDR) {
-        Set<Gene> sig_genes = (HashSet<Gene>) gene2FCandFDR.stream().
+        Set<Gene> sig_genes = gene2FCandFDR.stream().
                 filter(gene -> gene.fdr <= FDR_cutoff && Math.abs(gene.fc) >= FC_cutoff).
                 collect(Collectors.toSet());
         sig_genes.addAll(gene2FCandFDR.stream().filter(_gene -> _gene.fdr > FDR_cutoff &&

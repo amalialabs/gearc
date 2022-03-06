@@ -26,29 +26,27 @@ public class Handler {
         assertTrue(params.has("genelist"));
 
         File genelist = (File) params.valueOf("genelist");
-        //TODO
-        //read Input, init gene object thereby -> hashset<gene>
+        try {
+            optionParser.printHelpOn(System.out);
+        } catch (IOException e) {
+            new RuntimeException("Could not display help page.", e);
+        }
+
+        //TODO this all moved to Reader as part of constructor
+//        //read Input, init gene object thereby -> hashset<gene>
         Reader r = new Reader();
-        r.readExpressionFile(new File("/home/birinci/GOEnrichment/simul_exp_go_bp_ensembl.tsv"));
-        GO gos = r.readOboFile(new File("/home/birinci/GOEnrichment/go.obo"), "biological_process");
+        GO gos = null;
 
         //define_FDR_and_FC_cutoff_interval()
-        HashMap<String, Gene> genes = new HashMap<>();
-        Set<Gene> set = r.readExpressionFile(new File("/home/birinci/GOEnrichment/simul_exp_go_bp_ensembl.tsv"));
-        System.out.println(set.size());
-        Functions.filter_unclear(set).forEach(_g -> genes.put(_g.gene_id, _g));
-        r.geneMap = genes;
-        System.out.println(genes.values().size());
+        // now also performed directly while reading the expression input in the reader
+        //        Functions.filter_unclear(set).forEach(_g -> genes.put(_g.gene_id, _g));
+        /**
+         * @see Reader#readExpressionFile(File, boolean, HashMap)
+         */
+
 
         // readmappingGAF after reduction in names
-        r.readMappringGAF(new File("/home/birinci/GOEnrichment/goa_human.gaf.gz"), gos);
-        gos.getGoNodes().values().forEach(_node -> {
-            if(_node.getGenes() != null && _node.getGenes().size() > 2) {
-                System.out.println(_node.node_id);
-                System.out.println(_node.getNode_name());
-                System.out.println(_node.getGenes().size());
-            }
-        });
+        // --> done in reader constructor now
 
         //score_genes()
         Functions.score_genes(new HashSet<>(r.geneMap.values()));
@@ -58,11 +56,11 @@ public class Handler {
         Functions.assign_genes_to_sets(new HashSet<>(r.geneMap.values()), expected_change.AVERAGE);
 
 
-        int numGenesTotal = gos.getGoNodes().values().stream()
+        int numGenesTotal = GO.getGoNodes().values().stream()
                 .filter(_node -> _node.getGenes() != null).mapToInt(_node -> _node.getGenes().size()).sum();
         //todo need to remove "null"genes from Nodes
         Set<Gene> ge = new HashSet<>();
-        gos.getGoNodes().values().stream().forEach(_node -> {
+        GO.getGoNodes().values().stream().forEach(_node -> {
             if (_node.getGenes() != null) ge.addAll(_node.getGenes());
         });
         int deGenes = (int) ge.stream().filter(_go -> _go.is_significant).count();
@@ -73,7 +71,7 @@ public class Handler {
         //alternative
         for (int i = 0; i < 1; i++) { //later
             Functions.sample_genes(new HashSet<>(r.geneMap.values()), 0.2);
-            result.gather_runs(en.enrich(new HashSet<>(r.geneMap.values()), gos));
+            result.gather_runs(en.enrich(new HashSet<>(r.geneMap.values()), gos));  //fixme change method call
         }
 
 
@@ -89,11 +87,6 @@ public class Handler {
         result.writeRobustGOs(result.getXquantileGOnodes(0.95));
         //plots
 
-        try {
-            optionParser.printHelpOn(System.out);
-        } catch (IOException e) {
-            new RuntimeException("Could not display help page.", e);
-        }
     }
 
 }

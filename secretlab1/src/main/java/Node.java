@@ -1,3 +1,4 @@
+import java.util.HashSet;
 import java.util.Set;
 
 public class Node {
@@ -8,6 +9,7 @@ public class Node {
 //    Set<String> geneIds;
     double enrichment_score;
     Set<String> parents;
+    Set<Node> parentNodes;
 
     public String getNode_id() {
         return node_id;
@@ -26,6 +28,9 @@ public class Node {
     }
 
     public Set<Gene> getGenes() {
+        if (genes == null) {
+            genes = new HashSet<>();
+        }
         return genes;
     }
 
@@ -49,14 +54,19 @@ public class Node {
         this.parents = parents;
     }
 
-//    public Set<String> getGeneIds() {
-//        return geneIds;
-//    }
-//
-//    public void setGeneIds(Set<String> geneIds) {
-//        this.geneIds = geneIds;
-//    }
+    public Set<Node> getParentNodes() {
+        if (parentNodes == null) {
+            parentNodes = new HashSet<>();
+            for (String parent : getParents()) {
+                parentNodes.add(GO.goNodes.get(parent));
+            }
+        }
+        return parentNodes;
+    }
 
+    public void setParentNodes(Set<Node> parentNodes) {
+        this.parentNodes = parentNodes;
+    }
 
     @Override
     public String toString() {

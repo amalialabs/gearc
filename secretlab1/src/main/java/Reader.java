@@ -1,44 +1,63 @@
-import net.minidev.json.parser.ParseException;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
-/**
- * @author hadziahmetovic on 23.01.22
- */
 public class Reader {
     /*
      add GO reader
      add ensembl/gaf reader -> autoconvert/scrape info to generate ensembl verison
      diff-output reader -> flexible with col selector -> make gene, fc, label format??
      */
+    HashMap<String, Gene> geneMap = new HashMap<>();
+    HashMap<String, Set<String>> geneToGO = new HashMap<>();
 
-    HashMap<String, Gene> geneMap;
+
     //fixme need to be set before calling
     int numGenesTotal;
     int deGenes;
 
+    public Reader() {
+    }
+
+    //fixme specify and rely on ensembl mappingFile; updates may contain more options
+    // - also add mutable root -> perform for each root at the same time? maybe not, but add full call with all plots and per root
+    public Reader(File expressionFile, File mappingFile, File oboFile, String root) {
+        System.out.println("\nObo: starting");
+        long time = System.currentTimeMillis();
+        GO.goNodes = readOboFile(oboFile, root);
+        System.out.println("\tObo time: "+(System.currentTimeMillis()-time)+" ms");
+
+        System.out.println("\nExpressionFile: starting");
+        time = System.currentTimeMillis();
+        readExpressionFile(expressionFile);
+        System.out.println("\tExpressionFile time: "+(System.currentTimeMillis()-time)+" ms");
+
+        System.out.println("\nMappingFile: starting");
+        time = System.currentTimeMillis();
+        readMappringEnsebl(mappingFile);
+        System.out.println("\tMappingFile time: "+(System.currentTimeMillis()-time)+" ms");
+        postprocess();
+    }
 
     /**
      * Has to have header
-     * id      fc   fdr      signif
-     * DNAJC25-GNG10   -1.3420  0.1 false
-     * IGKV2-28        -2.3961 0.12  false
+     * id      fc   fdr
+     * DNAJC25-GNG10   -1.3420  0.1
+     * IGKV2-28        -2.3961 0.12
      * @param expressionFile
      * @return
      */
-    public Set<Gene> readExpressionFile(File expressionFile, boolean toConvert, HashMap<String, String> nameMapping) {
+    private void readExpressionFile(File expressionFile, boolean toConvert, HashMap<String, String> nameMapping) {
+        System.out.println("Starting");
         Set<Gene> genes = new HashSet<>();
-
-        SplittableRandom r = new SplittableRandom();
+        SplittableRandom r = new SplittableRandom();    //fixme
         try (Stream<String> stream = Files.lines(Paths.get(expressionFile.getAbsolutePath()))) {
             stream.skip(1).forEach(_line -> {
-                if (_line.charAt(0) != '#' && _line.charAt(0) != 'i') {
-//                    System.out.println(_line);
+                if (_line.charAt(0) != '#' && _line.charAt(0) != 'i') { //fixme -> should not have any lines with #GOxxx
                     String[] elems = _line.split("\t");
                     String gene_id;
                     if (toConvert) {
@@ -47,7 +66,7 @@ public class Reader {
                         gene_id = nameMapping.get(elems[0]);
                     }
                     double fc = Double.parseDouble(elems[1]);
-                    double fdr = r.nextDouble(1); //Double.parseDouble(elems[2]);
+                    double fdr = r.nextDouble(1); //Double.parseDouble(elems[2]); //fixme
 
                     Gene g = new Gene(gene_id, fc, fdr);
                     genes.add(g);
@@ -56,11 +75,17 @@ public class Reader {
         } catch (IOException e) {
             throw new RuntimeException("Error reading expression file: ", e);
         }
-        return genes;
+        Functions.filter_unclear(genes).forEach(_g -> geneMap.put(_g.gene_id, _g));
+
+        System.out.println("---------");
+        System.out.println("Filter check:");
+        System.out.println("Input:\t" + genes.size());
+        System.out.println("Filter:\t" + geneMap.keySet().size());
+        System.out.println("---------");
     }
 
-    public Set<Gene>readExpressionFile(File expressionFile) {
-        return readExpressionFile(expressionFile, true, null);
+    private void readExpressionFile(File expressionFile) {
+        readExpressionFile(expressionFile, true, null);
     }
 
     /**
@@ -76,8 +101,8 @@ public class Reader {
      * @param oboFile
      * @return
      */
-    public GO readOboFile(File oboFile, String root) {
-        GO gos = new GO();
+    private HashMap<String, Node> readOboFile(File oboFile, String root) {
+        HashMap<String, Node> goNodes = new HashMap<>();
         String line, id = null, name, namespace = null;
         Set<String> set = null;
         boolean good = true;
@@ -96,7 +121,7 @@ public class Reader {
                             if (node != null) {
                                 node.setParents(set);
                             }
-                            gos.getGoNodes().put(id, node);
+                            goNodes.put(id, node);
                         }
                         id = line.substring(4);
                         set = new HashSet<>();
@@ -120,18 +145,15 @@ public class Reader {
                 }
             }
             br.close();
-
             if (set != null) {
                 if (node != null) {
                     node.setParents(set);
                 }
             }
         } catch (IOException e) {
-            System.out.println("IOexception at obo file");
-            throw new RuntimeException(e);
+            throw new RuntimeException("IOexception at obo file " + oboFile.getAbsolutePath(), e);
         }
-
-        return gos;
+        return goNodes;
     }
 
     /**
@@ -145,7 +167,7 @@ public class Reader {
      * @param gos
      * FIXME chnage ensembl rest to automatically map names
      */
-    public void readMappringGAF(File mappingFile, GO gos){
+    private void readMappringGAF(File mappingFile, GO gos){
         int c = 0;
         String line;
         BufferedReader br = null;
@@ -235,65 +257,117 @@ public class Reader {
 
 
     //todo get creator functions from gergely
-//    private void readMappringEnsebl(){
+    private void readMappringEnsebl(File ensemblMapping){
+        try (Stream<String> stream = Files.lines(Paths.get(ensemblMapping.getAbsolutePath()))) {
+            final int[] counterLine = {0};
+            final int[] counterEntry = {0};
+            stream.skip(1).forEach(_line -> { //has header
+                String[] elems = _line.split("\t");
+                String gene_id = elems[0];
+                String gene_name = elems[1];
+                counterLine[0]++;
+                if(geneMap.containsKey(gene_name)){
+                    geneToGO.putIfAbsent(gene_name, new HashSet<>());
+                    geneToGO.get(gene_name).addAll(Stream.of(elems[2].split("\\|"))
+                            .filter(_go -> GO.goNodes.containsKey(_go)).collect(Collectors.toSet()));
+                    counterEntry[0]++;
+                }
+                //fixme take care of either gene _id or _name
+            });
+            System.out.println("---------");
+            System.out.println("Mapping check:");
+            System.out.println("Etries:\t" + counterLine[0]);
+            System.out.println("Valid Entries:\t" + counterEntry[0]);
+            System.out.println("Unique Entries:\t" + geneToGO.keySet().size());
+            System.out.println("---------");
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error during parsing of " + ensemblMapping.getAbsolutePath(), e);
+        }
+    }
+
+    /**
+     * Propagates gene counts to all parent GOs.
+     *
+     * Collects all relevant entries, according to min/max criteria, in relevantGo.
+     * Establishes parent-child connection.
+     */
+    private void postprocess() {
+        geneToGO.forEach((key, value) -> {
+            for (String go_id : value) {
+                GO.getGoNodes().get(go_id).getGenes().add(geneMap.get(key));
+            }
+        });
+
+        Set<Node> gos = new HashSet<>(GO.goNodes.values());
+        Set<Node> notPropagated;
+
+        System.out.println("Pre propagating posneg size\t"+gos.size());
+        do {
+            notPropagated = new HashSet<>();
+            Set<Node> finalNotPropagated = notPropagated;
+            gos.forEach(_go -> propagate(_go, finalNotPropagated));
+            notPropagated = finalNotPropagated;
+        } while ((gos = notPropagated).size() > 0);
+
+
+//        posneg = new HashSet<>();
 //
-//        String line, name;
-//        BufferedReader br = null;
-//        int one, two;
-//        boolean b;
+//        goParent.keySet().forEach(x -> {
+//            if (goParent.get(x) != null) {
+//                if(goPositive.get(x) != null || goNegative.get(x) != null) {
+//                    goPositive.putIfAbsent(x, new HashSet<>());
+//                    goNegative.putIfAbsent(x, new HashSet<>());
+//                    if (goPositive.get(x).size() + goNegative.get(x).size() >= minSize && goPositive.get(x).size() + goNegative.get(x).size() <= maxSize) {
+//                        relevantGo.add(x);
 //
-//        try {br = new BufferedReader(new FileReader(mapping));} catch (FileNotFoundException e) {}
-//        try {
-//            line = br.readLine();
-//            while ((line = br.readLine()) != null) {
-//                one = line.indexOf("\t");
-//                two = line.indexOf("\t", one + 1);
-//                if (two - one < 2) continue;
-//                name = line.substring(one + 1, two);
-//                if (!geneSignif.keySet().contains(name)) {
-//                    continue;
-//                }
-//                //currentSet = new HashSet<>();
-//                currentGene = name;
-//
-//                b = geneSignif.get(name);
-//                getGOs(line.substring(two + 1), b);
-//                //geneGO.put(name, currentSet);
-//            }
-//            br.close();
-//        }
-//        catch (IOException e) {
-//            System.out.println("IOexception ensembl reader");
-//        }
-//    }
-//
-//    private void getGOs (String line, boolean b) {
-//        try {
-//            while (true) {
-//                if (!allGO.contains(line.substring(0, 10))) {
-//                    line = line.substring(11);
-//                    continue;
-//                }
-//                //currentSet.add(line.substring(0, 10));
-//                if (!b) {   //TODO dont ask why, it works
-//                    if (goPositive.get(line.substring(0, 10)) == null) {
-//                        Set<String> set123 = new HashSet<>();
-//                        set123.add(currentGene);
-//                        goPositive.put(line.substring(0, 10), set123);
-//                    } else {
-//                        goPositive.get(line.substring(0, 10)).add(currentGene);
+//                        //relevantGo.put(x, new HashSet<>(goParent.get(x)));
 //                    }
-//                } else {
-//                    if (goNegative.get(line.substring(0, 10)) == null) {
-//                        Set<String> set123 = new HashSet<>();
-//                        set123.add(currentGene);
-//                        goNegative.put(line.substring(0, 10), set123);
-//                    } else {
-//                        goNegative.get(line.substring(0, 10)).add(currentGene);
-//                    }
 //                }
-//                line = line.substring(11);
+////                for (String parent : goParent.get(x)) { //TODO eval if this is useful
+////                    if (goChild.get(parent) == null) {
+////                        Set<String> se = new HashSet<>();
+////                        se.add(x);
+////                        goChild.put(parent, se);
+////                    } else {
+////                        goChild.get(parent).add(x);
+////                    }
+////                }
 //            }
-//        } catch (Exception e) {}
-//    }
+//            goPositive.putIfAbsent(x, new HashSet<>());
+//            goNegative.putIfAbsent(x, new HashSet<>());
+//            posneg.addAll(goPositive.get(x));
+//            posneg.addAll(goNegative.get(x));
+//        });
+//
+//        for (String gene : posneg) {
+//            if (geneSignif.get(gene)) geneSignifCount++;
+//        }
+//        System.out.println("Number of relevant genes\t" + posneg.size());
+        //TODO need step for relevant genes
+    }
+
+    private void propagate(Node n, Set<Node> notPropagated) {
+        for (Node parent : GO.getGoNodes().get(n.node_id).getParentNodes()) {
+            parent.getGenes().addAll(n.getGenes());
+        }
+        notPropagated.addAll(GO.getGoNodes().get(n.node_id).getParentNodes());
+    }
+
+    public static void main(String[] args) {
+        File expression = new File("/home/birinci/GOEnrichment/simul_exp_go_bp_ensembl.tsv");
+        File mappingEnsembl = new File("/home/birinci/GOEnrichment/goa_human_ensembl.tsv");
+        File oboFile = new File("/home/birinci/GOEnrichment/go.obo");
+        String root = "biological_process";
+
+        Reader r = new Reader(expression, mappingEnsembl, oboFile, root);
+
+        GO.getGoNodes().values().forEach(_node -> {
+            if(_node.getGenes() != null && _node.getGenes().size() > 3000) {
+                System.out.println(_node.node_id);
+                System.out.println(_node.getNode_name());
+                System.out.println(_node.getGenes().size());
+            }
+        });
+    }
 }
