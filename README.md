@@ -8,8 +8,8 @@ The latest version is available under:<br>
 ### Step1 ###
 Prepare needed input data: <br>
 - differential results file in the following format <br>
-Gene             |  fdr    |  lfc
--------------    | ------- | -----
+Gene   |  fdr    |  lfc
+-------------|-------|-----
 ENSG00000105     |  0.15   |  1.1
 ENSG00000105939  |  0.7    |  0.2
 
