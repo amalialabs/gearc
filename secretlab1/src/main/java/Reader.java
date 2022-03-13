@@ -40,7 +40,12 @@ public class Reader {
         time = System.currentTimeMillis();
         readMappringEnsebl(mappingFile);
         System.out.println("\tMappingFile time: "+(System.currentTimeMillis()-time)+" ms");
+
+
+        System.out.println("\nPostprocessing: starting");
+        time = System.currentTimeMillis();
         postprocess();
+        System.out.println("\tPostprocessing time: "+(System.currentTimeMillis()-time)+" ms");
     }
 
     /**

@@ -1,6 +1,7 @@
 import org.apache.commons.math3.distribution.HypergeometricDistribution;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Enrichment {
 
@@ -70,5 +71,20 @@ public class Enrichment {
 //            benjaminipvalue.put(keys[index[i]], result[i]);
 //        }
     }
-
+    
+    public void bhAdjust(HashMap<Node, Double> pval) {
+        List<Map.Entry<Node, Double>> list = pval.entrySet().stream()
+                .sorted(Comparator.comparingDouble(Map.Entry::getValue)).collect(Collectors.toList());
+        for (int i = list.size() - 1; i >= 0; i--) {
+            Node node = list.get(i).getKey();
+            if (i == list.size() - 1) {
+                node.setBhFDR(pval.get(node));
+            } else {
+                double unadjust = pval.get(node);
+                double left = pval.get(list.get(i + 1).getKey());
+                double right = (list.size() / (i + 1.0)) * unadjust;
+                node.setBhFDR(Math.min(left, right));
+            }
+        }
+    }
 }

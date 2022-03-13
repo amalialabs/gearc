@@ -8,6 +8,7 @@ public class Node {
     Set<Gene> genes;
 //    Set<String> geneIds;
     double enrichment_score;
+    double bhFDR;
     Set<String> parents;
     Set<Node> parentNodes;
 
@@ -66,6 +67,14 @@ public class Node {
 
     public void setParentNodes(Set<Node> parentNodes) {
         this.parentNodes = parentNodes;
+    }
+
+    public double getBhFDR() {
+        return bhFDR;
+    }
+
+    public void setBhFDR(double bhFDR) {
+        this.bhFDR = bhFDR;
     }
 
     @Override
