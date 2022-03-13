@@ -7,7 +7,8 @@ The latest version is available under:<br>
 
 ### Step1 ###
 Prepare needed input data: <br>
-- differential results file in the following format <br>
+- differential results file in the following tsv-format <br>
+
 Gene   |  fdr    |  lfc
 -------------|-------|-----
 ENSG00000105     |  0.15   |  1.1
