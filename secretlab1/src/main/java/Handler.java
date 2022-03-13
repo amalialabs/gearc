@@ -20,6 +20,7 @@ public class Handler {
         accepts("FC").withRequiredArg().ofType(double.class).defaultsTo(1.0).describedAs("log2foldchange cutoff");
         accepts("pval").withRequiredArg().ofType(double.class).defaultsTo(0.01).describedAs("adjusted p-value cutoff");
         acceptsAll( asList( "h", "?" ), "show help" ).forHelp();
+        accepts("out").withRequiredArg().ofType(String.class).describedAs("output file path"); //LATER defaults to installation path
         }};
 
         OptionSet params = optionParser.parse(args);
@@ -84,7 +85,13 @@ public class Handler {
             result.gather_runs(en.enrich(new HashSet<>(r.geneMap.values()), gos));
         }
         //later add user param
-        result.writeRobustGOs(result.getXquantileGOnodes(0.95));
+        if (params.has("out")) {
+            String filepath = (String) params.valueOf("out"); //FIXME file name or just path???
+            result.writeRobustGOs(result.getXquantileGOnodes(0.95), filepath);
+        } else {
+            result.printRobustGOs(result.getXquantileGOnodes(0.95));
+        }
+
         //plots
 
     }

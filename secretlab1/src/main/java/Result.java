@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,11 +63,24 @@ public class Result {
     prints robust GOs of a specified quantile
     @param list of GOs of quantile
      */
-    public void writeRobustGOs(Set<Node> robustGOs) {
+    public void printRobustGOs(Set<Node> robustGOs) {
         //LATER output in file or html table -> need optional arguments in handler
         System.out.println("GOnode\tmeanFDR");
         robustGOs.forEach(_go -> System.out.println(_go.node_id + "\t" + getMeanFDRofGO(_go)));
         System.out.println(robustGOs.size() + " GOs in total.");
+    }
+
+    public void writeRobustGOs(Set<Node> robustGOs, String outfile) {
+        try {
+            FileWriter fw = new FileWriter(new File(outfile));
+            fw.write("GOnode\tmeanFDR");
+            for (Node n : robustGOs) {
+                fw.write(n.node_id + "\t" + getMeanFDRofGO(n));
+            }
+            fw.close();
+        } catch (IOException e) {
+            throw new RuntimeException("could not init file ", e);
+        }
     }
 
 }
