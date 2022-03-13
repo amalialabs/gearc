@@ -20,7 +20,7 @@ public class Handler {
         accepts("FC").withRequiredArg().ofType(double.class).defaultsTo(1.0).describedAs("log2foldchange cutoff");
         accepts("pval").withRequiredArg().ofType(double.class).defaultsTo(0.01).describedAs("adjusted p-value cutoff");
         acceptsAll( asList( "h", "?" ), "show help" ).forHelp();
-        accepts("out").withRequiredArg().ofType(String.class).describedAs("output file path"); //LATER defaults to installation path
+        accepts("out").withRequiredArg().ofType(String.class).describedAs("output directory"); //LATER defaults to installation path
         }};
 
         OptionSet params = optionParser.parse(args);
@@ -35,8 +35,13 @@ public class Handler {
 
         //TODO this all moved to Reader as part of constructor
 //        //read Input, init gene object thereby -> hashset<gene>
-        Reader r = new Reader();
         GO gos = null;
+        File expression = new File("C:\\Users\\weiss\\Documents\\GO\\simul_exp_go_bp_ensembl.tsv");
+        File mappingEnsembl = new File("C:\\Users\\weiss\\Documents\\GO\\goa_human_ensembl.tsv");
+        File oboFile = new File("C:\\Users\\weiss\\Documents\\GO\\go.obo");
+        String root = "biological_process";
+        Reader r = new Reader(expression, mappingEnsembl, oboFile, root);
+
 
         //define_FDR_and_FC_cutoff_interval()
         // now also performed directly while reading the expression input in the reader
@@ -45,6 +50,10 @@ public class Handler {
          * @see Reader#readExpressionFile(File, boolean, HashMap)
          */
 
+
+        Plots plots = new Plots(params.valueOf("out").toString());
+        plots.unclear_genes_BARPLOT(r.geneMap.values()); //TODO must be called before genes are filtered!!!
+        plots.sig_genes_VOLCANO(r.geneMap.values());
 
         // readmappingGAF after reduction in names
         // --> done in reader constructor now

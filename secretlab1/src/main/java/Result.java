@@ -70,12 +70,12 @@ public class Result {
         System.out.println(robustGOs.size() + " GOs in total.");
     }
 
-    public void writeRobustGOs(Set<Node> robustGOs, String outfile) {
+    public void writeRobustGOs(Set<Node> robustGOs, String outdir) {
         try {
-            FileWriter fw = new FileWriter(new File(outfile));
-            fw.write("GOnode\tmeanFDR");
+            FileWriter fw = new FileWriter(new File(outdir, "/robust_GOs.tsv"));
+            fw.write("GOnode\tmeanFDR\n");
             for (Node n : robustGOs) {
-                fw.write(n.node_id + "\t" + getMeanFDRofGO(n));
+                fw.write(n.node_id + "\t" + getMeanFDRofGO(n) + "\n");
             }
             fw.close();
         } catch (IOException e) {

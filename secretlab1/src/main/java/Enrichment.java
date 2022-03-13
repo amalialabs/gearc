@@ -41,7 +41,7 @@ public class Enrichment {
     }
 
     public double hypergeometric(Node node) {
-        System.out.println(node);
+        //System.out.println(node);
         int numMeasuredGenesInSet = node.getGenes().size();
         //todo remove null catch
         int numSignificantGenesInSet = (int) node.getGenes().stream().filter(_g -> _g != null && _g.is_significant).count();
