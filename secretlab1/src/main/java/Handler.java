@@ -28,25 +28,26 @@ public class Handler {
         OptionSet params = optionParser.parse(args);
         assertTrue(params.has("genelist"));
 
+        System.out.println(params.toString());
+
         try {
             optionParser.printHelpOn(System.out);
         } catch (IOException e) {
             new RuntimeException("Could not display help page.", e);
         }
 
+        String outdir = (String) params.valueOf("out");
+        Plots plots = new Plots(outdir);
+
         GO gos = null;
-        File obo = (File) params.valueOf("obo");
-        File mapping = (File) params.valueOf("mapping");
+        File obo = new File((String) params.valueOf("obo"));
+        File mapping = new File((String) params.valueOf("mapping"));
         //File expression = (File) params.valueOf("genelist");
         File expression = new File("/data/simul_exp_go_bp_ensembl.tsv"); //for testing only
         String root = (String) params.valueOf("root");
         Reader r = new Reader(expression, mapping, obo, root);
 
-        //define_FDR_and_FC_cutoff_interval()
-
-        String outdir = (String) params.valueOf("out");
-        Plots plots = new Plots(outdir);
-        //plots.unclear_genes_BARPLOT(r.geneMap.values()); //TODO must be called before genes are filtered!!!
+        //plots.unclear_genes_BARPLOT(r.geneMap.values()); //FIXME must be called before genes are filtered!!!
         plots.sig_genes_VOLCANO(r.geneMap.values());
 
         Functions.score_genes(new HashSet<>(r.geneMap.values()));

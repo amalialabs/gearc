@@ -9,6 +9,11 @@ public class Plots {
     String out_dir;
     String rscript_folder = "/secretlab1/src/main/rscripts/";  //locally in docker image
 
+    String gene_ids;
+    String gene_groups;
+    String fcs;
+    String fdrs;
+
     public Plots(String output_dir) {
         this.FDR_cutoff = 0.05;
         this.FC_cutoff = 1.0;
@@ -81,6 +86,14 @@ public class Plots {
     }
 
     public void weighted_genes_CUMULATIVE() {
+
+    }
+
+    public void genes_set_PIECHART() {
+
+    }
+
+    public void selected_GOs_fdrs_BOXPLOT() {
 
     }
 
