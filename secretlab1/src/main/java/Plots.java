@@ -59,9 +59,9 @@ public class Plots {
     }
 
     public void unclear_genes_BARPLOT(Collection<Gene> genes) {
-        String rcommand = "Rscript /secretlab1/src/main/rscripts/unclear_genes_BARPLOT.R";
+        String rcommand = "/secretlab1/src/main/rscripts/unclear_genes_BARPLOT.R";
         try {
-            Process p = new ProcessBuilder(rcommand, this.gene_ids, this.gene_groups, out_dir).inheritIO().start();
+            Process p = new ProcessBuilder("Rscript", rcommand, this.gene_ids, this.gene_groups, out_dir).inheritIO().start();
             p.waitFor();
             //Runtime.getRuntime().exec(rscript_exe + " " + rscript_folder+"unclear_genes.R " + g + " " + grp + " " + out_dir);
         } catch (IOException e) {
