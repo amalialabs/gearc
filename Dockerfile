@@ -15,5 +15,7 @@ RUN cd secretlab1 && mvn package
 RUN cd /secretlab1/target && mkdir libs && for file in `find /root/.m2/repository/ -name "*.jar"`; do cp $file libs/; done
 RUN alias secretlab1='java -cp "/secretlab1/target/libs/*":`/secretlab1/target` Handler'
 
+RUN docker pull bnosac/cran-mirror
+RUN docker -p 22:22 -p 80:80 -v /home/bnosac/CRAN/:/var/www/html -d bnosac/cran-mirror
 RUN Rscript -e "install.packages('ggplot2')"
 
