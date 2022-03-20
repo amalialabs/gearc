@@ -7,3 +7,6 @@ RUN apk add R
 ADD secretlab1 secretlab1/
 ADD secretlab.jar secretlab.j
 
+RUN mkdir /out
+ADD data data/
+
