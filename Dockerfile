@@ -7,6 +7,11 @@ RUN apk add gcc g++ make
 RUN apk add musl-dev
 RUN apk add R-dev
 RUN Rscript -e "install.packages('ggplot2', repos='http://cran.rstudio.com/')"
+RUN Rscript -e "install.packages('reshape2', repos='http://cran.rstudio.com/')"
+RUN Rscript -e "install.packages('tidyr', repos='http://cran.rstudio.com/')"
+RUN Rscript -e "install.packages('VennDiagram', repos='http://cran.rstudio.com/')"
+RUN Rscript -e "install.packages('data.table', repos='http://cran.rstudio.com/')"
+#reshape2, VennDiagram, tidyr, data.table
 
 
 ADD secretlab1 secretlab1/
@@ -18,5 +23,5 @@ ADD data data/
 RUN apk add maven
 RUN cd secretlab1 && mvn package
 RUN cd /secretlab1/target && mkdir libs && for file in `find /root/.m2/repository/ -name "*.jar"`; do cp $file libs/; done
-RUN export secretlab1='java -cp "/secretlab1/target/libs/*":`/secretlab1/target` Handler'
+RUN alias secretlab1='java -cp "/secretlab1/target/libs/*":/secretlab1/target/ Handler'
 
