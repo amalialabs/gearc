@@ -16,7 +16,7 @@
                     <source>11</source>
                     <target>11</target>
                     <outputDirectory>${project.build.directory}</outputDirectory>
-                    
+
                 </configuration>
             </plugin>
         </plugins>
