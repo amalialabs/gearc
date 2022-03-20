@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class Plots {
 
@@ -72,9 +73,9 @@ public class Plots {
     }
 
     public void sig_genes_VOLCANO(Collection<Gene> genes) {
-        String rcommand = "Rscript /secretlab1/src/main/rscripts/sig_genes_VOLCANO.R";
+        String rcommand = "/secretlab1/src/main/rscripts/sig_genes_VOLCANO.R";
         try {
-            Process p = new ProcessBuilder(rcommand, this.gene_ids, this.gene_fcs, this.gene_fdrs, out_dir).inheritIO().start();
+            Process p = new ProcessBuilder("Rscript", rcommand, this.gene_ids, this.gene_fcs, this.gene_fdrs, out_dir).inheritIO().start();
             p.waitFor();
         } catch (IOException e) {
             throw new RuntimeException("could not read/find Rscript ", e);
@@ -97,6 +98,12 @@ public class Plots {
 
     public void selected_GOs_fdrs_BOXPLOT() {
 
+    }
+
+    public static void main(String[] args) {
+        List<Gene> list = new ArrayList<>();
+        Plots plots = new Plots("/home/birinci/GOEnrichment/", list, 0, 0);
+        plots.sig_genes_VOLCANO(null);
     }
 
 }

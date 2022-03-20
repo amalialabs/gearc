@@ -80,6 +80,9 @@ public class Reader {
         } catch (IOException e) {
             throw new RuntimeException("Error reading expression file: ", e);
         }
+        //fixme elena hat iwelche wünsche
+        // gene -> is filtered/not
+        // potentially make double/triple runs based on varying sets
         Functions.filter_unclear(genes).forEach(_g -> geneMap.put(_g.gene_id, _g));
 
         System.out.println("---------");
