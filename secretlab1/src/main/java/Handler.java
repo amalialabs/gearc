@@ -16,7 +16,7 @@ public class Handler {
         accepts("genelist").withRequiredArg().required().ofType(File.class).describedAs("diffexp output");
         accepts("expectedChange").withRequiredArg().ofType(expected_change.class).defaultsTo(expected_change.AVERAGE).describedAs("expected change in diffexp data");
         accepts("FC").withRequiredArg().ofType(double.class).defaultsTo(1.0).describedAs("log2foldchange cutoff");
-        accepts("pval").withRequiredArg().ofType(double.class).defaultsTo(0.01).describedAs("adjusted p-value cutoff");
+        accepts("FDR").withRequiredArg().ofType(double.class).defaultsTo(0.01).describedAs("adjusted p-value cutoff");
         acceptsAll( asList( "h", "?" ), "show help" ).forHelp();
         accepts("html");
         accepts("root").withRequiredArg().ofType(String.class).defaultsTo("biological_process").describedAs("GO DAG root");
@@ -31,13 +31,10 @@ public class Handler {
         System.out.println(params.toString());
 
         try {
-            optionParser.printHelpOn(System.out);
+            optionParser.printHelpOn(System.out); //FIXME print only if --help not always
         } catch (IOException e) {
             throw new RuntimeException("Could not display help page.", e);
         }
-
-        String outdir = (String) params.valueOf("out");
-        Plots plots = new Plots(outdir);
 
         GO gos = null;
         File obo = new File((String) params.valueOf("obo"));
@@ -46,6 +43,9 @@ public class Handler {
         File expression = new File("/data/simul_exp_go_bp_ensembl.tsv"); //for testing only
         String root = (String) params.valueOf("root");
         Reader r = new Reader(expression, mapping, obo, root);
+
+        String outdir = (String) params.valueOf("out");
+        Plots plots = new Plots(outdir, r.geneMap.values(), (double) params.valueOf("FDR"), (double) params.valueOf("FC"));
 
         //plots.unclear_genes_BARPLOT(r.geneMap.values()); //FIXME must be called before genes are filtered!!!
         plots.sig_genes_VOLCANO(r.geneMap.values());

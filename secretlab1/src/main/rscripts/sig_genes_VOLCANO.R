@@ -8,6 +8,8 @@ if (length(args)==0) {
 	print("ERROR: no arguments provided")
 }
 
+print(args)
+
 genes <- args[2]
 fcs <- args[3]
 fdrs <- args[4]
