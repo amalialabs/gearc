@@ -64,7 +64,7 @@ public class Result {
     @param list of GOs of quantile
      */
     public void printRobustGOs(Set<Node> robustGOs) {
-        //LATER output in file or html table -> need optional arguments in handler
+        //LATER output in html table -> need optional argument in handler
         System.out.println("GOnode\tmeanFDR");
         robustGOs.forEach(_go -> System.out.println(_go.node_id + "\t" + getMeanFDRofGO(_go)));
         System.out.println(robustGOs.size() + " GOs in total.");

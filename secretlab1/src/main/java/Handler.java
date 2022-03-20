@@ -11,7 +11,6 @@ public class Handler {
 
     public enum expected_change {LOW, AVERAGE, HIGH};
 
-    //todo insert all optional args
     public static void main(String[] args) {
         OptionParser optionParser = new OptionParser() {{
         accepts("genelist").withRequiredArg().required().ofType(File.class).describedAs("diffexp output");
@@ -19,6 +18,7 @@ public class Handler {
         accepts("FC").withRequiredArg().ofType(double.class).defaultsTo(1.0).describedAs("log2foldchange cutoff");
         accepts("pval").withRequiredArg().ofType(double.class).defaultsTo(0.01).describedAs("adjusted p-value cutoff");
         acceptsAll( asList( "h", "?" ), "show help" ).forHelp();
+        accepts("html");
         accepts("root").withRequiredArg().ofType(String.class).defaultsTo("biological_process").describedAs("GO DAG root");
         accepts("mapping").withRequiredArg().ofType(String.class).defaultsTo("/data/goa_human_ensembl.tsv").describedAs("ENSEMBL gene mapping");
         accepts("obo").withRequiredArg().ofType(String.class).defaultsTo("/data/go.obo").describedAs("GO DAG");
@@ -33,7 +33,7 @@ public class Handler {
         try {
             optionParser.printHelpOn(System.out);
         } catch (IOException e) {
-            new RuntimeException("Could not display help page.", e);
+            throw new RuntimeException("Could not display help page.", e);
         }
 
         String outdir = (String) params.valueOf("out");
@@ -69,7 +69,7 @@ public class Handler {
 
         Result result = new Result();
         //alternative
-        for (int i = 0; i < 1; i++) { //later 1000
+        for (int i = 0; i < 1; i++) { //LATER 1000
             Functions.sample_genes(new HashSet<>(r.geneMap.values()), 0.2);
             result.gather_runs(en.enrich(new HashSet<>(r.geneMap.values()), gos));  //fixme change method call
         }
@@ -78,12 +78,12 @@ public class Handler {
         //will do only if percent > 0,2
         double percent = Functions.extend_flex_set(new HashSet<>(r.geneMap.values()));
         System.out.println(percent);
-        for (int i = 0; i < 1; i++) { //later 1000
+        for (int i = 0; i < 1; i++) { //LATER 1000
             Functions.sample_genes(new HashSet<>(r.geneMap.values()), percent);
             result.gather_runs(en.enrich(new HashSet<>(r.geneMap.values()), gos));
         }
 
-        if (params.has("out")) {
+        if (params.has("out")) { //FIXME probably always true because of default --> fix it
             String filepath = (String) params.valueOf("out");
             result.writeRobustGOs(result.getXquantileGOnodes(0.95), filepath);
         } else {
