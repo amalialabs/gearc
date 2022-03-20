@@ -9,8 +9,9 @@ public class Plots {
     String out_dir;
 
     String rscript_exe = "C:\\Users\\weiss\\Documents\\Software\\R-3.6.3\\bin\\Rscript.exe";
+    String rscript = "Rscript.exe";
     String r = "/mnt/c/Users/weiss/Documents/Software/R-3.6.3/bin/Rscript.exe";
-    String rscript_folder = "C:\\Users\\weiss\\Documents\\secretlab_rscripts\\";
+    String rscript_folder = "C:\\Users\\weiss\\Documents\\Uni\\secretlab\\secretlab1\\main\\rscripts\\";
 
     public Plots(String output_dir) {
         this.FDR_cutoff = 0.05;
@@ -47,7 +48,7 @@ public class Plots {
         String g = list2vector(gene_ids);
         String grp = list2vector(gene_unclear);
         try {
-            Process p = new ProcessBuilder(rscript_exe, rscript_folder+"unclear_genes_BARPLOT.R", g, grp, out_dir).inheritIO().start();
+            Process p = new ProcessBuilder(rscript, rscript_folder+"unclear_genes_BARPLOT.R", g, grp, out_dir).inheritIO().start();
             p.waitFor();
             //Runtime.getRuntime().exec(rscript_exe + " " + rscript_folder+"unclear_genes.R " + g + " " + grp + " " + out_dir);
         } catch (IOException e) {
