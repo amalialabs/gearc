@@ -48,7 +48,8 @@ public class Handler {
         Plots plots = new Plots(outdir, r.geneMap.values(), (double) params.valueOf("FDR"), (double) params.valueOf("FC"));
 
         //plots.unclear_genes_BARPLOT(r.geneMap.values()); //FIXME must be called before genes are filtered!!!
-        plots.sig_genes_VOLCANO(r.geneMap.values());
+        plots.sig_genes_VOLCANO();
+        plots.gene_categories_BARPLOT();
 
         Functions.score_genes(new HashSet<>(r.geneMap.values()));
 
