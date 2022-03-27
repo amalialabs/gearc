@@ -18,12 +18,13 @@ public class Plots {
 //    String gene_fdrs;
     String genetable_path = "/out/tmp/genes.table";
 
-    public Plots(String output_dir, Collection<Gene> genes, double fdr, double fc) {
+    public Plots(String output_dir, Collection<Gene> genes, Collection<Node> gos, double fdr, double fc) {
         this.FDR_cutoff = fdr;
         this.FC_cutoff = fc;
         this.out_dir = output_dir;
         //init_r_vectors(genes);
         createGeneTable(genes);
+        createGOTable(gos);
     }
 
 //    public String list2vector(ArrayList<Object> list) {
@@ -48,6 +49,23 @@ public class Plots {
             for (Gene gene : genes) {
                 bw.write(gene.gene_id + "\t" + gene.fdr + "\t" + gene.fc + "\t" + gene.set +
                         "\t" + gene.weighted_score + "\t" + gene.is_significant + "\n");
+            }
+            bw.close();
+        } catch (IOException e) {
+            throw new RuntimeException("could not write file. ", e);
+        }
+    }
+
+    public void createGOTable(Collection<Node> gos) {
+        try {
+            File dir = new File("/out/tmp/");
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File("/out/tmp/gos.table")));
+            bw.write("nodeID\tnodeName\tenrichScore\tFDR\n");
+            for (Node go : gos) {
+                bw.write(go.node_id + "\t" + go.node_name + "\t" + go.enrichment_score + "\t" + go.bhFDR + "\n");
             }
             bw.close();
         } catch (IOException e) {
@@ -121,11 +139,27 @@ public class Plots {
     }
 
     public void weighted_genes_CUMULATIVE() {
-
+        String rcommand = "/secretlab1/src/main/rscripts/genes_scored_CUMULATIVE.R";
+        try {
+            Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
+            p.waitFor();
+        } catch (IOException e) {
+            throw new RuntimeException("could not read/find Rscript ", e);
+        } catch (InterruptedException i) {
+            throw new RuntimeException("could not run subprocess ", i);
+        }
     }
 
     public void genes_set_PIECHART() {
-
+        String rcommand = "/secretlab1/src/main/rscripts/genes_sets_PIECHART.R";
+        try {
+            Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
+            p.waitFor();
+        } catch (IOException e) {
+            throw new RuntimeException("could not read/find Rscript ", e);
+        } catch (InterruptedException i) {
+            throw new RuntimeException("could not run subprocess ", i);
+        }
     }
 
     public void selected_GOs_fdrs_BOXPLOT() {

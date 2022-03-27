@@ -50,11 +50,6 @@ public class Handler {
         Reader r = new Reader(expression, mapping, obo, root);
 
         String outdir = (String) params.valueOf("out");
-        Plots plots = new Plots(outdir, r.geneMap.values(), (double) params.valueOf("FDR"), (double) params.valueOf("FC"));
-
-        //plots.unclear_genes_BARPLOT(r.geneMap.values()); //FIXME must be called before genes are filtered!!!
-        plots.sig_genes_VOLCANO();
-        plots.gene_categories_BARPLOT();
 
         Functions.score_genes(new HashSet<>(r.geneMap.values()));
 
@@ -88,11 +83,20 @@ public class Handler {
             }
         }
 
+        Set<Node> robust_gos = result.getXquantileGOnodes(0.95);
+
+        Plots plots = new Plots(outdir, r.geneMap.values(), robust_gos, (double) params.valueOf("FDR"), (double) params.valueOf("FC"));
+        //plots.unclear_genes_BARPLOT(r.geneMap.values()); //FIXME must be called before genes are filtered!!!
+        plots.sig_genes_VOLCANO();
+        plots.gene_categories_BARPLOT();
+        plots.weighted_genes_CUMULATIVE();
+        plots.genes_set_PIECHART();
+
         if (params.has("out")) {
             String filepath = (String) params.valueOf("out");
-            result.writeRobustGOs(result.getXquantileGOnodes(0.95), filepath);
+            result.writeRobustGOs(robust_gos, filepath);
         } else {
-            result.printRobustGOs(result.getXquantileGOnodes(0.95));
+            result.printRobustGOs(robust_gos);
         }
 
     }

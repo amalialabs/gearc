@@ -8,9 +8,8 @@ if (length(args)==0) {
 	print("no arguments provided")
 }
 
-genes <- args[2]
-scores <- args[3]
-outdir <- args[4]
-df <- as.data.frame(cbind(genes, scores))
-ggplot(df, aes(score)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("weighted score")
+genes <- genes <- read.csv(args[1], sep="\t", header=TRUE)
+outdir <- args[2]
+
+ggplot(genes, aes(weighted_score)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("weighted score")
 ggsave(paste0(outdir, .Platform$file.sep, "genes_weighted_score_CUMULATIVE.pdf"), width=10, height=10)
