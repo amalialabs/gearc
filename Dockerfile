@@ -23,5 +23,7 @@ ADD data data/
 RUN apk add maven
 RUN cd secretlab1 && mvn package
 RUN cd /secretlab1/target && mkdir libs && for file in `find /root/.m2/repository/ -name "*.jar"`; do cp $file libs/; done
-RUN alias secretlab1='java -cp "/secretlab1/target/libs/*":/secretlab1/target/ Handler'
+#RUN alias secretlab1='java -cp "/secretlab1/target/libs/*":/secretlab1/target/ Handler'
+RUN echo -e '#!/bin/java -cp "/secretlab1/target/libs/*":/secretlab1/target/ Handler "$@"' > /usr/bin/secretlab && \
+    chmod +x /usr/bin/secretlab
 
