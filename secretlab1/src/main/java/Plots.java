@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,12 +16,14 @@ public class Plots {
     String gene_groups;
     String gene_fcs;
     String gene_fdrs;
+    String genetable_path = "/out/tmp/genes.table";
 
     public Plots(String output_dir, Collection<Gene> genes, double fdr, double fc) {
         this.FDR_cutoff = fdr;
         this.FC_cutoff = fc;
         this.out_dir = output_dir;
-        init_r_vectors(genes);
+        //init_r_vectors(genes);
+        createGeneTable(genes);
     }
 
     public String list2vector(ArrayList<Object> list) {
@@ -30,6 +35,24 @@ public class Plots {
         sb = sb.deleteCharAt(sb.length()-1);
         sb.append(")");
         return sb.toString();
+    }
+
+    public void createGeneTable(Collection<Gene> genes) {
+        try {
+            File dir = new File("/out/tmp/");
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File("/out/tmp/genes.table")));
+            bw.write("geneID\tFDR\tlog2FC\tgeneset\tweighted_score\tis_sig\n");
+            for (Gene gene : genes) {
+                bw.write(gene.gene_id + "\t" + gene.fdr + "\t" + gene.fc + "\t" + gene.set +
+                        "\t" + gene.weighted_score + "\t" + gene.is_significant + "\n");
+            }
+            bw.close();
+        } catch (IOException e) {
+            throw new RuntimeException("could not write file. ", e);
+        }
     }
 
     public void init_r_vectors(Collection<Gene> genes) {
@@ -75,7 +98,7 @@ public class Plots {
     public void sig_genes_VOLCANO(Collection<Gene> genes) {
         String rcommand = "/secretlab1/src/main/rscripts/sig_genes_VOLCANO.R";
         try {
-            Process p = new ProcessBuilder("Rscript", rcommand, this.gene_ids, this.gene_fcs, this.gene_fdrs, out_dir).inheritIO().start();
+            Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
             p.waitFor();
         } catch (IOException e) {
             throw new RuntimeException("could not read/find Rscript ", e);

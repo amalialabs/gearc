@@ -10,10 +10,8 @@ if (length(args)==0) {
 
 print(args)
 
-genes <- args[2]
-fcs <- args[3]
-fdrs <- args[4]
-outdir <- args[5]
-df <- as.data.frame(cbind(genes, fcs, fdrs))
-ggplot(df, aes(x=fcs, y=-log10(fdrs))) + geom_point() + ylab("-log10(FDR)") + xlab("log2FC")
+genes <- read.csv(args[1], sep="\t", header=TRUE)
+outdir <- args[2]
+
+ggplot(genes, aes(x=log2FC, y=-log10(FDR))) + geom_point() + ylab("-log10(FDR)") + xlab("log2FC")
 ggsave(paste0(outdir, .Platform$file.sep, "significant_genes_volcano.pdf"), width=10, height=10)
