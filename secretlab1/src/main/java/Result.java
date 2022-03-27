@@ -1,3 +1,4 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -72,12 +73,12 @@ public class Result {
 
     public void writeRobustGOs(Set<Node> robustGOs, String outdir) {
         try {
-            FileWriter fw = new FileWriter(new File(outdir, "/robust_GOs.tsv"));
-            fw.write("GOnode\tmeanFDR\n");
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outdir, "/robust_GOs.tsv")));
+            bw.write("GOnode\tmeanFDR\n");
             for (Node n : robustGOs) {
-                fw.write(n.node_id + "\t" + getMeanFDRofGO(n) + "\n");
+                bw.write(n.node_id + "\t" + getMeanFDRofGO(n) + "\n");
             }
-            fw.close();
+            bw.close();
         } catch (IOException e) {
             throw new RuntimeException("could not init file ", e);
         }

@@ -13,7 +13,7 @@ public class Handler {
 
     public static void main(String[] args) {
         OptionParser optionParser = new OptionParser() {{
-        accepts("genelist").withRequiredArg().required().ofType(File.class).describedAs("diffexp output");
+        accepts("genelist").withRequiredArg().required().ofType(String.class).describedAs("diffexp output");
         accepts("expectedChange").withRequiredArg().ofType(expected_change.class).defaultsTo(expected_change.AVERAGE).describedAs("expected change in diffexp data");
         accepts("FC").withRequiredArg().ofType(double.class).defaultsTo(1.0).describedAs("log2foldchange cutoff");
         accepts("FDR").withRequiredArg().ofType(double.class).defaultsTo(0.01).describedAs("adjusted p-value cutoff");
@@ -28,10 +28,13 @@ public class Handler {
         OptionSet params = optionParser.parse(args);
         assertTrue(params.has("genelist"));
 
-        System.out.println(params.toString());
+        System.out.println(params.toString()); //FIXME doesnt print options but only some java-id
 
         try {
-            optionParser.printHelpOn(System.out); //FIXME print only if --help not always
+            if (params.has("h") || params.has("?")) {
+                optionParser.printHelpOn(System.out);
+                System.exit(0);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Could not display help page.", e);
         }
@@ -39,8 +42,7 @@ public class Handler {
         GO gos = null;
         File obo = new File((String) params.valueOf("obo"));
         File mapping = new File((String) params.valueOf("mapping"));
-        //File expression = (File) params.valueOf("genelist");
-        File expression = new File("/data/simul_exp_go_bp_ensembl.tsv"); //for testing only
+        File expression = new File((String) params.valueOf("genelist"));
         String root = (String) params.valueOf("root");
         Reader r = new Reader(expression, mapping, obo, root);
 
@@ -68,23 +70,22 @@ public class Handler {
         System.out.println(numGenesTotal + "\t" + deGenes);
         Enrichment en = new Enrichment(numGenesTotal, deGenes);
 
-        Result result = new Result();
-        //alternative
+        Result result = new Result();  //alternative
         for (int i = 0; i < 1; i++) { //LATER 1000
             Functions.sample_genes(new HashSet<>(r.geneMap.values()), 0.2);
             result.gather_runs(en.enrich(new HashSet<>(r.geneMap.values()), gos));  //fixme change method call
         }
 
-        //alternative
-        //will do only if percent > 0,2
-        double percent = Functions.extend_flex_set(new HashSet<>(r.geneMap.values()));
+        double percent = Functions.extend_flex_set(new HashSet<>(r.geneMap.values())); //alternative, will do only if percent > 0,2
         System.out.println(percent);
-        for (int i = 0; i < 1; i++) { //LATER 1000
-            Functions.sample_genes(new HashSet<>(r.geneMap.values()), percent);
-            result.gather_runs(en.enrich(new HashSet<>(r.geneMap.values()), gos));
+        if (percent > 0.2) {
+            for (int i = 0; i < 1; i++) { //LATER 1000
+                Functions.sample_genes(new HashSet<>(r.geneMap.values()), percent);
+                result.gather_runs(en.enrich(new HashSet<>(r.geneMap.values()), gos));
+            }
         }
 
-        if (params.has("out")) { //FIXME probably always true because of default --> fix it
+        if (params.has("out")) {
             String filepath = (String) params.valueOf("out");
             result.writeRobustGOs(result.getXquantileGOnodes(0.95), filepath);
         } else {
