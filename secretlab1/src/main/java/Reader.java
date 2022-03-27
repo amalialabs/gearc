@@ -14,6 +14,8 @@ public class Reader {
      */
     HashMap<String, Gene> geneMap = new HashMap<>();
     HashMap<String, Set<String>> geneToGO = new HashMap<>();
+    HashMap<String, String> geneID2Name = new HashMap<>();
+    HashMap<String, String> geneName2ID = new HashMap<>();
 
 
     //fixme need to be set before calling
@@ -29,23 +31,25 @@ public class Reader {
         System.out.println("\nObo: starting");
         long time = System.currentTimeMillis();
         GO.goNodes = readOboFile(oboFile, root);
-        System.out.println("\tObo time: "+(System.currentTimeMillis()-time)+" ms");
+        System.out.println("\tObo time: " + (System.currentTimeMillis() - time) + " ms");
 
-        System.out.println("\nExpressionFile: starting");
-        time = System.currentTimeMillis();
-        readExpressionFile(expressionFile);
-        System.out.println("\tExpressionFile time: "+(System.currentTimeMillis()-time)+" ms");
 
         System.out.println("\nMappingFile: starting");
         time = System.currentTimeMillis();
         readMappringEnsebl(mappingFile);
-        System.out.println("\tMappingFile time: "+(System.currentTimeMillis()-time)+" ms");
+        System.out.println("\tMappingFile time: " + (System.currentTimeMillis() - time) + " ms");
+
+
+        System.out.println("\nExpressionFile: starting");
+        time = System.currentTimeMillis();
+        readExpressionFile(expressionFile);
+        System.out.println("\tExpressionFile time: " + (System.currentTimeMillis() - time) + " ms");
 
 
         System.out.println("\nPostprocessing: starting");
         time = System.currentTimeMillis();
         postprocess();
-        System.out.println("\tPostprocessing time: "+(System.currentTimeMillis()-time)+" ms");
+        System.out.println("\tPostprocessing time: " + (System.currentTimeMillis() - time) + " ms");
     }
 
     /**
@@ -53,10 +57,11 @@ public class Reader {
      * id      fc   fdr
      * DNAJC25-GNG10   -1.3420  0.1
      * IGKV2-28        -2.3961 0.12
+     *
      * @param expressionFile
      * @return
      */
-    private void readExpressionFile(File expressionFile, boolean toConvert, HashMap<String, String> nameMapping) {
+    private void readExpressionFile(File expressionFile, boolean isGeneID) {
         System.out.println("Starting");
         Set<Gene> genes = new HashSet<>();
         SplittableRandom r = new SplittableRandom();    //fixme
@@ -65,15 +70,15 @@ public class Reader {
                 if (_line.charAt(0) != '#' && _line.charAt(0) != 'i') { //fixme -> should not have any lines with #GOxxx
                     String[] elems = _line.split("\t");
                     String gene_id;
-                    if (toConvert) {
+                    if (isGeneID) {
                         gene_id = elems[0];
                     } else {
-                        gene_id = nameMapping.get(elems[0]);
+                        gene_id = geneName2ID.get(elems[0]);
                     }
                     double fc = Double.parseDouble(elems[1]);
-                    double fdr = r.nextDouble(1); //Double.parseDouble(elems[2]); //fixme
+                    double fdr = Double.parseDouble(elems[2]); //fixme
 
-                    Gene g = new Gene(gene_id, fc, fdr);
+                    Gene g = new Gene(gene_id, geneID2Name.get(gene_id), fc, fdr);
                     genes.add(g);
                 }
             });
@@ -93,7 +98,7 @@ public class Reader {
     }
 
     private void readExpressionFile(File expressionFile) {
-        readExpressionFile(expressionFile, true, null);
+        readExpressionFile(expressionFile, true);
     }
 
     /**
@@ -117,14 +122,18 @@ public class Reader {
         Node node = null;
 
         BufferedReader br = null;
-        try {br = new BufferedReader(new FileReader(oboFile));} catch (FileNotFoundException e) {}
+        try {
+            br = new BufferedReader(new FileReader(oboFile));
+        } catch (FileNotFoundException e) {
+        }
         try {
             while ((line = br.readLine()) != null) {
                 if (line.length() > 1) {
                     if (line.charAt(0) == '[' && line.charAt(2) == 'y') break;
 
                     else if (line.charAt(0) == 'i' && line.charAt(1) == 'd') {
-                        if (!good) { }  //TODO nice if man
+                        if (!good) {
+                        }  //TODO nice if man
                         else if (set != null) {
                             if (node != null) {
                                 node.setParents(set);
@@ -171,11 +180,11 @@ public class Reader {
      * UniProtKB       A0A024R161      DNAJC25-GNG10           GO:0005834      GO_REF:0000002  IEA     InterPro:IPR001770|InterPro:IPR015898   C       Guanine nucleotide-binding protei
      * UniProtKB       A0A024R161      DNAJC25-GNG10           GO:0007186      GO_REF:0000002  IEA     InterPro:IPR001770|InterPro:IPR015898   P       Guanine nucleotide-binding protei
      * UniProtKB       A0A075B6P5      IGKV2-28                GO:0002250      GO_REF:0000037  IEA     UniProtKB-KW:KW-1064    P       Immunoglobulin kappa variable 2-28      KV228_H
+     *
      * @param mappingFile
-     * @param gos
-     * FIXME chnage ensembl rest to automatically map names
+     * @param gos         FIXME chnage ensembl rest to automatically map names
      */
-    private void readMappringGAF(File mappingFile, GO gos){
+    private void readMappringGAF(File mappingFile, GO gos) {
         int c = 0;
         String line;
         BufferedReader br = null;
@@ -184,33 +193,35 @@ public class Reader {
 
         int lines = 2000;
 
-        try {br = new BufferedReader(new InputStreamReader( new GZIPInputStream(new FileInputStream(mappingFile))));} catch (Exception e) {}
         try {
-            while ((line = br.readLine()) != null){
+            br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(mappingFile))));
+        } catch (Exception e) {
+        }
+        try {
+            while ((line = br.readLine()) != null) {
                 if (line.charAt(0) == '!') continue;
                 one = line.indexOf("\t");
-                two = line.indexOf("\t", one+1);
-                three = line.indexOf("\t", two+1);
-                four = line.indexOf("\t", three+1);
-                five = line.indexOf("\t", four+1);
+                two = line.indexOf("\t", one + 1);
+                three = line.indexOf("\t", two + 1);
+                four = line.indexOf("\t", three + 1);
+                five = line.indexOf("\t", four + 1);
                 //System.out.println(line);
 
 
-                if(c++ > lines) break;
+                if (c++ > lines) break;
 
 
-
-                if (four-three > 1) {
+                if (four - three > 1) {
                     //System.out.println(line);
                     continue;
                 }
-                gene = line.substring(two+1, three);
+                gene = line.substring(two + 1, three);
 
                 //todo add this check for later -> redundant info removal
 //                if (geneSignif.get(gene) == null) {
 //                    continue;
 //                }
-                go = line.substring(four+1, five);
+                go = line.substring(four + 1, five);
                 Node node = gos.getGoNodes().get(go);
                 if (node == null) {
                     continue;
@@ -226,7 +237,7 @@ public class Reader {
 //                System.out.println("Gene\t"+gene);
 //                System.out.println("Go\t"+go);
 //                System.out.println(++c);
-                if(geneMap.get(geneId) != null) {
+                if (geneMap.get(geneId) != null) {
                     if (node.getGenes() == null) {
                         Set<Gene> set = new HashSet<>();
                         set.add(geneMap.get(geneId));
@@ -257,15 +268,14 @@ public class Reader {
 
             }
             br.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("IOexception gaf reader");
         }
     }
 
 
     //todo get creator functions from gergely
-    private void readMappringEnsebl(File ensemblMapping){
+    private void readMappringEnsebl(File ensemblMapping) {
         try (Stream<String> stream = Files.lines(Paths.get(ensemblMapping.getAbsolutePath()))) {
             final int[] counterLine = {0};
             final int[] counterEntry = {0};
@@ -273,14 +283,16 @@ public class Reader {
                 String[] elems = _line.split("\t");
                 String gene_id = elems[0];
                 String gene_name = elems[1];
+                geneID2Name.put(gene_id, gene_name);
                 counterLine[0]++;
-                if(geneMap.containsKey(gene_name)){
-                    geneToGO.putIfAbsent(gene_name, new HashSet<>());
-                    geneToGO.get(gene_name).addAll(Stream.of(elems[2].split("\\|"))
+//                if (geneMap.containsKey(gene_id)) {
+                    geneToGO.putIfAbsent(gene_id, new HashSet<>());
+                    geneToGO.get(gene_id).addAll(Stream.of(elems[2].split("\\|"))
                             .filter(_go -> GO.goNodes.containsKey(_go)).collect(Collectors.toSet()));
                     counterEntry[0]++;
-                }
+//                }
                 //fixme take care of either gene _id or _name
+                // -> always put on gene_id, name is complementary in Gene object
             });
             System.out.println("---------");
             System.out.println("Mapping check:");
@@ -296,7 +308,7 @@ public class Reader {
 
     /**
      * Propagates gene counts to all parent GOs.
-     *
+     * <p>
      * Collects all relevant entries, according to min/max criteria, in relevantGo.
      * Establishes parent-child connection.
      */
@@ -310,7 +322,7 @@ public class Reader {
         Set<Node> gos = new HashSet<>(GO.goNodes.values());
         Set<Node> notPropagated;
 
-        System.out.println("Pre propagating posneg size\t"+gos.size());
+        System.out.println("Pre propagating posneg size\t" + gos.size());
         do {
             notPropagated = new HashSet<>();
             Set<Node> finalNotPropagated = notPropagated;
@@ -363,15 +375,15 @@ public class Reader {
     }
 
     public static void main(String[] args) {
-        File expression = new File("/home/birinci/GOEnrichment/simul_exp_go_bp_ensembl.tsv");
-        File mappingEnsembl = new File("/home/birinci/GOEnrichment/goa_human_ensembl.tsv");
-        File oboFile = new File("/home/birinci/GOEnrichment/go.obo");
+        File expression = new File("/home/birinci/Projects/secretlab/data/empires.out");
+        File mappingEnsembl = new File("/home/birinci/Projects/secretlab/data/goa_human_ensembl.tsv");
+        File oboFile = new File("/home/birinci/Projects/secretlab/data/go.obo");
         String root = "biological_process";
 
         Reader r = new Reader(expression, mappingEnsembl, oboFile, root);
 
         GO.getGoNodes().values().forEach(_node -> {
-            if(_node.getGenes() != null && _node.getGenes().size() > 3000) {
+            if (_node.getGenes() != null && _node.getGenes().size() > 3000) {
                 System.out.println(_node.node_id);
                 System.out.println(_node.getNode_name());
                 System.out.println(_node.getGenes().size());

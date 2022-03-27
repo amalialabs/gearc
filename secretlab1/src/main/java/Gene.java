@@ -1,6 +1,7 @@
 public class Gene {
 
     String gene_id;
+    String gene_name;
     double weighted_score;
     double fdr;
     double fc;
@@ -13,6 +14,13 @@ public class Gene {
         this.fc = fc;
         this.fdr = fdr;
         this.is_significant = Math.abs(fc) > Functions.FC_cutoff && fdr <= Functions.FDR_cutoff;
+    }
+
+    public Gene(String gene_id, String gene_name, double fdr, double fc) {
+        this.gene_id = gene_id;
+        this.gene_name = gene_name;
+        this.fdr = fdr;
+        this.fc = fc;
     }
 
     public double get_FDR_value() {
