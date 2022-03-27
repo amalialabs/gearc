@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 public class Functions {
 
     public static double FDR_cutoff = 0.05; //LATER where will it be defined?
-    public static double FC_cutoff = 1.0;
+    public static double FC_cutoff = 1;
 
     /*
     calculates FDR and FC interval based on input distribution

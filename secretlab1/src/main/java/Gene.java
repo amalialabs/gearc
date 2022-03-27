@@ -16,11 +16,12 @@ public class Gene {
         this.is_significant = Math.abs(fc) > Functions.FC_cutoff && fdr <= Functions.FDR_cutoff;
     }
 
-    public Gene(String gene_id, String gene_name, double fdr, double fc) {
+    public Gene(String gene_id, String gene_name, double fc, double fdr) {
         this.gene_id = gene_id;
         this.gene_name = gene_name;
         this.fdr = fdr;
         this.fc = fc;
+        this.is_significant = Math.abs(fc) > Functions.FC_cutoff && fdr <= Functions.FDR_cutoff;
     }
 
     public double get_FDR_value() {

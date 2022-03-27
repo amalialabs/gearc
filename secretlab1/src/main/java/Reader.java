@@ -284,6 +284,7 @@ public class Reader {
                 String gene_id = elems[0];
                 String gene_name = elems[1];
                 geneID2Name.put(gene_id, gene_name);
+                geneName2ID.put(gene_name, gene_id);
                 counterLine[0]++;
 //                if (geneMap.containsKey(gene_id)) {
                     geneToGO.putIfAbsent(gene_id, new HashSet<>());
@@ -313,6 +314,8 @@ public class Reader {
      * Establishes parent-child connection.
      */
     private void postprocess() {
+        geneToGO.keySet().removeIf(gene_id -> !geneMap.containsKey(gene_id));
+
         geneToGO.forEach((key, value) -> {
             for (String go_id : value) {
                 GO.getGoNodes().get(go_id).getGenes().add(geneMap.get(key));

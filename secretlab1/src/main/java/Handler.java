@@ -64,6 +64,7 @@ public class Handler {
         GO.getGoNodes().values().stream().forEach(_node -> {
             if (_node.getGenes() != null) ge.addAll(_node.getGenes());
         });
+
         int deGenes = (int) ge.stream().filter(_go -> _go.is_significant).count();
         System.out.println(numGenesTotal + "\t" + deGenes);
         Enrichment en = new Enrichment(numGenesTotal, deGenes);
