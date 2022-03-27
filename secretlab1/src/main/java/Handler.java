@@ -28,7 +28,10 @@ public class Handler {
         OptionSet params = optionParser.parse(args);
         assertTrue(params.has("genelist"));
 
-        System.out.println(params.toString()); //FIXME doesnt print options but only some java-id
+        System.out.println("Params:"); //FIXME doesnt print options but only some java-id
+        params.specs().forEach(spec -> {
+            System.out.println(spec + "\t" + params.valueOf(spec));
+        });
 
         try {
             if (params.has("h") || params.has("?")) {
