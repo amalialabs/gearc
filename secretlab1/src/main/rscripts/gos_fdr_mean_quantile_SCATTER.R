@@ -12,8 +12,10 @@ print(args)
 
 gos <- read.csv(args[1], sep="\t", header=TRUE)
 quantile <- args[2]
+c <- paste0("V", 1000*quantile+2)
 outdir <- args[3]
+gos$mean <- lapply(go[,3:1003], 1, mean)
 
-ggplot(gos, aes(x=log2FC, y=-log10(FDR), col=ifelse(is_sig, "red", "black"))) + geom_jitter() +
-ylab("-log10(FDR)") + xlab("log2FC") + scale_color_identity()
-ggsave(paste0(outdir, .Platform$file.sep, "significant_genes_volcano.pdf"), width=10, height=10)
+ggplot(gos, aes(x=-log10(mean), y=-log10(c))) + geom_jitter() +
+ylab(paste0("-log10(", quantile , "FDR)")) + xlab("-log10(mean FDR)")
+ggsave(paste0(outdir, .Platform$file.sep, "gos_mean_vs_quantile_fdr_scatter.pdf"), width=10, height=10)

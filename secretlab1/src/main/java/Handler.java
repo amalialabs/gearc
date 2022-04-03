@@ -98,6 +98,7 @@ public class Handler {
         plots.gene_categories_BARPLOT();
         plots.weighted_genes_CUMULATIVE();
         plots.genes_set_PIECHART();
+        plots.go_fdrs_mean_vs_quantile_SCATTER();
 
         if (params.has("out")) {
             String filepath = (String) params.valueOf("out");

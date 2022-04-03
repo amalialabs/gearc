@@ -130,7 +130,7 @@ public class Plots {
     public void go_fdrs_mean_vs_quantile_SCATTER() {
         String rcommand = "/secretlab1/src/main/rscripts/genes_sets_PIECHART.R";
         try {
-            Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
+            Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, String.valueOf(0.95), out_dir).inheritIO().start();
             p.waitFor();
         } catch (IOException e) {
             throw new RuntimeException("could not read/find Rscript ", e);
