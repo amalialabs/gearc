@@ -17,5 +17,5 @@ outdir <- args[3]
 gos$mean <- lapply(go[,3:1003], 1, mean)
 
 ggplot(gos, aes(x=-log10(mean), y=-log10(c))) + geom_jitter() +
-ylab(paste0("-log10(", quantile , "FDR)")) + xlab("-log10(mean FDR)")
+ylab(paste0("-log10(", quantile , "FDR)")) + xlab("-log10(mean FDR)") + geom_abline(col="red", lty=2)
 ggsave(paste0(outdir, .Platform$file.sep, "gos_mean_vs_quantile_fdr_scatter.pdf"), width=10, height=10)

@@ -10,13 +10,17 @@ public class Plots {
     double FC_cutoff;
     String out_dir;
     String genetable_path;
+    String gotable_path;
+    String gotable_extend_path;
     Result res;
 
     public Plots(String output_dir, Collection<Gene> genes, Collection<Node> gos, double fdr, double fc, Result res) {
         this.FDR_cutoff = fdr;
         this.FC_cutoff = fc;
         this.out_dir = output_dir;
-        genetable_path = out_dir + File.separator + "genes.table";
+        this.genetable_path = out_dir + File.separator + "genes.table";
+        this.gotable_path = output_dir + File.separator + "gos.table";
+        this.gotable_extend_path = output_dir + File.separator + "gos_extend.table";
         this.res = res;
         createGeneTable(genes);
         createGOTable(gos);
@@ -56,6 +60,15 @@ public class Plots {
             for (Node go : gos) {
                 bw.write(go.node_id + "\t" + go.node_name);
                 for (double fdr : res.GOnode2FDRruns.get(go)) {
+                    bw.write("\t" + fdr);
+                }
+                bw.write("\n");
+            }
+            bw.close();
+            bw = new BufferedWriter(new FileWriter(new File(this.out_dir, "gos2fdrs_extended.table")));
+            for (Node go : gos) {
+                bw.write(go.node_id + "\t" + go.node_name);
+                for (double fdr : res.GOnode2FDRrunsExtend.get(go)) {
                     bw.write("\t" + fdr);
                 }
                 bw.write("\n");
@@ -130,7 +143,19 @@ public class Plots {
     public void go_fdrs_mean_vs_quantile_SCATTER() {
         String rcommand = "/secretlab1/src/main/rscripts/genes_sets_PIECHART.R";
         try {
-            Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, String.valueOf(0.95), out_dir).inheritIO().start();
+            Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, String.valueOf(0.95), out_dir).inheritIO().start();
+            p.waitFor();
+        } catch (IOException e) {
+            throw new RuntimeException("could not read/find Rscript ", e);
+        } catch (InterruptedException i) {
+            throw new RuntimeException("could not run subprocess ", i);
+        }
+    }
+
+    public void selected_gos_fdr_distrib_BOXPLOT() {
+        String rcommand = "/secretlab1/src/main/rscripts/selected_GOs_FDR_BOXPLOT.R";
+        try {
+            Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, out_dir).inheritIO().start();
             p.waitFor();
         } catch (IOException e) {
             throw new RuntimeException("could not read/find Rscript ", e);

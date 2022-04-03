@@ -8,21 +8,34 @@ import java.util.stream.Collectors;
 public class Result {
 
     public HashMap<Node, ArrayList<Double>> GOnode2FDRruns = new HashMap<>();
+    public HashMap<Node, ArrayList<Double>> GOnode2FDRrunsExtend = new HashMap<>();
 
     /*
     collects FDR values for every 1000 runs to each GO node, sorts FDRS each time
     @param map of GO node to FDR value
      */
-    public void gather_runs(HashMap<Node, Double> GOnode2FDR) {
-        GOnode2FDR.keySet().forEach(_node -> {
-            if (GOnode2FDRruns.containsKey(_node)) {
-                GOnode2FDRruns.get(_node).add(GOnode2FDR.get(_node));
-            } else {
-                ArrayList<Double> tmp = new ArrayList<>();
-                tmp.add(GOnode2FDR.get(_node));
-                GOnode2FDRruns.put(_node, tmp);
-            }
-        });
+    public void gather_runs(HashMap<Node, Double> GOnode2FDR, boolean extend) {
+        if (extend) {
+            GOnode2FDR.keySet().forEach(_node -> {
+                if (GOnode2FDRrunsExtend.containsKey(_node)) {
+                    GOnode2FDRrunsExtend.get(_node).add(GOnode2FDR.get(_node));
+                } else {
+                    ArrayList<Double> tmp = new ArrayList<>();
+                    tmp.add(GOnode2FDR.get(_node));
+                    GOnode2FDRrunsExtend.put(_node, tmp);
+                }
+            });
+        } else {
+            GOnode2FDR.keySet().forEach(_node -> {
+                if (GOnode2FDRruns.containsKey(_node)) {
+                    GOnode2FDRruns.get(_node).add(GOnode2FDR.get(_node));
+                } else {
+                    ArrayList<Double> tmp = new ArrayList<>();
+                    tmp.add(GOnode2FDR.get(_node));
+                    GOnode2FDRruns.put(_node, tmp);
+                }
+            });
+        }
         sortFDR();
     }
 
@@ -31,6 +44,7 @@ public class Result {
      */
     public void sortFDR() {
         GOnode2FDRruns.keySet().forEach(_node -> Collections.sort(GOnode2FDRruns.get(_node)));
+        GOnode2FDRrunsExtend.keySet().forEach(_node -> Collections.sort(GOnode2FDRrunsExtend.get(_node)));
     }
 
     /*
