@@ -76,7 +76,7 @@ public class Handler {
 
 
         Result result = new Result();  //alternative
-        for (int i = 0; i < 1; i++) { //LATER 1000
+        for (int i = 0; i < 1000; i++) {
             Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), 0.2);
             result.gather_runs(en.enrich(sampled, gos));
         }
@@ -84,7 +84,7 @@ public class Handler {
         double percent = Functions.extend_flex_set(new HashSet<>(r.geneMap.values())); //alternative, will do only if percent > 0,2
         System.out.println(percent);
         if (percent > 0.2) {
-            for (int i = 0; i < 1; i++) { //LATER 1000
+            for (int i = 0; i < 1000; i++) {
                 Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), percent);
                 result.gather_runs(en.enrich(sampled, gos));
             }
@@ -92,7 +92,7 @@ public class Handler {
 
         Set<Node> robust_gos = result.getXquantileGOnodes(0.95);
 
-        Plots plots = new Plots(outdir, r.geneMap.values(), robust_gos, (double) params.valueOf("FDR"), (double) params.valueOf("FC"));
+        Plots plots = new Plots(outdir, r.geneMap.values(), robust_gos, (double) params.valueOf("FDR"), (double) params.valueOf("FC"), result);
         plots.unclear_genes_BARPLOT(r.allGenes.values());
         plots.sig_genes_VOLCANO();
         plots.gene_categories_BARPLOT();
