@@ -46,10 +46,10 @@ public class Plots {
                 dir.mkdirs();
             }
             BufferedWriter bw = new BufferedWriter(new FileWriter(new File(this.out_dir, "genes.table")));
-            bw.write("geneID\tFDR\tlog2FC\tgeneset\tweighted_score\tis_sig\n");
+            bw.write("geneID\tFDR\tlog2FC\tgeneset\tweighted_score\tis_sig\tis_unclear\tnot_sig\n");
             for (Gene gene : genes) {
                 bw.write(gene.gene_id + "\t" + gene.fdr + "\t" + gene.fc + "\t" + gene.set +
-                        "\t" + gene.weighted_score + "\t" + gene.is_significant + "\n");
+                  "\t" + gene.weighted_score + "\t" + gene.is_significant + "\t" + gene.unclear + "\t" + gene.not_signif + "\n");
             }
             bw.close();
         } catch (IOException e) {
@@ -103,15 +103,14 @@ public class Plots {
 
     public void unclear_genes_BARPLOT(Collection<Gene> genes) {
         String rcommand = "/secretlab1/src/main/rscripts/unclear_genes_BARPLOT.R";
-//        try {
-//            Process p = new ProcessBuilder("Rscript", rcommand, this.gene_ids, this.gene_groups, out_dir).inheritIO().start();
-//            p.waitFor();
-//            //Runtime.getRuntime().exec(rscript_exe + " " + rscript_folder+"unclear_genes.R " + g + " " + grp + " " + out_dir);
-//        } catch (IOException e) {
-//            throw new RuntimeException("could not read/find Rscript ", e);
-//        } catch (InterruptedException i) {
-//            throw new RuntimeException("could not run subprocess ", i);
-//        }
+        try {
+            Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
+            p.waitFor();
+        } catch (IOException e) {
+            throw new RuntimeException("could not read/find Rscript ", e);
+        } catch (InterruptedException i) {
+            throw new RuntimeException("could not run subprocess ", i);
+        }
     }
 
     public void sig_genes_VOLCANO() {
