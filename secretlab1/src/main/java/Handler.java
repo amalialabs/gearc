@@ -3,6 +3,7 @@ import joptsimple.OptionSet;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
@@ -56,18 +57,23 @@ public class Handler {
         Enum expected_change = (Enum) params.valueOf("expectedChange");
         Functions.assign_genes_to_sets(new HashSet<>(r.geneMap.values()), expected_change);
 
-
-        int numGenesTotal = GO.getGoNodes().values().stream()
-                .filter(_node -> _node.getGenes() != null).mapToInt(_node -> _node.getGenes().size()).sum();
-        //todo need to remove "null"genes from Nodes
-        Set<Gene> ge = new HashSet<>();
-        GO.getGoNodes().values().stream().forEach(_node -> {
-            if (_node.getGenes() != null) ge.addAll(_node.getGenes());
-        });
-
-        int deGenes = (int) ge.stream().filter(_go -> _go.is_significant).count();
+        Set<Gene> genesTotal = new HashSet<>();
+        Set<Gene> genesSignif = new HashSet<>();
+        for (Node node : GO.getGoNodes().values()) {
+            if (node.getGenes() != null) {
+                for (Gene gene : node.getGenes()) {
+                    if (gene.is_significant) {
+                        genesSignif.add(gene);
+                    }
+                }
+                genesTotal.addAll(node.getGenes());
+            }
+        }
+        int numGenesTotal = genesTotal.size();
+        int deGenes = genesSignif.size();
         System.out.println(numGenesTotal + "\t" + deGenes);
         Enrichment en = new Enrichment(numGenesTotal, deGenes);
+
 
         Result result = new Result();  //alternative
         for (int i = 0; i < 1; i++) { //LATER 1000
@@ -99,6 +105,13 @@ public class Handler {
         } else {
             result.printRobustGOs(robust_gos);
         }
+
+        GO.getGoNodes().values().forEach(_node -> {
+            if (_node.bhFDR < 0.05) {
+                System.out.println(_node);
+                System.out.println("----------------\n");
+            }
+        });
 
     }
 

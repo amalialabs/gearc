@@ -82,9 +82,10 @@ public class Node {
         return "Node{" +
                 "node_id='" + node_id + '\'' +
                 ", node_name='" + node_name + '\'' +
-                ", genes=" + genes +
                 ", enrichment_score=" + enrichment_score +
+                ", bhFDR=" + bhFDR +
                 ", parents=" + parents +
+                ", genes=" + genes +
                 '}';
     }
 }

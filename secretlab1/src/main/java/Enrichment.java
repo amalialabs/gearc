@@ -36,7 +36,7 @@ public class Enrichment {
             }
             node2FDR.put(node, pvalue);
         }
-        benjamini(node2FDR); // sollte die FDRs überschreiben
+        bhAdjust(node2FDR); // sollte die FDRs überschreiben
         return(node2FDR);
     }
 
