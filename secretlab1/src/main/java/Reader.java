@@ -12,6 +12,7 @@ public class Reader {
      add ensembl/gaf reader -> autoconvert/scrape info to generate ensembl verison
      diff-output reader -> flexible with col selector -> make gene, fc, label format??
      */
+    HashMap<String, Gene> allGenes = new HashMap<>();
     HashMap<String, Gene> geneMap = new HashMap<>();
     HashMap<String, Set<String>> geneToGO = new HashMap<>();
     HashMap<String, String> geneID2Name = new HashMap<>();
@@ -88,6 +89,7 @@ public class Reader {
         //fixme elena hat iwelche wünsche
         // gene -> is filtered/not
         // potentially make double/triple runs based on varying sets
+        genes.forEach(_g -> allGenes.put(_g.gene_id, _g));
         Functions.filter_unclear(genes).forEach(_g -> geneMap.put(_g.gene_id, _g));
 
         System.out.println("---------");

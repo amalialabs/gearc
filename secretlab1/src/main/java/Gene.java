@@ -6,6 +6,8 @@ public class Gene {
     double fdr;
     double fc;
     boolean is_significant;
+    boolean unclear;
+    boolean not_signif;
     public enum corresponding_set {SIG_CORE, FLEX, SIGNON_CORE};
     corresponding_set set;
 
@@ -13,7 +15,9 @@ public class Gene {
         this.gene_id = gene_id;
         this.fc = fc;
         this.fdr = fdr;
-        this.is_significant = Math.abs(fc) > Functions.FC_cutoff && fdr <= Functions.FDR_cutoff;
+        this.is_significant = Math.abs(fc) >= Functions.FC_cutoff && fdr <= Functions.FDR_cutoff;
+        this.not_signif = Math.abs(fc) < Functions.FC_cutoff && fdr > Functions.FDR_cutoff;
+        this.unclear = !is_significant && !not_signif;
     }
 
     public Gene(String gene_id, String gene_name, double fc, double fdr) {
@@ -21,7 +25,9 @@ public class Gene {
         this.gene_name = gene_name;
         this.fdr = fdr;
         this.fc = fc;
-        this.is_significant = Math.abs(fc) > Functions.FC_cutoff && fdr <= Functions.FDR_cutoff;
+        this.is_significant = Math.abs(fc) >= Functions.FC_cutoff && fdr <= Functions.FDR_cutoff;
+        this.not_signif = Math.abs(fc) < Functions.FC_cutoff && fdr > Functions.FDR_cutoff;
+        this.unclear = !is_significant && !not_signif;
     }
 
     public double get_FDR_value() {
