@@ -18,14 +18,6 @@ public class Reader {
     HashMap<String, String> geneID2Name = new HashMap<>();
     HashMap<String, String> geneName2ID = new HashMap<>();
 
-
-    //fixme need to be set before calling
-    int numGenesTotal;
-    int deGenes;
-
-    public Reader() {
-    }
-
     //fixme specify and rely on ensembl mappingFile; updates may contain more options
     // - also add mutable root -> perform for each root at the same time? maybe not, but add full call with all plots and per root
     public Reader(File expressionFile, File mappingFile, File oboFile, String root) {
@@ -63,7 +55,6 @@ public class Reader {
      * @return
      */
     private void readExpressionFile(File expressionFile, boolean isGeneID) {
-        System.out.println("Starting");
         Set<Gene> genes = new HashSet<>();
         SplittableRandom r = new SplittableRandom();    //fixme
         try (Stream<String> stream = Files.lines(Paths.get(expressionFile.getAbsolutePath()))) {
@@ -327,49 +318,12 @@ public class Reader {
         Set<Node> gos = new HashSet<>(GO.goNodes.values());
         Set<Node> notPropagated;
 
-        System.out.println("Pre propagating posneg size\t" + gos.size());
         do {
             notPropagated = new HashSet<>();
             Set<Node> finalNotPropagated = notPropagated;
             gos.forEach(_go -> propagate(_go, finalNotPropagated));
             notPropagated = finalNotPropagated;
         } while ((gos = notPropagated).size() > 0);
-
-
-//        posneg = new HashSet<>();
-//
-//        goParent.keySet().forEach(x -> {
-//            if (goParent.get(x) != null) {
-//                if(goPositive.get(x) != null || goNegative.get(x) != null) {
-//                    goPositive.putIfAbsent(x, new HashSet<>());
-//                    goNegative.putIfAbsent(x, new HashSet<>());
-//                    if (goPositive.get(x).size() + goNegative.get(x).size() >= minSize && goPositive.get(x).size() + goNegative.get(x).size() <= maxSize) {
-//                        relevantGo.add(x);
-//
-//                        //relevantGo.put(x, new HashSet<>(goParent.get(x)));
-//                    }
-//                }
-////                for (String parent : goParent.get(x)) { //TODO eval if this is useful
-////                    if (goChild.get(parent) == null) {
-////                        Set<String> se = new HashSet<>();
-////                        se.add(x);
-////                        goChild.put(parent, se);
-////                    } else {
-////                        goChild.get(parent).add(x);
-////                    }
-////                }
-//            }
-//            goPositive.putIfAbsent(x, new HashSet<>());
-//            goNegative.putIfAbsent(x, new HashSet<>());
-//            posneg.addAll(goPositive.get(x));
-//            posneg.addAll(goNegative.get(x));
-//        });
-//
-//        for (String gene : posneg) {
-//            if (geneSignif.get(gene)) geneSignifCount++;
-//        }
-//        System.out.println("Number of relevant genes\t" + posneg.size());
-        //TODO need step for relevant genes
     }
 
     private void propagate(Node n, Set<Node> notPropagated) {

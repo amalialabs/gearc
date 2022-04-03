@@ -98,7 +98,6 @@ public class Handler {
         plots.gene_categories_BARPLOT();
         plots.weighted_genes_CUMULATIVE();
         plots.genes_set_PIECHART();
-        plots.genes_set_PIECHART();
 
         if (params.has("out")) {
             String filepath = (String) params.valueOf("out");
@@ -106,14 +105,5 @@ public class Handler {
         } else {
             result.printRobustGOs(robust_gos);
         }
-
-//        GO.getGoNodes().values().forEach(_node -> {
-//            if (_node.bhFDR < 0.05) {
-//                System.out.println(_node);
-//                System.out.println("----------------\n");
-//            }
-//        });
-
     }
-
 }

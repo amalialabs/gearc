@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 public class Enrichment {
 
-    //fixme need to be set before calling
     int numGenesTotal;
     int deGenes;
 
@@ -53,24 +52,6 @@ public class Enrichment {
         return(hg_pval);
     }
 
-    public void benjamini(HashMap<Node, Double> pval) {
-        Double[] pvalues = new Double[pval.size()];
-        String[] keys = new String[pval.size()];
-        int counter = 0;
-        for (Map.Entry<Node, Double> entry : pval.entrySet()) {
-            pvalues[counter] = entry.getValue();
-            keys[counter] = entry.getKey().node_id;
-            counter++;
-        }
-        //FIXME entweder eigene BH Klasse oder nur eine kleine Funktion hier
-//        BenjaminiHochbergFDR bh = new BenjaminiHochbergFDR(pvalues);
-//        int[] index = bh.createIndex(pvalues);
-//        bh.calculate();
-//        Double[] result = bh.getAdjustedPvalues();
-//        for (int i = 0; i < result.length; i++) {
-//            benjaminipvalue.put(keys[index[i]], result[i]);
-//        }
-    }
     
     public void bhAdjust(HashMap<Node, Double> pval) {
         List<Map.Entry<Node, Double>> list = pval.entrySet().stream()
