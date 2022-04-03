@@ -41,11 +41,11 @@ public class Plots {
 
     public void createGeneTable(Collection<Gene> genes) {
         try {
-            File dir = new File(out_dir); //fixme Elena -> hier vom input param nehmen
+            File dir = new File(this.out_dir); //fixme Elena -> hier vom input param nehmen
             if (!dir.exists()) {
                 dir.mkdirs();
             }
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(out_dir, "genes.table")));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(this.out_dir, "genes.table")));
             bw.write("geneID\tFDR\tlog2FC\tgeneset\tweighted_score\tis_sig\n");
             for (Gene gene : genes) {
                 bw.write(gene.gene_id + "\t" + gene.fdr + "\t" + gene.fc + "\t" + gene.set +
@@ -59,11 +59,11 @@ public class Plots {
 
     public void createGOTable(Collection<Node> gos) {
         try {
-            File dir = new File(out_dir);
+            File dir = new File(this.out_dir);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(out_dir, "gos.table")));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(this.out_dir, "gos.table")));
             bw.write("nodeID\tnodeName\tenrichScore\tFDR\n");
             for (Node go : gos) {
                 bw.write(go.node_id + "\t" + go.node_name + "\t" + go.enrichment_score + "\t" + go.bhFDR + "\n");
