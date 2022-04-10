@@ -8,7 +8,6 @@ if (length(args)==0) {
 	print("ERROR: no arguments provided")
 }
 
-print(args)
 
 gos <- read.csv(args[1], sep="\t", header=TRUE)
 quantile <- as.numeric(args[2])
@@ -17,7 +16,7 @@ outdir <- args[3]
 
 num_cols <- ncol(gos)
 c <- paste0("V", (round(((num_cols-2)*quantile))+2))
-print(c)
+
 gos$mean <- apply(gos[,3:num_cols], 1, mean)
 
 ggplot(gos, aes_string(x="mean", y=c)) + geom_jitter() +

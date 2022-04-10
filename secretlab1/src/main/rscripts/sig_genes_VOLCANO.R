@@ -1,5 +1,7 @@
 #/usr/bin/Rscript
 
+suppressWarning()
+
 library(ggplot2)
 
 args = commandArgs(trailingOnly=TRUE)
