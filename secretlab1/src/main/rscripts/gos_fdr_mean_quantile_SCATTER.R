@@ -11,10 +11,12 @@ if (length(args)==0) {
 print(args)
 
 gos <- read.csv(args[1], sep="\t", header=TRUE)
-quantile <- args[2]
-num_cols <- ncol(gos)
-c <- paste0("V", ((num_cols-2)*quantile)+2)
+quantile <- as.numeric(args[2])
 outdir <- args[3]
+
+
+num_cols <- ncol(gos)
+c <- paste0("V", (round(((num_cols-2)*quantile))+2))
 gos$mean <- lapply(go[,3:num_cols], mean)
 
 ggplot(gos, aes(x=-log10(mean), y=-log10(c))) + geom_jitter() +
