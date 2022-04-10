@@ -12,6 +12,7 @@ public class Plots {
     String genetable_path;
     String gotable_path;
     String gotable_extend_path;
+    String gotable_standard;
     Result res;
 
     public Plots(String output_dir, Collection<Gene> genes, Collection<Node> gos, double fdr, double fc, Result res) {
@@ -21,6 +22,7 @@ public class Plots {
         this.genetable_path = out_dir + File.separator + "genes.table";
         this.gotable_path = output_dir + File.separator + "gos.table";
         this.gotable_extend_path = output_dir + File.separator + "gos_extend.table";
+        this.gotable_standard = output_dir + File.separator + "gos_standard.table";
         this.res = res;
         createGeneTable(genes);
         createGOTable(gos);
@@ -180,6 +182,18 @@ public class Plots {
         String rcommand = "/secretlab1/src/main/rscripts/gos_quantile_vs_mean_JITTER.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, out_dir).inheritIO().start();
+            p.waitFor();
+        } catch (IOException e) {
+            throw new RuntimeException("could not read/find Rscript ", e);
+        } catch (InterruptedException i) {
+            throw new RuntimeException("could not run subprocess ", i);
+        }
+    }
+
+    public void gos_standard_vs_robust_vs_extended_BARPLOT() {
+        String rcommand = "/secretlab1/src/main/rscripts/gos_standard_vs_robust_vs_extended_BARPLOT.R";
+        try {
+            Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, gotable_standard, out_dir).inheritIO().start();
             p.waitFor();
         } catch (IOException e) {
             throw new RuntimeException("could not read/find Rscript ", e);

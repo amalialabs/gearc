@@ -112,6 +112,7 @@ public class Handler {
         plots.selected_gos_fdr_distrib_BOXPLOT();
         plots.selected_gos_rob_vs_extend_BOXPLOT();
         plots.gos_quantile_vs_mean_fdr_BOXPLOT();
+        plots.gos_standard_vs_robust_vs_extended_BARPLOT();
 
         if (params.has("out")) {
             String filepath = (String) params.valueOf("out");
