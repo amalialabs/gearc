@@ -31,7 +31,7 @@ draw.triple.venn(area1=nrow(nodes), area2=nrow(nodes_ext), area3=nrow(nodes_stan
                 n12=nrow(merge(nodes, nodes_ext, by="V1")),
                 n13=nrow(merge(nodes, nodes_standard, by="V1")),
                 n23=nrow(merge(nodes_ext, nodes_standard, by="V1")),
-                n123=nrow(merge(merge(nodes, nodes_ext, by="V1")), nodes_standard, by="V1"),
+                n123=nrow(merge(merge(nodes, nodes_ext, by="V1"), nodes_standard, by="V1")),
                 fill=c("red", "blue", "green"), category=c("robust", "robust + extended", "standard"))
 dev.off()
 
