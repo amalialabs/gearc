@@ -212,4 +212,16 @@ public class Plots {
         }
     }
 
+    public void gos_standard_vs_robust_vs_extended_VENN() {
+        String rcommand = "/secretlab1/src/main/rscripts/gos_standard_vs_robust_vs_extended_VENN.R";
+        try {
+            Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, gotable_standard, out_dir).inheritIO().start();
+            p.waitFor();
+        } catch (IOException e) {
+            throw new RuntimeException("could not read/find Rscript ", e);
+        } catch (InterruptedException i) {
+            throw new RuntimeException("could not run subprocess ", i);
+        }
+    }
+
 }

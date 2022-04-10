@@ -14,20 +14,27 @@ nodes_ext <- args[2]
 nodes_standard <- args[3]
 outdir <- args[4]
 
+fdr <- 0.05
+
 ncol_95quant <- ncol(nodes)*0.95+2
 nodes <- nodes[,c(1,ncol_95quant)] #95% quantile
-colnames(nodes)[2] <- "robust"
+colnames(nodes)[2] <- "FDR"
+nodes$type <- "robust"
+nodes <- subset(nodes, nodes$FDR <= fdr)
+
 nodes_ext <- ndoes_ext[,c(1,ncol_95quant)]
-colnames(nodes_ext)[2] <- "robust + extended"
-colnames(nodes_standard)[2] <- "standard"
+colnames(nodes_ext)[2] <- "FDR"
+nodes_ext$type <- "robust + extended"
+nodes_ext <- susbet(nodes_ext, nodes_ext$FDR <= fdr)
 
-n <- merge(nodes, nodes_ext, by="V1")
-n <- merge(n, nodes_standard, by="V1")
+colnames(nodes_standard)[2] <- "FDR"
+nodes_standard$type <- "standard"
+nodes_standard <- subset(nodes_standard, nodes_standard$FDR <= fdr)
 
-n2 <- reshape2::melt(n, id.vars=1, variable.name="type")
+n <- rbind(nodes, nodes_ext, nodes_standard)
 
 
-ggplot(n2, aes(x=type, y=-log10(value)), fill=type) + geom_boxplot() + ylab("-log10(FDR)") + xlab("")
+ggplot(n, aes(x=type, y=-log10(FDR)), fill=type) + geom_boxplot() + ylab("-log10(FDR)") + xlab("")
 ggsave(paste0(outdir, .Platform$file.sep, "gos_standard_vs_robust_vs_extended_BARPLOT.pdf"), width=10, height=10)
 
 

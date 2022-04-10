@@ -86,7 +86,7 @@ public class Handler {
 
 
         Result result = new Result();  //alternative
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 5; i++) {
             Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), 0.2);
             result.gather_runs(en.enrich(sampled, gos), false);
         }
@@ -94,7 +94,7 @@ public class Handler {
         double percent = Functions.extend_flex_set(new HashSet<>(r.geneMap.values())); //alternative, will do only if percent > 0,2
         System.out.println(percent);
         if (percent > 0.2) {
-            for (int i = 0; i < 500; i++) {
+            for (int i = 0; i < 5; i++) {
                 Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), percent);
                 result.gather_runs(en.enrich(sampled, gos), true);
             }
@@ -113,6 +113,7 @@ public class Handler {
         plots.selected_gos_rob_vs_extend_BOXPLOT();
         plots.gos_quantile_vs_mean_fdr_BOXPLOT();
         plots.gos_standard_vs_robust_vs_extended_BARPLOT();
+        plots.gos_standard_vs_robust_vs_extended_VENN();
 
         if (params.has("out")) {
             String filepath = (String) params.valueOf("out");
