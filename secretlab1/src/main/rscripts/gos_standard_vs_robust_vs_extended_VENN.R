@@ -26,7 +26,7 @@ nodes_ext <- subset(nodes_ext, nodes_ext[,2] <= fdr)
 nodes_standard <- subset(nodes_standard, nodes_standard[,2] <= fdr)
 
 
-pdf(paste0(outdir, .Platform$file.sep, "gos_standard_vs_robust_vs_extended_BARPLOT.pdf"), width=10, height=10)
+pdf(paste0(outdir, .Platform$file.sep, "gos_standard_vs_robust_vs_extended_VENN.pdf"), width=10, height=10)
 draw.triple.venn(area1=nrow(nodes), area2=nrow(nodes_ext), area3=nrow(nodes_standard),
                 n12=nrow(merge(nodes, nodes_ext, by="V1")),
                 n13=nrow(merge(nodes, nodes_standard, by="V1")),
