@@ -59,11 +59,15 @@ public class Handler {
 
         Set<Gene> genesTotal = new HashSet<>();
         Set<Gene> genesSignif = new HashSet<>();
+        Set<Gene> genesTotalFiltered = new HashSet<>();
         for (Node node : GO.getGoNodes().values()) {
             if (node.getGenes() != null) {
                 for (Gene gene : node.getGenes()) {
                     if (gene.is_significant) {
                         genesSignif.add(gene);
+                    }
+                    if (!gene.unclear) {
+                        genesTotalFiltered.add(gene);
                     }
                 }
                 genesTotal.addAll(node.getGenes());
@@ -71,12 +75,14 @@ public class Handler {
         }
         int numGenesTotal = genesTotal.size();
         int deGenes = genesSignif.size();
-        System.out.println(numGenesTotal + "\t" + deGenes);
-        Enrichment en = new Enrichment(numGenesTotal, deGenes);
+        int numGenesTotalFiltered = genesTotalFiltered.size();
+        System.out.println(numGenesTotalFiltered + "\t" + deGenes);
+        Enrichment en = new Enrichment(numGenesTotalFiltered, deGenes);
 
         Set<Gene> allGenes = new HashSet<>();
         allGenes.addAll(r.allGenes.values());
-        HashMap<Node, Double> standard_node2fdr = en.enrich(allGenes, gos);  //standard enrichment way
+        Enrichment en_standard = new Enrichment(numGenesTotal, deGenes);
+        HashMap<Node, Double> standard_node2fdr = en_standard.enrich(allGenes, gos);  //standard enrichment way
 
 
         Result result = new Result();  //alternative
