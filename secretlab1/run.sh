@@ -84,7 +84,11 @@ fi
 genelistPath=`readlink -f $genelist`
 genelistCall="--genelist $genelistPath"
 
+mkdir -p $outdir
+outdirPath=`readlink -f $outdir`
+outdirCall="--out $outdirPath"
+
 ## for podman users replace here docker with 'podman'
 ## for windows users replace here docker with 'winpty docker'
 docker run --pull=always $obo $mapping -v $outdir:/out/ -v $genelistPath:$genelistPath --rm -it hadziahmetovic/secretlab1 secretlab \
-  $genelistCall $oboCall $mappingCall
+  $genelistCall $oboCall $mappingCall $outdirCall
