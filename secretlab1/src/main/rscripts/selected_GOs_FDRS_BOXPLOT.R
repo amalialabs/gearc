@@ -11,7 +11,7 @@ if (length(args)==0) {
 nodes <- args[1]
 outdir <- args[2]
 
-nodes <- nodes[order(nodes$V1002),]
+nodes <- nodes[order(nodes[,502]),]
 nodes <- nodes[1:5,]
 
 nodes <- reshape2::melt(nodes, id.vars=c(1,2), variable.name="FDR")
