@@ -32,6 +32,7 @@ fi
 eval set -- "$PARSED"
 obo=
 mapping=
+outdir=
 # now enjoy the options in order and nicely split until we see --
 while true; do
     case "$1" in
@@ -84,9 +85,11 @@ fi
 genelistPath=`readlink -f $genelist`
 genelistCall="--genelist $genelistPath"
 
-mkdir -p $outdir
-outdirPath=`readlink -f $outdir`
-outdirCall="--out $outdirPath"
+if [[ "$outdir" != "" ]]; then
+  mkdir -p $outdir
+  outdirPath=`readlink -f $outdir`
+  outdirCall="--out $outdirPath"
+fi
 
 ## for podman users replace here docker with 'podman'
 ## for windows users replace here docker with 'winpty docker'
