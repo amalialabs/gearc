@@ -91,7 +91,5 @@ if [[ "$outdir" != "" ]]; then
   outdirCall="--out $outdirPath"
 fi
 
-## for docker users replace here podman with 'docker'
-## for windows users replace here podman with 'winpty docker'
-podman run --pull=always $obo $mapping -v $outdir:/out/ -v $genelistPath:$genelistPath --rm -it hadziahmetovic/secretlab1 secretlab \
+winpty docker run --pull=always $obo $mapping -v $outdir:/out/ -v $genelistPath:$genelistPath --rm -it hadziahmetovic/secretlab1 secretlab \
   $genelistCall $oboCall $mappingCall $outdirCall
