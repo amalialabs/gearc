@@ -164,4 +164,28 @@ public class Plots {
         }
     }
 
+    public void selected_gos_rob_vs_extend_BOXPLOT() {
+        String rcommand = "/secretlab1/src/main/rscripts/selected_GOs_rob_vs_extend_BOXPLOT.R";
+        try {
+            Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, out_dir).inheritIO().start();
+            p.waitFor();
+        } catch (IOException e) {
+            throw new RuntimeException("could not read/find Rscript ", e);
+        } catch (InterruptedException i) {
+            throw new RuntimeException("could not run subprocess ", i);
+        }
+    }
+
+    public void gos_quantile_vs_mean_fdr_BOXPLOT() {
+        String rcommand = "/secretlab1/src/main/rscripts/gos_quantile_vs_mean_JITTER.R";
+        try {
+            Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, out_dir).inheritIO().start();
+            p.waitFor();
+        } catch (IOException e) {
+            throw new RuntimeException("could not read/find Rscript ", e);
+        } catch (InterruptedException i) {
+            throw new RuntimeException("could not run subprocess ", i);
+        }
+    }
+
 }

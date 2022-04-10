@@ -15,7 +15,7 @@ nodes <- nodes[order(nodes[,502]),]
 nodes <- nodes[1:5,]
 
 nodes <- reshape2::melt(nodes, id.vars=c(1,2), variable.name="FDR")
-nodes$FDR <- as.numeric(as.character(nodes$FDR))
+nodes$value <- as.numeric(as.character(nodes$value))
 
 ggplot(nodes, aes(x=V1, y=-log10(value))) + geom_boxplot() + ylab("-log10(FDR)") + xlab("GO node(s)")
 ggsave(paste0(outdir, .Platform$file.sep, "selected_nodes_fdrs_BOXPLOT.pdf"), width=10, height=10)
