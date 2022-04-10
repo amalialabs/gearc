@@ -22,4 +22,4 @@ gos$mean <- apply(gos[,3:num_cols], 1, mean)
 ggplot(gos, aes_string(x="mean", y=c)) + geom_jitter() +
 ylab(paste0("-log10(", quantile , "FDR)")) + xlab("-log10(mean FDR)") + geom_abline(col="red", lty=2) +
 scale_x_continuous(trans="log10") + scale_y_continuous(trans="log10")
-ggsave(paste0(outdir, .Platform$file.sep, "gos_mean_vs_quantile_fdr_scatter.pdf"), width=10, height=10)
+ggsave(paste0(outdir, .Platform$file.sep, "gos_mean_vs_quantile_fdr_SCATTER.pdf"), width=10, height=10)
