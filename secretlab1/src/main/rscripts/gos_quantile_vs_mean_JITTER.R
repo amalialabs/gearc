@@ -18,7 +18,7 @@ num_cols2 <- ncol(nodes_ext)
 
 nodes$mean <- apply(nodes[,3:num_cols], 1, mean)
 nodes_ext$mean <- apply(nodes_ext[,3:num_cols2], 1, mean)
-ncol_95quant <- round(num_cols*0.95)+2
+ncol_95quant <- round((num_cols-2)*0.95)+2
 nodes$quant <- nodes[,ncol_95quant]  #95% quantile
 nodes_ext$quant <- nodes[,ncol_95quant]
 nodes <- nodes[,c(1,num_cols-1, num_cols)]   #nur die beiden letzt berechneten Werte
