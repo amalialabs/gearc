@@ -79,7 +79,7 @@ public class Result {
     @param list of GOs of quantile
      */
     public void printRobustGOs(Set<Node> robustGOs) {
-        //LATER output in html table -> need optional argument in handler
+        //LATER output in html table
         System.out.println("GOnode\tmeanFDR");
         robustGOs.forEach(_go -> System.out.println(_go.node_id + "\t" + getMeanFDRofGO(_go)));
         System.out.println(robustGOs.size() + " GOs in total.");
@@ -91,6 +91,34 @@ public class Result {
             bw.write("GOnode\tmeanFDR\n");
             for (Node n : robustGOs) {
                 bw.write(n.node_id + "\t" + getMeanFDRofGO(n) + "\n");
+            }
+            bw.close();
+        } catch (IOException e) {
+            throw new RuntimeException("could not init file ", e);
+        }
+    }
+
+    public void printStandardGOs(HashMap<Node, Double> gos) {
+        gos = gos.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (e1, e2) -> e1, LinkedHashMap::new));
+        HashMap<Node, Double> standardGOs = gos;
+        System.out.println("GOnode\tFDR");
+        standardGOs.keySet().forEach(_go -> System.out.println(_go.node_id + "\t" + standardGOs.get(_go)));
+        System.out.println(gos.size() + " GOs in total.");
+    }
+
+    public void writeStandardGOs(HashMap<Node, Double> standardGOs, String outdir) {
+        standardGOs = standardGOs.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (e1, e2) -> e1, LinkedHashMap::new));
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outdir, "/standard_GOs.tsv")));
+            bw.write("GOnode\tFDR\n");
+            for (Node n : standardGOs.keySet()) {
+                bw.write(n.node_id + "\t" + standardGOs.get(n) + "\n");
             }
             bw.close();
         } catch (IOException e) {

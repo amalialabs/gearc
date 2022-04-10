@@ -29,7 +29,7 @@ public class Handler {
         OptionSet params = optionParser.parse(args);
         assertTrue(params.has("genelist"));
 
-        System.out.println("Params:"); //FIXME doesnt print options but only some java-id
+        System.out.println("Params:");
         params.specs().forEach(spec -> {
             System.out.println(spec + "\t" + params.valueOf(spec));
         });
@@ -66,13 +66,17 @@ public class Handler {
                         genesSignif.add(gene);
                     }
                 }
-                genesTotal.addAll(node.getGenes());
+                genesTotal.addAll(node.getGenes());  //FIXME are unclear included or not
             }
         }
         int numGenesTotal = genesTotal.size();
         int deGenes = genesSignif.size();
         System.out.println(numGenesTotal + "\t" + deGenes);
         Enrichment en = new Enrichment(numGenesTotal, deGenes);
+
+        Set<Gene> allGenes = new HashSet<>();
+        allGenes.addAll(r.allGenes.values());
+        HashMap<Node, Double> standard_node2fdr = en.enrich(allGenes, gos);  //standard enrichment way
 
 
         Result result = new Result();  //alternative
@@ -106,8 +110,10 @@ public class Handler {
         if (params.has("out")) {
             String filepath = (String) params.valueOf("out");
             result.writeRobustGOs(robust_gos, filepath);
+            result.writeStandardGOs(standard_node2fdr, filepath);
         } else {
             result.printRobustGOs(robust_gos);
+            result.printStandardGOs(standard_node2fdr);
         }
     }
 }
