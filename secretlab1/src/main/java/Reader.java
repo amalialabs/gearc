@@ -56,7 +56,6 @@ public class Reader {
      */
     private void readExpressionFile(File expressionFile, boolean isGeneID) {
         Set<Gene> genes = new HashSet<>();
-        SplittableRandom r = new SplittableRandom();    //fixme
         try (Stream<String> stream = Files.lines(Paths.get(expressionFile.getAbsolutePath()))) {
             stream.skip(1).forEach(_line -> {
                 if (_line.charAt(0) != '#' && _line.charAt(0) != 'i') { //fixme -> should not have any lines with #GOxxx
@@ -68,7 +67,7 @@ public class Reader {
                         gene_id = geneName2ID.get(elems[0]);
                     }
                     double fc = Double.parseDouble(elems[1]);
-                    double fdr = Double.parseDouble(elems[2]); //fixme
+                    double fdr = Double.parseDouble(elems[2]);
 
                     Gene g = new Gene(gene_id, geneID2Name.get(gene_id), fc, fdr);
                     genes.add(g);
@@ -81,7 +80,8 @@ public class Reader {
         // gene -> is filtered/not
         // potentially make double/triple runs based on varying sets
         genes.forEach(_g -> allGenes.put(_g.gene_id, _g));
-        Functions.filter_unclear(genes).forEach(_g -> geneMap.put(_g.gene_id, _g));
+        genes.forEach(_g -> geneMap.put(_g.gene_id, _g));
+//        Functions.filter_unclear(genes).forEach(_g -> geneMap.put(_g.gene_id, _g));
 
         System.out.println("---------");
         System.out.println("Filter check:");

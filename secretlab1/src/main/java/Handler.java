@@ -66,7 +66,7 @@ public class Handler {
                         genesSignif.add(gene);
                     }
                 }
-                genesTotal.addAll(node.getGenes());  //FIXME are unclear included or not
+                genesTotal.addAll(node.getGenes());
             }
         }
         int numGenesTotal = genesTotal.size();
