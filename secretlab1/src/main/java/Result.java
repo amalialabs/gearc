@@ -105,8 +105,14 @@ public class Result {
                         (e1, e2) -> e1, LinkedHashMap::new));
         HashMap<Node, Double> standardGOs = gos;
         System.out.println("GOnode\tFDR");
-        standardGOs.keySet().forEach(_go -> System.out.println(_go.node_id + "\t" + standardGOs.get(_go)));
-        System.out.println(gos.size() + " GOs in total.");
+        int sig = (int) standardGOs.keySet().stream().filter(_go -> standardGOs.get(_go) <= 0.05).count();
+        standardGOs.keySet().forEach(_go -> {
+            if (standardGOs.get(_go) <= 0.05) { //FIXME get from handler
+                System.out.println(_go.node_id + "\t" + standardGOs.get(_go));
+            }
+        }
+        );
+        System.out.println(sig + "/" + gos.size() + " enriched GOs");
     }
 
     public void writeStandardGOs(HashMap<Node, Double> standardGOs, String outdir) {
