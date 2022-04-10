@@ -73,23 +73,23 @@ oboCall=
 
 if [[ "$mapping" != "" ]]; then
   mappingPath=`readlink -f $mapping`;
-  mapping="-v $mappingPath:$mappingPath";
-  mappingCall="--mapping $mappingPath"
+  mapping="-v $mappingPath:/input/mapping.tsv";
+  mappingCall="--mapping /input/mapping.tsv"
 fi
 if [[ "$obo" != "" ]]; then
   oboPath=`readlink -f $obo`;
-  obo="-v $oboPath:$oboPath";
-  oboCall="--obo $oboPath"
+  obo="-v $oboPath:/input/go.obo";
+  oboCall="--obo /input/go.obo"
 fi
 
 genelistPath=`readlink -f $genelist`
-genelistCall="--genelist $genelistPath"
+genelist="-v $genelistPath:/input/genelist.tsv"
+genelistCall="--genelist /input/genelist.tsv"
 
 if [[ "$outdir" != "" ]]; then
   mkdir -p $outdir
   outdirPath=`readlink -f $outdir`
-  outdirCall="--out $outdirPath"
 fi
 
-winpty docker run --pull=always $obo $mapping -v $outdir:/out/ -v $genelistPath:$genelistPath --rm -it hadziahmetovic/secretlab1 secretlab \
-  $genelistCall $oboCall $mappingCall $outdirCall
+winpty docker run --pull=always $genelist $obo $mapping -v $outdir:/out/ --rm -it hadziahmetovic/secretlab1 secretlab \
+  $genelistCall $oboCall $mappingCall
