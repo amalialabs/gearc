@@ -11,7 +11,7 @@ if (length(args)==0) {
 genes <- read.csv(args[1], sep="\t", header=TRUE)
 outdir <- args[2]
 
-genes <- subset(genes, genes$is_unclear == false)
+genes <- subset(genes, genes$is_unclear == "false")
 
 genes$geneset <- as.character(genes$geneset)
 df <- as.data.frame(table(genes$geneset))

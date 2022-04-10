@@ -155,7 +155,7 @@ public class Plots {
     }
 
     public void go_fdrs_mean_vs_quantile_SCATTER() {
-        String rcommand = "/secretlab1/src/main/rscripts/genes_sets_PIECHART.R";
+        String rcommand = "/secretlab1/src/main/rscripts/gos_fdr_mean_quantile_SCATTER.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, String.valueOf(0.95), out_dir).inheritIO().start();
             p.waitFor();
