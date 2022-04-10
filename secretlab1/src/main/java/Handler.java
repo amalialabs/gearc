@@ -99,6 +99,7 @@ public class Handler {
         plots.weighted_genes_CUMULATIVE();
         plots.genes_set_PIECHART();
         plots.go_fdrs_mean_vs_quantile_SCATTER();
+        plots.selected_gos_fdr_distrib_BOXPLOT();
 
         if (params.has("out")) {
             String filepath = (String) params.valueOf("out");
