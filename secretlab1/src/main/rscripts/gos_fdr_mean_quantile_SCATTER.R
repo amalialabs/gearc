@@ -17,6 +17,7 @@ outdir <- args[3]
 
 num_cols <- ncol(gos)
 c <- paste0("V", (round(((num_cols-2)*quantile))+2))
+print(c)
 gos$mean <- lapply(go[,3:num_cols], mean)
 
 ggplot(gos, aes(x=-log10(mean), y=-log10(c))) + geom_jitter() +
