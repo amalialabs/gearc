@@ -6,6 +6,7 @@ public class Node {
     String node_id;
     String node_name;
     Set<Gene> genes;
+    Integer geneSize;
 //    Set<String> geneIds;
     double enrichment_score;
     double bhFDR;
@@ -75,6 +76,13 @@ public class Node {
 
     public void setBhFDR(double bhFDR) {
         this.bhFDR = bhFDR;
+    }
+
+    public int getRelevantGenesSize() {
+        if (geneSize == null) {
+            geneSize = (int) genes.stream().filter(_gene -> !_gene.unclear).count();
+        }
+        return geneSize;
     }
 
     @Override

@@ -29,8 +29,7 @@ public class Enrichment {
         // lATER vielleicht beschränkt man die nodes bzgl Anzahl Gene also nodes mit #genes > x und < y
         for (Node node : gos.getGoNodes().values()) {
             double pvalue = 1.0;
-            //todo resolve if no genes for node
-            if (node.getGenes() != null && node.getGenes().size() != 0) {
+            if (node.getGenes() != null && node.getRelevantGenesSize() != 0) {
                 pvalue = hypergeometric(node);
             }
             node2FDR.put(node, pvalue);
@@ -40,9 +39,7 @@ public class Enrichment {
     }
 
     public double hypergeometric(Node node) {
-        //System.out.println(node);
-        int numMeasuredGenesInSet = node.getGenes().size();
-        //todo remove null catch
+        int numMeasuredGenesInSet = node.getRelevantGenesSize();
         int numSignificantGenesInSet = (int) node.getGenes().stream().filter(_g -> _g != null && _g.is_significant).count();
         double hg_pval = 1.0;
         if (numMeasuredGenesInSet != 0) {
