@@ -21,8 +21,8 @@ nodes_ext$mean <- apply(nodes_ext[,3:num_cols2], 1, mean)
 ncol_95quant <- round((num_cols-2)*0.95)+2
 nodes$quant <- nodes[,ncol_95quant]  #95% quantile
 nodes_ext$quant <- nodes[,ncol_95quant]
-nodes <- nodes[,c(1,num_cols-1, num_cols)]   #nur die beiden letzt berechneten Werte
-nodes_ext <- nodes_ext[,c(1,num_cols2-1, num_cols2)]
+nodes <- nodes[,c(1,num_cols+1, num_cols+2)]   #nur die beiden letzt berechneten Werte
+nodes_ext <- nodes_ext[,c(1,num_cols2+1, num_cols2+2)]
 nodes$type <- "robust"
 nodes_ext$type <- "robust + extended"
 n <- rbind(nodes, nodes_ext)
