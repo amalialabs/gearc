@@ -12,9 +12,10 @@ print(args)
 
 gos <- read.csv(args[1], sep="\t", header=TRUE)
 quantile <- args[2]
-c <- paste0("V", 1000*quantile+2)
+num_cols <- ncol(gos)
+c <- paste0("V", ((num_cols-2)*quantile)+2)
 outdir <- args[3]
-gos$mean <- lapply(go[,3:1003], mean)
+gos$mean <- lapply(go[,3:num_cols], mean)
 
 ggplot(gos, aes(x=-log10(mean), y=-log10(c))) + geom_jitter() +
 ylab(paste0("-log10(", quantile , "FDR)")) + xlab("-log10(mean FDR)") + geom_abline(col="red", lty=2)
