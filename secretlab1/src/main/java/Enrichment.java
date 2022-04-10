@@ -38,6 +38,7 @@ public class Enrichment {
         return(node2FDR);
     }
 
+    //FIXME !!! jeder node zieht immer die selben gene, berücksichtige die sampled genes!!!
     public double hypergeometric(Node node) {
         int numMeasuredGenesInSet = node.getRelevantGenesSize();
         int numSignificantGenesInSet = (int) node.getGenes().stream().filter(_g -> _g != null && _g.is_significant).count();
