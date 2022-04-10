@@ -1,6 +1,6 @@
 #/usr/bin/Rscript
 
-suppressWarning()
+options(warn = - 1)
 
 library(ggplot2)
 
