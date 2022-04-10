@@ -22,10 +22,10 @@ colnames(nodes)[2] <- "FDR"
 nodes$type <- "robust"
 nodes <- subset(nodes, nodes$FDR <= fdr)
 
-nodes_ext <- ndoes_ext[,c(1,ncol_95quant)]
+nodes_ext <- nodes_ext[,c(1,ncol_95quant)]
 colnames(nodes_ext)[2] <- "FDR"
 nodes_ext$type <- "robust + extended"
-nodes_ext <- susbet(nodes_ext, nodes_ext$FDR <= fdr)
+nodes_ext <- subset(nodes_ext, nodes_ext$FDR <= fdr)
 
 colnames(nodes_standard)[2] <- "FDR"
 nodes_standard$type <- "standard"

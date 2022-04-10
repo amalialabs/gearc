@@ -27,7 +27,7 @@ nodes$type <- "robust"
 nodes_ext$type <- "robust + extended"
 n <- rbind(nodes, nodes_ext)
 
-head(n)
+
 
 
 ggplot(n, aes(x=-log10(mean), y=-log10(quant)), fill=type) + geom_jitter() + ylab("-log10(FDR 95%)") + xlab("-log10(FDR mean)")
