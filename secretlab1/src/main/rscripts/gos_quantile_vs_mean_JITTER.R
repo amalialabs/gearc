@@ -13,13 +13,16 @@ nodes <- args[1]
 nodes_ext <- args[2]
 outdir <- args[3]
 
-nodes$mean <- lapply(nodes[,3:ncol(nodes)], mean)
-nodes_ext$mean <- lapply(nodes_ext[,3:ncol(nodes_ext)], mean)
-ncol_95quant <- ncol(nodes)*0.95+2
+num_cols <- ncol(nodes)
+num_cols2 <- ncol(nodes_ext)
+
+nodes$mean <- lapply(nodes[,3:num_cols], mean)
+nodes_ext$mean <- lapply(nodes_ext[,3:num_cols2], mean)
+ncol_95quant <- num_cols*0.95+2
 nodes$quant <- nodes[,ncol_95quant]  #95% quantile
 nodes_ext$quant <- nodes[,ncol_95quant]
-nodes <- nodes[,c(1,ncol(nodes)-1, ncol(nodes))]   #nur die beiden letzt berechneten Werte
-nodes_ext <- nodes_ext[,c(1,ncol(nodes)-1, ncol(nodes))]
+nodes <- nodes[,c(1,num_cols-1, num_cols)]   #nur die beiden letzt berechneten Werte
+nodes_ext <- nodes_ext[,c(1,num_cols2-1, num_cols2)]
 nodes$type <- "robust"
 nodes_ext$type <- "robust + extended"
 n <- rbind(nodes, nodes_ext)

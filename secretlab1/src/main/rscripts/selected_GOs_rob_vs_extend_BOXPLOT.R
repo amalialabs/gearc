@@ -12,9 +12,12 @@ nodes <- args[1]
 nodes_ext <- args[2]
 outdir <- args[3]
 
-nodes <- nodes[order(nodes[,ncol(nodes)]),]
+num_cols <- ncol(nodes)
+num_cols2 <- ncol(nodes_ext)
+
+nodes <- nodes[order(nodes[,num_cols]),]
 nodes <- nodes[1:2,]
-nodes_ext <- nodes_ext[order(nodes_ext[,ncol(nodes_ext)]),]
+nodes_ext <- nodes_ext[order(nodes_ext[,num_cols2]),]
 nodes_ext <- nodes_ext[1:2,]
 
 nodes <- reshape2::melt(nodes, id.vars=c(1,2), variable.name="FDR")

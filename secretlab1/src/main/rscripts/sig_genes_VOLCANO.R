@@ -8,7 +8,6 @@ if (length(args)==0) {
 	print("ERROR: no arguments provided")
 }
 
-print(args)
 
 genes <- read.csv(args[1], sep="\t", header=TRUE)
 #fdr <- args[2]
