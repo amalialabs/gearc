@@ -8,7 +8,7 @@ if (length(args)==0) {
 	print("ERROR: no arguments provided")
 }
 
-nodes <- args[1]
+nodes <- read.csv(args[1], sep="\t", header=FALSE)
 outdir <- args[2]
 
 num_cols <- ncol(nodes)

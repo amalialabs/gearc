@@ -9,7 +9,7 @@ if (length(args)==0) {
 }
 
 
-gos <- read.csv(args[1], sep="\t", header=TRUE)
+gos <- read.csv(args[1], sep="\t", header=FALSE)
 quantile <- as.numeric(args[2])
 outdir <- args[3]
 

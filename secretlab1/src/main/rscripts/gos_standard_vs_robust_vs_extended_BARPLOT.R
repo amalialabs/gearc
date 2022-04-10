@@ -9,9 +9,9 @@ if (length(args)==0) {
 	print("ERROR: no arguments provided")
 }
 
-nodes <- args[1]
-nodes_ext <- args[2]
-nodes_standard <- args[3]
+nodes <- read.csv(args[1], sep="\t", header=FALSE)
+nodes_ext <- read.csv(args[2], sep="\t", header=FALSE)
+nodes_standard <- read.csv(args[3], sep="\t", header=FALSE)
 outdir <- args[4]
 
 fdr <- 0.05
