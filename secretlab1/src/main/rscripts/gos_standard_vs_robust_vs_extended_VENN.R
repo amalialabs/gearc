@@ -27,12 +27,12 @@ nodes_standard <- subset(nodes_standard, nodes_standard[,2] <= fdr)
 
 
 pdf(paste0(outdir, .Platform$file.sep, "gos_standard_vs_robust_vs_extended_BARPLOT.pdf"), width=10, height=10)
-VennDiagram(n1=nrow(nodes), n2=nrow(nodes_ext), n3=nrow(nodes_standard),
+draw.triple.venn(area1=nrow(nodes), area2=nrow(nodes_ext), area3=nrow(nodes_standard),
                 n12=nrow(merge(nodes, nodes_ext, by="V1")),
                 n13=nrow(merge(nodes, nodes_standard, by="V1")),
                 n23=nrow(merge(nodes_ext, nodes_standard, by="V1")),
                 n123=nrow(merge(merge(nodes, nodes_ext, by="V1")), nodes_standard, by="V1"),
-                col=c("red", "blue", "green"), labels=c("robust", "robust + extended", "standard"))
+                fill=c("red", "blue", "green"), category=c("robust", "robust + extended", "standard"))
 dev.off()
 
 
