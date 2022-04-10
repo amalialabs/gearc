@@ -10,6 +10,12 @@ public class Result {
     public HashMap<Node, ArrayList<Double>> GOnode2FDRruns = new HashMap<>();
     public HashMap<Node, ArrayList<Double>> GOnode2FDRrunsExtend = new HashMap<>();
 
+    public double FDR_cutoff;
+
+    public Result (double fdr) {
+        this.FDR_cutoff = fdr;
+    }
+
     /*
     collects FDR values for every 1000 runs to each GO node, sorts FDRS each time
     @param map of GO node to FDR value
@@ -105,9 +111,9 @@ public class Result {
                         (e1, e2) -> e1, LinkedHashMap::new));
         HashMap<Node, Double> standardGOs = gos;
         System.out.println("GOnode\tFDR");
-        int sig = (int) standardGOs.keySet().stream().filter(_go -> standardGOs.get(_go) <= 0.05).count();
+        int sig = (int) standardGOs.keySet().stream().filter(_go -> standardGOs.get(_go) <= this.FDR_cutoff).count();
         standardGOs.keySet().forEach(_go -> {
-            if (standardGOs.get(_go) <= 0.05) { //FIXME get from handler
+            if (standardGOs.get(_go) <= this.FDR_cutoff) {
                 System.out.println(_go.node_id + "\t" + standardGOs.get(_go));
             }
         }

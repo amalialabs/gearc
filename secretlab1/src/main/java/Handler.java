@@ -85,7 +85,7 @@ public class Handler {
         HashMap<Node, Double> standard_node2fdr = en_standard.enrich(allGenes, gos);  //standard enrichment way
 
 
-        Result result = new Result();  //alternative
+        Result result = new Result((double) params.valueOf("FDR"));  //alternative
         for (int i = 0; i < 5; i++) {
             Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), 0.2);
             result.gather_runs(en.enrich(sampled, gos), false);
@@ -103,16 +103,27 @@ public class Handler {
         Set<Node> robust_gos = result.getXquantileGOnodes(0.95);
 
         Plots plots = new Plots(outdir, r.geneMap.values(), robust_gos, (double) params.valueOf("FDR"), (double) params.valueOf("FC"), result, standard_node2fdr);
+        System.out.println("plotting unclear_genes_BARPLOT");
         plots.unclear_genes_BARPLOT(r.allGenes.values());
+        System.out.println("plotting sig_genes_VOLCANO");
         plots.sig_genes_VOLCANO();
+        System.out.println("plotting gene_categories_BARPLOT");
         plots.gene_categories_BARPLOT();
+        System.out.println("plotting weigthed_genes_CUMULATIVE");
         plots.weighted_genes_CUMULATIVE();
+        System.out.println("plotting genes_sets_PIECHART");
         plots.genes_set_PIECHART();
+        System.out.println("plotting go_fdrs_mean_vs_quantiole_SCATTER");
         plots.go_fdrs_mean_vs_quantile_SCATTER();
+        System.out.println("plotting selected_gos_fdr_distrib_BOXPLOT");
         plots.selected_gos_fdr_distrib_BOXPLOT();
+        System.out.println("plotting selected_gos_rob_vs_extend_BOXPLOT");
         plots.selected_gos_rob_vs_extend_BOXPLOT();
+        System.out.println("plotting gos_quntile_vs_mean_fdr_BOXPLOT");
         plots.gos_quantile_vs_mean_fdr_BOXPLOT();
+        System.out.println("plotting gos_standard_vs_robust_vs_extend_BARPLOT");
         plots.gos_standard_vs_robust_vs_extended_BARPLOT();
+        System.out.println("plotting gos_standard_vs_robust_vs_extend_VENN");
         plots.gos_standard_vs_robust_vs_extended_VENN();
 
         if (params.has("out")) {
@@ -120,8 +131,8 @@ public class Handler {
             result.writeRobustGOs(robust_gos, filepath);
             result.writeStandardGOs(standard_node2fdr, filepath);
         } else {
-            result.printRobustGOs(robust_gos);
-            result.printStandardGOs(standard_node2fdr);
+            //result.printRobustGOs(robust_gos);
+            //result.printStandardGOs(standard_node2fdr);
         }
     }
 }
