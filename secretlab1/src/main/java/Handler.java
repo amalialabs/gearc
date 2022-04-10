@@ -78,7 +78,7 @@ public class Handler {
         Result result = new Result();  //alternative
         for (int i = 0; i < 1000; i++) {
             Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), 0.2);
-            result.gather_runs(en.enrich(sampled, gos));
+            result.gather_runs(en.enrich(sampled, gos), false);
         }
 
         double percent = Functions.extend_flex_set(new HashSet<>(r.geneMap.values())); //alternative, will do only if percent > 0,2
@@ -86,7 +86,7 @@ public class Handler {
         if (percent > 0.2) {
             for (int i = 0; i < 1000; i++) {
                 Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), percent);
-                result.gather_runs(en.enrich(sampled, gos));
+                result.gather_runs(en.enrich(sampled, gos), true);
             }
         }
 
