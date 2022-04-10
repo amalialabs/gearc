@@ -16,7 +16,7 @@ outdir <- args[4]
 
 fdr <- 0.05
 
-ncol_95quant <- ncol(nodes)*0.95+2
+ncol_95quant <- round(ncol(nodes)*0.95)+2
 nodes <- nodes[,c(1,ncol_95quant)] #95% quantile
 colnames(nodes)[2] <- "FDR"
 nodes$type <- "robust"

@@ -16,8 +16,8 @@ outdir <- args[3]
 num_cols <- ncol(nodes)
 num_cols2 <- ncol(nodes_ext)
 
-nodes$mean <- lapply(nodes[,3:num_cols], mean)
-nodes_ext$mean <- lapply(nodes_ext[,3:num_cols2], mean)
+nodes$mean <- apply(nodes[,3:num_cols], 1, mean)
+nodes_ext$mean <- apply(nodes_ext[,3:num_cols2], 1, mean)
 ncol_95quant <- num_cols*0.95+2
 nodes$quant <- nodes[,ncol_95quant]  #95% quantile
 nodes_ext$quant <- nodes[,ncol_95quant]

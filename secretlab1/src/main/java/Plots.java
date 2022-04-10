@@ -190,7 +190,7 @@ public class Plots {
         }
     }
 
-    public void gos_quantile_vs_mean_fdr_BOXPLOT() {
+    public void gos_quantile_vs_mean_fdr_JITTER() {
         String rcommand = "/secretlab1/src/main/rscripts/gos_quantile_vs_mean_JITTER.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, out_dir).inheritIO().start();

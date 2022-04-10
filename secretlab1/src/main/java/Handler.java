@@ -120,7 +120,7 @@ public class Handler {
         System.out.println("plotting selected_gos_rob_vs_extend_BOXPLOT");
         plots.selected_gos_rob_vs_extend_BOXPLOT();
         System.out.println("plotting gos_quntile_vs_mean_fdr_BOXPLOT");
-        plots.gos_quantile_vs_mean_fdr_BOXPLOT();
+        plots.gos_quantile_vs_mean_fdr_JITTER();
         System.out.println("plotting gos_standard_vs_robust_vs_extend_BARPLOT");
         plots.gos_standard_vs_robust_vs_extended_BARPLOT();
         System.out.println("plotting gos_standard_vs_robust_vs_extend_VENN");
