@@ -14,10 +14,10 @@ nodes_ext <- args[2]
 nodes_standard <- args[3]
 outdir <- args[4]
 
-
-nodes <- nodes[,c(1,477)] #95% quantile
+ncol_95quant <- ncol(nodes)*0.95+2
+nodes <- nodes[,c(1,ncol_95quant)] #95% quantile
 colnames(nodes)[2] <- "robust"
-nodes_ext <- ndoes_ext[,c(1,477)]
+nodes_ext <- ndoes_ext[,c(1,ncol_95quant)]
 colnames(nodes_ext)[2] <- "robust + extended"
 colnames(nodes_standard)[2] <- "standard"
 

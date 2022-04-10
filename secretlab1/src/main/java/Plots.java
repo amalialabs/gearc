@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 
 public class Plots {
 
@@ -10,20 +11,24 @@ public class Plots {
     double FC_cutoff;
     String out_dir;
     String genetable_path;
+    String gos;
     String gotable_path;
     String gotable_extend_path;
     String gotable_standard;
     Result res;
+    HashMap<Node, Double> gos_standard;
 
-    public Plots(String output_dir, Collection<Gene> genes, Collection<Node> gos, double fdr, double fc, Result res) {
+    public Plots(String output_dir, Collection<Gene> genes, Collection<Node> gos, double fdr, double fc, Result res, HashMap<Node, Double> gos_standard) {
         this.FDR_cutoff = fdr;
         this.FC_cutoff = fc;
         this.out_dir = output_dir;
         this.genetable_path = out_dir + File.separator + "genes.table";
-        this.gotable_path = output_dir + File.separator + "gos.table";
-        this.gotable_extend_path = output_dir + File.separator + "gos_extend.table";
-        this.gotable_standard = output_dir + File.separator + "gos_standard.table";
+        this.gos = output_dir + File.separator + "gos.table";
+        this.gotable_path = output_dir + File.separator + "gos2fdrs.table";
+        this.gotable_extend_path = output_dir + File.separator + "gos2fdrs_extended.table";
+        this.gotable_standard = output_dir + File.separator + "gos2fdrs_standard.table";
         this.res = res;
+        this.gos_standard = gos_standard;
         createGeneTable(genes);
         createGOTable(gos);
     }
@@ -74,6 +79,11 @@ public class Plots {
                     bw.write("\t" + fdr);
                 }
                 bw.write("\n");
+            }
+            bw.close();
+            bw = new BufferedWriter(new FileWriter(new File(this.out_dir, "gos2fdrs_standard.table")));
+            for (Node go : gos_standard.keySet()) {
+                bw.write(go.node_id + "\t" + go.node_name + "\t" + gos_standard.get(go) + "\n");
             }
             bw.close();
         } catch (IOException e) {

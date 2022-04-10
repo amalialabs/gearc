@@ -102,7 +102,7 @@ public class Handler {
 
         Set<Node> robust_gos = result.getXquantileGOnodes(0.95);
 
-        Plots plots = new Plots(outdir, r.geneMap.values(), robust_gos, (double) params.valueOf("FDR"), (double) params.valueOf("FC"), result);
+        Plots plots = new Plots(outdir, r.geneMap.values(), robust_gos, (double) params.valueOf("FDR"), (double) params.valueOf("FC"), result, standard_node2fdr);
         plots.unclear_genes_BARPLOT(r.allGenes.values());
         plots.sig_genes_VOLCANO();
         plots.gene_categories_BARPLOT();
