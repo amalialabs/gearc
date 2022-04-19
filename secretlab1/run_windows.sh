@@ -82,14 +82,17 @@ if [[ "$obo" != "" ]]; then
   oboCall="--obo //input/go.obo"
 fi
 
-genelistPath=$(echo $(readlink -f $genelist) | sed 's/\/\\/g')
-genelist="-v $genelistPath:/input/genelist.tsv"
+genelistPath=$(echo $(readlink -f $genelist) | sed 's/"\"/"\\"/g')
+genelist="-v /$genelistPath:/input/genelist.tsv"
 genelistCall="--genelist //input/genelist.tsv"
 
 if [[ "$outdir" != "" ]]; then
   mkdir -p $outdir
-  outdirPath=$(echo $(readlink -f $outdir) | sed 's/\/\\/g')
+  outdirPath=$(echo $(readlink -f $outdir) | sed 's/"\"/"\\"/g')
 fi
 
-winpty docker run --pull=always $genelist $obo $mapping -v $outdirPath:/out/ --rm -it hadziahmetovic/secretlab1 secretlab \
+winpty docker run --pull=always $genelist $obo $mapping -v "/"$outdirPath:/out/ --rm -it hadziahmetovic/secretlab1 secretlab \
   $genelistCall $oboCall $mappingCall
+
+
+# ATTENTION!!! git bash must have enabled symlinks, look in c/programdata/git/config for [core] -> symlinks=true
