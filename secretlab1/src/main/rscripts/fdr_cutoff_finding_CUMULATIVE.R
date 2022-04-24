@@ -14,7 +14,7 @@ outdir <- args[2]
 
 genes <- genes[,c(1,2,6)]
 
-fdrcutoff <- 0.05
+fdrcutoff <- 0.05 #* nrow(genes)
 num_sig_genes <- nrow(subset(genes, genes$is_sig == "true"))
 num_nonsig_genes <- nrow(subset(genes, genes$is_sig == "false"))
 num_one_percent_sig <- max(round(0.01 * num_sig_genes), 5)

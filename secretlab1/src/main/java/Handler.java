@@ -125,6 +125,10 @@ public class Handler {
         plots.gos_standard_vs_robust_vs_extended_BARPLOT();
         System.out.println("plotting gos_standard_vs_robust_vs_extend_VENN");
         plots.gos_standard_vs_robust_vs_extended_VENN();
+        System.out.println("plotting fdr cutoff finding");
+        plots.fdr_cutoff_finding_CUMULATIVE();
+        System.out.println("plotting fc cutoff finding");
+        plots.fc_cutoff_finding_CUMULATIVE();
 
         if (params.has("out")) {
             String filepath = (String) params.valueOf("out");
