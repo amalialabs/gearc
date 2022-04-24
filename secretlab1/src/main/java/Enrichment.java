@@ -33,15 +33,11 @@ public class Enrichment {
             }
             node2FDR.put(node, pvalue);
         }
-        System.out.println("TEST BH overwriting");
-        System.out.println(node2FDR.entrySet().iterator().next().getValue());
-        bhAdjust(node2FDR); // sollte die FDRs überschreiben
-        System.out.println(node2FDR.entrySet().iterator().next().getValue());
+        bhAdjust(node2FDR);
         return(node2FDR);
     }
 
     public double hypergeometric(Node node, Set<Gene> sampled_genes) {
-        //int numMeasuredGenesInSet = node.getRelevantGenesSize();
         int numMeasuredGenesInSet = (int) node.getGenes().stream().filter(_g -> sampled_genes.contains(_g) && !_g.unclear).count();
         int numSignificantGenesInSet = (int) node.getGenes().stream().filter(_g -> _g != null && _g.is_significant && sampled_genes.contains(_g)).count();
         double hg_pval = 1.0;
@@ -52,7 +48,6 @@ public class Enrichment {
         return(hg_pval);
     }
 
-    
     public void bhAdjust(HashMap<Node, Double> pval) {
         List<Map.Entry<Node, Double>> list = pval.entrySet().stream()
                 .sorted(Comparator.comparingDouble(Map.Entry::getValue)).collect(Collectors.toList());
