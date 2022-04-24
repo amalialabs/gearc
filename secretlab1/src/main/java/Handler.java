@@ -136,6 +136,7 @@ public class Handler {
 
         if (params.has("out")) {
             System.out.println("writing output GOs");
+            System.out.println(outdir);
             result.writeRobustGOs(robust_gos, outdir);
             result.writeStandardGOs(standard_node2fdr, outdir);
         } else {

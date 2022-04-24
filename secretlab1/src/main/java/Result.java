@@ -95,8 +95,7 @@ public class Result {
     }
 
     public void writeRobustGOs(Set<Node> robustGOs, String outdir) {
-//        String file = outdir + "/robust_GOs.tsv";
-//        file = file.replaceAll("/", "\\");
+        System.out.println(outdir);
         File f = new File(outdir + File.separator + "robust_GOs.tsv");
         BufferedWriter bw;
         try {
