@@ -16,6 +16,7 @@ genes <- genes[,c(1,4,5,7)]
 genes$geneset <- factor(genes$geneset, levels=c("SIG_CORE", "FLEX", "SIGNON_CORE"))
 
 idx_last_flex <- nrow(subset(genes, genes$geneset=="SIG_CORE" || genes$geneset=="FLEX"))
+print(idx_last_flex)
 
 z <- genes[idx_last_flex, 3]
 bonus <- 1.0
@@ -23,6 +24,7 @@ penalty <- 0.0
 idx_current_gene <- idx_last_flex
 while (bonus > penalty) {
     idx_current_gene <- idx_current_gene + 1
+    print(idx_current_gene)
     bonus <- dnorm(idx_current_gene)
     print(bonus)
     penalty <- abs(genes[idx_current_gene, 3]-z)
