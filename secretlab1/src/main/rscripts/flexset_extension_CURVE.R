@@ -32,12 +32,14 @@ while (bonus > penalty) {
 idx_profitable_extension <- idx_current_gene - 1
 
 
-ggplot(data = data.frame(x = c(0, nrow(genes))), aes(x)) +
-  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1)) + ylab("") +
-  scale_y_continuous(breaks = NULL) +
+ggplot(data.frame(x=c(0, nrow(genes))), aes(x)) +
+  stat_function(fun=dnorm, n=101, args=list(mean=0, sd=1)) + ylab("") +
+  scale_y_continuous(breaks=NULL) +
   geom_point(aes(idx_profitable_extension, dnorm(idx_profitable_extension), col="red")) +
   xlab("distance") + ylab("bonus") +
   geom_point(aes(0.2*nrow(genes), dnorm(0.2*nrow(genes)), col="blue"))
 ggsave(paste0(outdir, .Platform$file.sep, "flexset_extension_CURVE.pdf"), width=10, height=10)
+
+print("plotted file")
 
 
