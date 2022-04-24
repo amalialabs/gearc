@@ -23,6 +23,8 @@ public class EnsemblGOMapping {
             pw.println("ensembl_id\tgos");  //fixme add also HGNC
             for (String gene : genes) {
                 pw.print(gene + "\t");
+                String geneName = EnsemblRestClient.getGeneName(gene);
+                pw.print(geneName + "\t");
                 Collection<String> gos = getGO(gene);
                 if (gos.size() > 0) {
                     StringBuilder sb = new StringBuilder();

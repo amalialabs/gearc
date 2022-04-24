@@ -23,12 +23,14 @@ public class EnsemblRestClient {
 
     public static void main(String[] args) throws Exception {
 
-        System.out.println(">ENSG00000105939");
-        System.out.println(getSequence("ENSG00000105939"));
+        System.out.println(getGeneName("ENSG00000105939"));
 
-        System.out.println(getGeneID("homo_sapiens", "ZC3HAV1"));
-
-        getRegions("ENSP00000242351", 1, 902);
+//        System.out.println(">ENSG00000105939");
+//        System.out.println(getSequence("ENSG00000105939"));
+//
+//        System.out.println(getGeneID("homo_sapiens", "ZC3HAV1"));
+//
+//        getRegions("ENSP00000242351", 1, 902);
     }
 
     public static void testVariants() throws ParseException, InterruptedException, IOException {
@@ -105,6 +107,26 @@ public class EnsemblRestClient {
         }
         JSONObject gene = (JSONObject)genes.get(0);
         return (String)gene.get("id");
+    }
+
+    public static String getGeneName(String geneID) {
+        String endpoint = "/xrefs/id/" + geneID + "?;external_db=HGNC;";
+        JSONArray info = null;
+        try {
+            info = (JSONArray) getJSON(endpoint);
+        } catch (ParseException e) {    //for these its more important  that it gets processed and not interrupted -> could add logging for such cases
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if(info.isEmpty()) {
+            throw new RuntimeException("Got nothing for endpoint "+endpoint);
+        }
+        System.out.println(info);
+        JSONObject gene = (JSONObject) info.get(0);
+        return (String) gene.get("display_id");
     }
 
     /**
