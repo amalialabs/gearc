@@ -122,9 +122,10 @@ public class EnsemblRestClient {
             e.printStackTrace();
         }
         if(info.isEmpty()) {
-            throw new RuntimeException("Got nothing for endpoint "+endpoint);
+//            throw new RuntimeException("Got nothing for endpoint "+endpoint);
+            return "";
         }
-        System.out.println(info);
+//        System.out.println(info);
         JSONObject gene = (JSONObject) info.get(0);
         return (String) gene.get("display_id");
     }
