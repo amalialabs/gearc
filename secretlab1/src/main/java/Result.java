@@ -96,8 +96,9 @@ public class Result {
 
     public void writeRobustGOs(Set<Node> robustGOs, String outdir) {
         System.out.println(outdir + "/robust_GOs.tsv");
+        File f = new File(outdir, "robust_GOs.tsv");
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outdir, "robust_GOs.tsv")));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(f));
             bw.write("GOnode\tmeanFDR\n");
             for (Node n : robustGOs) {
                 bw.write(n.node_id + "\t" + df.format(getMeanFDRofGO(n)) + "\n");
