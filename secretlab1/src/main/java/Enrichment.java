@@ -1,5 +1,4 @@
 import org.apache.commons.math3.distribution.HypergeometricDistribution;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,23 +24,26 @@ public class Enrichment {
         });
 
         HashMap<Node, Double> node2FDR = new HashMap<>();
-        //
+
         // lATER vielleicht beschränkt man die nodes bzgl Anzahl Gene also nodes mit #genes > x und < y
         for (Node node : gos.getGoNodes().values()) {
             double pvalue = 1.0;
             if (node.getGenes() != null && node.getRelevantGenesSize() != 0) {
-                pvalue = hypergeometric(node);
+                pvalue = hypergeometric(node, sampled_genes);
             }
             node2FDR.put(node, pvalue);
         }
+        System.out.println("TEST BH overwriting");
+        System.out.println(node2FDR.entrySet().iterator().next());
         bhAdjust(node2FDR); // sollte die FDRs überschreiben
+        System.out.println(node2FDR.entrySet().iterator().next());
         return(node2FDR);
     }
 
-    //FIXME !!! jeder node zieht immer die selben gene, berücksichtige die sampled genes!!!
-    public double hypergeometric(Node node) {
-        int numMeasuredGenesInSet = node.getRelevantGenesSize();
-        int numSignificantGenesInSet = (int) node.getGenes().stream().filter(_g -> _g != null && _g.is_significant).count();
+    public double hypergeometric(Node node, Set<Gene> sampled_genes) {
+//        int numMeasuredGenesInSet = node.getRelevantGenesSize();
+        int numMeasuredGenesInSet = (int) node.getGenes().stream().filter(_g -> sampled_genes.contains(_g)).count();
+        int numSignificantGenesInSet = (int) node.getGenes().stream().filter(_g -> _g != null && _g.is_significant && sampled_genes.contains(_g)).count();
         double hg_pval = 1.0;
         if (numMeasuredGenesInSet != 0) {
             hg_pval = new HypergeometricDistribution(numGenesTotal, deGenes,
