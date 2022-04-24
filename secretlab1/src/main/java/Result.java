@@ -97,7 +97,7 @@ public class Result {
     public void writeRobustGOs(Set<Node> robustGOs, String outdir) {
         System.out.println(outdir + "/robust_GOs.tsv");
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outdir, "/robust_GOs.tsv")));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outdir, "robust_GOs.tsv")));
             bw.write("GOnode\tmeanFDR\n");
             for (Node n : robustGOs) {
                 bw.write(n.node_id + "\t" + df.format(getMeanFDRofGO(n)) + "\n");
@@ -131,7 +131,7 @@ public class Result {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (e1, e2) -> e1, LinkedHashMap::new));
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outdir, "/standard_GOs.tsv")));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outdir, "standard_GOs.tsv")));
             bw.write("GOnode\tFDR\n");
             for (Node n : standardGOs.keySet()) {
                 bw.write(n.node_id + "\t" + df.format(standardGOs.get(n)) + "\n");
