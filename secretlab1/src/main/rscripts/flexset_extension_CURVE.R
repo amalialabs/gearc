@@ -16,6 +16,7 @@ genes <- genes[,c(1,4,5,7)]
 genes$geneset <- factor(genes$geneset, levels=c("SIG_CORE", "FLEX", "SIGNON_CORE"))
 
 idx_last_flex <- nrow(subset(genes, genes$geneset=="SIG_CORE" | genes$geneset=="FLEX"))
+print(head(genes))
 print(idx_last_flex)
 
 z <- genes[idx_last_flex, 3]
