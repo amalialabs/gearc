@@ -21,11 +21,12 @@ z <- genes[idx_last_flex, 3]
 bonus <- 1.0
 penalty <- 0.0
 idx_current_gene <- idx_last_flex
-while (bonus >= penalty) {
+while (bonus > penalty) {
     idx_current_gene <- idx_current_gene + 1
     bonus <- dnorm(idx_current_gene)
     print(bonus)
     penalty <- abs(genes[idx_current_gene, 3]-z)
+    print(penalty)
 }
 
 idx_profitable_extension <- idx_current_gene - 1
