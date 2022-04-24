@@ -129,6 +129,8 @@ public class Handler {
         plots.fdr_cutoff_finding_CUMULATIVE();
         System.out.println("plotting fc cutoff finding");
         plots.fc_cutoff_finding_CUMULATIVE();
+        System.out.println("plotting flexset extension");
+        plots.flexset_extension_CURVE();
 
         if (params.has("out")) {
             String filepath = (String) params.valueOf("out");

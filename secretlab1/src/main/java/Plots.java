@@ -242,7 +242,20 @@ public class Plots {
     }
 
     public void fc_cutoff_finding_CUMULATIVE() {
+        //LATER check y-axe >= 0
         String rcommand = "/secretlab1/src/main/rscripts/fc_cutoff_finding_CUMULATIVE.R";
+        try {
+            Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
+            p.waitFor();
+        } catch (IOException e) {
+            throw new RuntimeException("could not read/find Rscript ", e);
+        } catch (InterruptedException i) {
+            throw new RuntimeException("could not run subprocess ", i);
+        }
+    }
+
+    public void flexset_extension_CURVE() {
+        String rcommand = "/secretlab1/src/main/rscripts/flexset_extension_CURVE.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
             p.waitFor();
