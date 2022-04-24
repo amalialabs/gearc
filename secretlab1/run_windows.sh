@@ -89,10 +89,12 @@ genelistCall="--genelist //input/genelist.tsv"
 if [[ "$outdir" != "" ]]; then
   mkdir -p $outdir
   outdirPath=$(echo $(readlink -f $outdir) | sed 's/"\"/"\\"/g')
+  outTmp="-v /$outdirPath:/$outdirPath"
+  outCall="--out $outdirPath"
 fi
 
-winpty docker run --pull=always $genelist $obo $mapping -v "/"$outdirPath:/out/ --rm -it hadziahmetovic/secretlab1 secretlab \
-  $genelistCall $oboCall $mappingCall
+winpty docker run --pull=always $genelist $obo $mapping $outTmp --rm -it hadziahmetovic/secretlab1 secretlab \
+  $genelistCall $oboCall $mappingCall $outCall
 
 
 # ATTENTION!!! git bash must have enabled symlinks, look in c/programdata/git/config for [core] -> symlinks=true

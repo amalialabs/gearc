@@ -49,6 +49,7 @@ public class Handler {
         Reader r = new Reader(expression, mapping, obo, root);
 
         String outdir = (String) params.valueOf("out");
+        System.out.println(outdir);
 
         Functions.score_genes(new HashSet<>(r.geneMap.values()));
 
@@ -138,8 +139,8 @@ public class Handler {
             result.writeRobustGOs(robust_gos, outdir);
             result.writeStandardGOs(standard_node2fdr, outdir);
         } else {
-            result.printRobustGOs(robust_gos);
-            result.printStandardGOs(standard_node2fdr);
+//            result.printRobustGOs(robust_gos);
+//            result.printStandardGOs(standard_node2fdr);
         }
     }
 }

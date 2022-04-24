@@ -3,7 +3,7 @@
 
 options(warn = - 1)
 
-library(VennDiagram)
+library(VennDiagram, quietly=TRUE)
 
 args = commandArgs(trailingOnly=TRUE)
 
