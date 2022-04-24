@@ -269,7 +269,7 @@ public class Plots {
     public void num_sig_gos_BARPLOT() {
         String rcommand = "/secretlab1/src/main/rscripts/num_sig_gos_comparison_BARPLOT.R";
         try {
-            Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
+            Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, gotable_standard, out_dir).inheritIO().start();
             p.waitFor();
         } catch (IOException e) {
             throw new RuntimeException("could not read/find Rscript ", e);
@@ -281,7 +281,7 @@ public class Plots {
     public void expected_change_BARPLOT() {
         String rcommand = "/secretlab1/src/main/rscripts/expected_change_distrib_BARPLOT.R";
         try {
-            Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, gotable_standard, out_dir).inheritIO().start();
+            Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
             p.waitFor();
         } catch (IOException e) {
             throw new RuntimeException("could not read/find Rscript ", e);
