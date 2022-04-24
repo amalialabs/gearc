@@ -97,14 +97,15 @@ public class Result {
     public void writeRobustGOs(Set<Node> robustGOs, String outdir) {
         System.out.println(outdir + "/robust_GOs.tsv");
         File f = new File(outdir, "robust_GOs.tsv");
+        BufferedWriter bw;
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+            bw = new BufferedWriter(new FileWriter(f));
             bw.write("GOnode\tmeanFDR\n");
             for (Node n : robustGOs) {
                 bw.write(n.node_id + "\t" + df.format(getMeanFDRofGO(n)) + "\n");
             }
             bw.close();
-            System.out.println("normally printed robust_GOs.tsv file");
+            System.out.println("normally printed robust_GOs.tsv file " + f.getAbsolutePath());
         } catch (IOException e) {
             throw new RuntimeException("could not init file ", e);
         }
