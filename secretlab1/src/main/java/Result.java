@@ -2,6 +2,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,8 @@ public class Result {
     public HashMap<Node, ArrayList<Double>> GOnode2FDRrunsExtend = new HashMap<>();
 
     public double FDR_cutoff;
+
+    DecimalFormat df = new DecimalFormat("0.####E0");
 
     public Result (double fdr) {
         this.FDR_cutoff = fdr;
@@ -87,7 +90,7 @@ public class Result {
     public void printRobustGOs(Set<Node> robustGOs) {
         //LATER output in html table
         System.out.println("GOnode\tmeanFDR");
-        robustGOs.forEach(_go -> System.out.println(_go.node_id + "\t" + getMeanFDRofGO(_go)));
+        robustGOs.forEach(_go -> System.out.println(_go.node_id + "\t" + df.format(getMeanFDRofGO(_go))));
         System.out.println(robustGOs.size() + " GOs in total.");
     }
 
@@ -96,7 +99,7 @@ public class Result {
             BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outdir, "/robust_GOs.tsv")));
             bw.write("GOnode\tmeanFDR\n");
             for (Node n : robustGOs) {
-                bw.write(n.node_id + "\t" + getMeanFDRofGO(n) + "\n");
+                bw.write(n.node_id + "\t" + df.format(getMeanFDRofGO(n)) + "\n");
             }
             bw.close();
         } catch (IOException e) {
@@ -114,7 +117,7 @@ public class Result {
         int sig = (int) standardGOs.keySet().stream().filter(_go -> standardGOs.get(_go) <= this.FDR_cutoff).count();
         standardGOs.keySet().forEach(_go -> {
             if (standardGOs.get(_go) <= this.FDR_cutoff) {
-                System.out.println(_go.node_id + "\t" + standardGOs.get(_go));
+                System.out.println(_go.node_id + "\t" + df.format(standardGOs.get(_go)));
             }
         }
         );
@@ -130,7 +133,7 @@ public class Result {
             BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outdir, "/standard_GOs.tsv")));
             bw.write("GOnode\tFDR\n");
             for (Node n : standardGOs.keySet()) {
-                bw.write(n.node_id + "\t" + standardGOs.get(n) + "\n");
+                bw.write(n.node_id + "\t" + df.format(standardGOs.get(n)) + "\n");
             }
             bw.close();
         } catch (IOException e) {
