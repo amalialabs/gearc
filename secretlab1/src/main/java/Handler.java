@@ -30,9 +30,7 @@ public class Handler {
         assertTrue(params.has("genelist"));
 
         System.out.println("Params:");
-        params.specs().forEach(spec -> {
-            System.out.println(spec + "\t" + params.valueOf(spec));
-        });
+        params.specs().forEach(spec -> System.out.println(spec + "\t" + params.valueOf(spec)));
 
         try {
             if (params.has("h") || params.has("?")) {
@@ -137,12 +135,11 @@ public class Handler {
         plots.num_sig_gos_BARPLOT();
 
         if (params.has("out")) {
-            String filepath = (String) params.valueOf("out");
-            result.writeRobustGOs(robust_gos, filepath);
-            result.writeStandardGOs(standard_node2fdr, filepath);
+            result.writeRobustGOs(robust_gos, outdir);
+            result.writeStandardGOs(standard_node2fdr, outdir);
         } else {
-            //result.printRobustGOs(robust_gos);
-            //result.printStandardGOs(standard_node2fdr);
+            result.printRobustGOs(robust_gos);
+            result.printStandardGOs(standard_node2fdr);
         }
     }
 }

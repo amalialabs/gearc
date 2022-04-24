@@ -95,6 +95,7 @@ public class Result {
     }
 
     public void writeRobustGOs(Set<Node> robustGOs, String outdir) {
+        System.out.println(outdir + "/robust_GOs.tsv");
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outdir, "/robust_GOs.tsv")));
             bw.write("GOnode\tmeanFDR\n");
