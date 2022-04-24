@@ -17,7 +17,7 @@ genes$geneset <- factor(genes$geneset, levels=c("SIG_CORE", "FLEX", "SIGNON_CORE
 
 idx_last_flex <- nrow(subset(genes, genes$geneset=="SIG_CORE" | genes$geneset=="FLEX"))
 
-genes <- genes[oder(genes$weighted_score, decreasing=TRUE),]
+genes <- genes[order(genes$weighted_score, decreasing=TRUE),]
 
 z <- genes[idx_last_flex, 3]
 bonus <- 1.0
