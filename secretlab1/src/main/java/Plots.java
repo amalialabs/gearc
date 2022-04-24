@@ -2,6 +2,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -17,6 +18,8 @@ public class Plots {
     String gotable_standard;
     Result res;
     HashMap<Node, Double> gos_standard;
+
+    DecimalFormat df = new DecimalFormat("0.####E0");
 
     public Plots(String output_dir, Collection<Gene> genes, Collection<Node> gos, double fdr, double fc, Result res, HashMap<Node, Double> gos_standard) {
         this.FDR_cutoff = fdr;
@@ -44,7 +47,7 @@ public class Plots {
             BufferedWriter bw = new BufferedWriter(new FileWriter(new File(this.out_dir, File.separator + "genes.table")));
             bw.write("geneID\tFDR\tlog2FC\tgeneset\tweighted_score\tis_sig\tis_unclear\tnot_sig\n");
             for (Gene gene : genes) {
-                bw.write(gene.gene_id + "\t" + gene.fdr + "\t" + gene.fc + "\t" + gene.set +
+                bw.write(gene.gene_id + "\t" + df.format(gene.fdr) + "\t" + gene.fc + "\t" + gene.set +
                   "\t" + gene.weighted_score + "\t" + gene.is_significant + "\t" + gene.unclear + "\t" + gene.not_signif + "\n");
             }
             bw.close();
@@ -62,14 +65,14 @@ public class Plots {
             BufferedWriter bw = new BufferedWriter(new FileWriter(new File(this.out_dir, File.separator + "gos.table")));
             bw.write("nodeID\tnodeName\tenrichScore\tstandardFDR\n");
             for (Node go : gos) {
-                bw.write(go.node_id + "\t" + go.node_name + "\t" + go.enrichment_score + "\t" + go.bhFDR + "\n");
+                bw.write(go.node_id + "\t" + go.node_name + "\t" + go.enrichment_score + "\t" + df.format(go.bhFDR) + "\n");
             }
             bw.close();
             bw = new BufferedWriter(new FileWriter(new File(this.out_dir, File.separator + "gos2fdrs.table")));
             for (Node go : gos) {
                 bw.write(go.node_id + "\t" + go.node_name);
                 for (double fdr : res.GOnode2FDRruns.get(go)) {
-                    bw.write("\t" + fdr);
+                    bw.write("\t" + df.format(fdr));
                 }
                 bw.write("\n");
             }
@@ -78,14 +81,14 @@ public class Plots {
             for (Node go : gos) {
                 bw.write(go.node_id + "\t" + go.node_name);
                 for (double fdr : res.GOnode2FDRrunsExtend.get(go)) {
-                    bw.write("\t" + fdr);
+                    bw.write("\t" + df.format(fdr));
                 }
                 bw.write("\n");
             }
             bw.close();
             bw = new BufferedWriter(new FileWriter(new File(this.out_dir, File.separator + "gos2fdrs_standard.table")));
             for (Node go : gos_standard.keySet()) {
-                bw.write(go.node_id + "\t" + go.node_name + "\t" + gos_standard.get(go) + "\n");
+                bw.write(go.node_id + "\t" + go.node_name + "\t" + df.format(gos_standard.get(go)) + "\n");
             }
             bw.close();
         } catch (IOException e) {
