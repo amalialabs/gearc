@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public class EnsemblGOMapping {
 
-    public static void main(String[] args) throws ParseException, InterruptedException, IOException {
+    public static void main(String[] args) {
         EnsemblGOMapping egm = new EnsemblGOMapping(null, 103);
 //        getGO("ENSG00000170152").stream().forEach(_go -> System.out.println(_go));
     }
