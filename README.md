@@ -90,3 +90,10 @@ The easiest way to start is by executing either `run.sh` or `run_windows.sh`
 depending on whether you are using unix or windows. Both scripts make it easier
 to map all of the needed variables to the container in which the computation will
 take place.
+
+
+
+### Mapping
+wget http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.106.gtf.gz
+gunzip Homo_sapiens.GRCh38.106.gtf.gz
+cat Homo_sapiens.GRCh38.103.gtf | grep -P "\tgene\t" | sed 's/^.*gene_id "//' | sed 's/"; gene_.*$//' | sort -u > Homo_sapiens.GRCh38.103.gtf.geneIDs

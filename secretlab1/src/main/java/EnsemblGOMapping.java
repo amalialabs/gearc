@@ -1,5 +1,3 @@
-import net.minidev.json.parser.ParseException;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,18 +8,17 @@ import java.util.stream.Stream;
 public class EnsemblGOMapping {
 
     public static void main(String[] args) {
-        EnsemblGOMapping egm = new EnsemblGOMapping(null, 103);
+        File geneIDsFile = new File("/home/birinci/Downloads/Homo_sapiens.GRCh38.106.gtf.geneIDs");
+        EnsemblGOMapping egm = new EnsemblGOMapping(new File("/home/birinci/Downloads/"), 106, getGeneIDs(geneIDsFile));
 //        getGO("ENSG00000170152").stream().forEach(_go -> System.out.println(_go));
     }
 
-    public EnsemblGOMapping(File outputFile, int ensemblVersion) {
-        File geneIDsFile = new File("/home/birinci/Downloads/Homo_sapiens.GRCh38.103.gtf.geneIDs.from24148");
-        List<String> genes = getGeneIDs(geneIDsFile);
-        outputFile = new File("/home/birinci/Downloads/goa_human_ensembl_release_" + ensemblVersion + ".tsv");
+    public EnsemblGOMapping(File outputDir, int ensemblVersion, List<String> geneIDs) {
+        File outputFile = new File(outputDir,"goa_human_ensembl_release_" + ensemblVersion + ".tsv");
 
         try (PrintWriter pw = new PrintWriter(outputFile)) {
-            pw.println("ensembl_id\tgos");  //fixme add also HGNC
-            for (String gene : genes) {
+            pw.println("ensembl_id\thgnc\tgos");
+            for (String gene : geneIDs) {
                 pw.print(gene + "\t");
                 String geneName = EnsemblRestClient.getGeneName(gene);
                 pw.print(geneName + "\t");
@@ -31,7 +28,11 @@ public class EnsemblGOMapping {
                     for (String elem : getGO(gene)) {
                         sb.append("|").append(elem);
                     }
-                    pw.println(sb.toString().substring(1));
+                    if (sb.length() > 0) {
+                        pw.println(sb.toString().substring(1));
+                    } else {
+                        System.out.println("Error in:\t" + gene + "\t" + geneName + "\t" + sb.toString());
+                    }
                 } else
                     pw.println();
             }
@@ -40,7 +41,7 @@ public class EnsemblGOMapping {
         }
     }
 
-    private List<String> getGeneIDs(File geneListFile) {
+    private static List<String> getGeneIDs(File geneListFile) {
         List<String> list = new ArrayList<>();
         try (Stream<String> stream = Files.lines(Paths.get(geneListFile.getAbsolutePath()))) {
             stream.forEach(list::add);
