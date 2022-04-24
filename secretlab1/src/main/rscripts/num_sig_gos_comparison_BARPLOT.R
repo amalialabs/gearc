@@ -25,9 +25,16 @@ gos_standard$type <- "standard"
 colnames(gos)[3] <- "FDR"
 colnames(gos_extended)[3] <- "FDR"
 colnames(gos_standard)[3] <- "FDR"
+colnames(gos)[1] <- "id"
+colnames(gos)[2] <- "name"
+colnames(gos_extended)[1] <- "id"
+colnames(gos_extended)[2] <- "name"
+colnames(gos_standard)[1] <- "id"
+colnames(gos_standard)[2] <- "name"
 
 g <- rbind(gos, gos_extended, gos_standard)
 g <- subset(g, g$FDR <= 0.05)
+g$type <- factor(g$type, levels=c("standard", "robust", "robust + extended"))
 
 
 ggplot(g, aes(FDR, fill=type)) + geom_bar() + ylab("# genes") + xlab("enrichment type")
