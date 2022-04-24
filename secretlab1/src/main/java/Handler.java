@@ -135,8 +135,6 @@ public class Handler {
         plots.num_sig_gos_BARPLOT();
 
         if (params.has("out")) {
-            System.out.println("writing output GOs");
-            System.out.println(outdir);
             result.writeRobustGOs(robust_gos, outdir);
             result.writeStandardGOs(standard_node2fdr, outdir);
         } else {

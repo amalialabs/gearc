@@ -95,7 +95,6 @@ public class Result {
     }
 
     public void writeRobustGOs(Set<Node> robustGOs, String outdir) {
-        System.out.println(outdir);
         File f = new File(outdir + File.separator + "robust_GOs.tsv");
         BufferedWriter bw;
         try {
@@ -105,7 +104,6 @@ public class Result {
                 bw.write(n.node_id + "\t" + df.format(getMeanFDRofGO(n)) + "\n");
             }
             bw.close();
-            System.out.println("normally printed robust_GOs.tsv file " + f.getAbsolutePath());
         } catch (IOException e) {
             throw new RuntimeException("could not init file ", e);
         }
@@ -133,8 +131,9 @@ public class Result {
                 .sorted(Map.Entry.comparingByValue())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (e1, e2) -> e1, LinkedHashMap::new));
+        File f = new File(outdir + File.separator + "standard_GOs.tsv");
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outdir, "standard_GOs.tsv")));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(f));
             bw.write("GOnode\tFDR\n");
             for (Node n : standardGOs.keySet()) {
                 bw.write(n.node_id + "\t" + df.format(standardGOs.get(n)) + "\n");
