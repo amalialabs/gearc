@@ -95,8 +95,9 @@ public class Result {
     }
 
     public void writeRobustGOs(Set<Node> robustGOs, String outdir) {
-        System.out.println(outdir + "/robust_GOs.tsv");
-        File f = new File(outdir, "robust_GOs.tsv");
+        String file = outdir + "/robust_GOs.tsv";
+        System.out.println(file);
+        File f = new File(file);
         BufferedWriter bw;
         try {
             bw = new BufferedWriter(new FileWriter(f));
