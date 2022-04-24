@@ -1,6 +1,8 @@
 
 #/usr/bin/Rscript
 
+options(warn = - 1)
+
 library(VennDiagram)
 
 args = commandArgs(trailingOnly=TRUE)
