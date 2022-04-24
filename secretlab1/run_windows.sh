@@ -90,7 +90,7 @@ if [[ "$outdir" != "" ]]; then
   mkdir -p $outdir
   outdirPath=$(echo $(readlink -f $outdir) | sed 's/"\"/"\\"/g')
   outTmp="-v /$outdirPath:/$outdirPath"
-  outCall="--out $outdirPath"
+  outCall="--out /$outdirPath"
 fi
 
 winpty docker run --pull=always $genelist $obo $mapping $outTmp --rm -it hadziahmetovic/secretlab1 secretlab \

@@ -40,7 +40,4 @@ ggplot(data.frame(x=c(0, nrow(genes))), aes(x)) +
   geom_point(aes(0.2*nrow(genes), dnorm(0.2*nrow(genes)), col="blue"))
 ggsave(paste0(outdir, .Platform$file.sep, "flexset_extension_CURVE.pdf"), width=10, height=10)
 
-print(paste0(outdir, .Platform$file.sep, "flexset_extension_CURVE.pdf"))
-print("plotted file")
-
 
