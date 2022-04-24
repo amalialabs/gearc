@@ -104,6 +104,7 @@ public class Result {
                 bw.write(n.node_id + "\t" + df.format(getMeanFDRofGO(n)) + "\n");
             }
             bw.close();
+            System.out.println("normally printed robust_GOs.tsv file");
         } catch (IOException e) {
             throw new RuntimeException("could not init file ", e);
         }
