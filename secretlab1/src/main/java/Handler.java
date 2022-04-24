@@ -131,6 +131,10 @@ public class Handler {
         plots.fc_cutoff_finding_CUMULATIVE();
         System.out.println("plotting flexset extension");
         plots.flexset_extension_CURVE();
+        System.out.println("plotting expected change distrib");
+        plots.expected_change_BARPLOT();
+        System.out.println("plotting num sig gos comparison");
+        plots.num_sig_gos_BARPLOT();
 
         if (params.has("out")) {
             String filepath = (String) params.valueOf("out");
