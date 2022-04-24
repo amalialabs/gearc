@@ -58,3 +58,35 @@ RUN apt-get update && \
 
 RUN Rscript -e "install.packages('rJava')"
 ```
+
+## Files
+
+#### Genelist
+The genelist should be in the format of gene_id, log2 fold change, and fdr.
+If you have a different format you may use the `reformatGeneList.sh` script in order to get the desired input format.
+It takes 4 mandatory inputs: `--gene` `--lfc` `--fdr` `--input`.
+If the `--out` param is set then the output is written to that file, else
+it is returned to standard out.
+```shell script
+$ head ../data/corona.empires.outECC 
+gene    diffexp.fdr     diffexp.log2fc  diffsplic.most.signif.test      diffsplic.fdr   diffsplic.difflog2fc
+ENSG00000143067 0.000e+00       -2.230  untested        1.000   0.000e+00
+ENSG00000168394 0.000e+00       -3.130  ENSG00000168394.merged.ENST00000354258.ENST00000643049_VS_excl.ENST00000643049  0.240   -0.919
+ENSG00000181381 0.000e+00       -3.050  ENSG00000181381.merged.ENST00000510590.ENST00000511577_VS_excl.ENST00000510590  0.265   0.862
+ENSG00000204592 0.000e+00       -1.390  ENSG00000204592.excl.ENST00000484194_VS_excl.ENST00000493699    0.060   -1.013
+
+$ ./reformatGeneList.sh --gene 1 --lfc 3 --fdr 2 --input ../data/corona.empires.outECC --out ../data/corona.reformatted
+
+$ head ../data/corona.reformatted 
+gene    diffexp.log2fc  diffexp.fdr
+ENSG00000143067 -2.230  0.000e+00
+ENSG00000168394 -3.130  0.000e+00
+ENSG00000181381 -3.050  0.000e+00
+ENSG00000204592 -1.390  0.000e+00
+```
+
+## Starting secretlab
+The easiest way to start is by executing either `run.sh` or `run_windows.sh`
+depending on whether you are using unix or windows. Both scripts make it easier
+to map all of the needed variables to the container in which the computation will
+take place.
