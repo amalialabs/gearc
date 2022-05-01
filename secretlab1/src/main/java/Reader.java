@@ -25,28 +25,28 @@ public class Reader {
         this.FDR_cutoff = FDR_cutoff;
         this.FC_cutoff = FC_cutoff;
 
-        System.out.println("\nObo: starting");
+//        System.out.println("\nObo: starting");
         long time = System.currentTimeMillis();
         GO.goNodes = readOboFile(oboFile, root);
-        System.out.println("\tObo time: " + (System.currentTimeMillis() - time) + " ms");
+//        System.out.println("\tObo time: " + (System.currentTimeMillis() - time) + " ms");
 
 
-        System.out.println("\nMappingFile: starting");
+//        System.out.println("\nMappingFile: starting");
         time = System.currentTimeMillis();
         readMappringEnsebl(mappingFile);
-        System.out.println("\tMappingFile time: " + (System.currentTimeMillis() - time) + " ms");
+//        System.out.println("\tMappingFile time: " + (System.currentTimeMillis() - time) + " ms");
 
 
-        System.out.println("\nExpressionFile: starting");
+//        System.out.println("\nExpressionFile: starting");
         time = System.currentTimeMillis();
         readExpressionFile(expressionFile);
-        System.out.println("\tExpressionFile time: " + (System.currentTimeMillis() - time) + " ms");
+//        System.out.println("\tExpressionFile time: " + (System.currentTimeMillis() - time) + " ms");
 
 
-        System.out.println("\nPostprocessing: starting");
+//        System.out.println("\nPostprocessing: starting");
         time = System.currentTimeMillis();
         postprocess();
-        System.out.println("\tPostprocessing time: " + (System.currentTimeMillis() - time) + " ms");
+//        System.out.println("\tPostprocessing time: " + (System.currentTimeMillis() - time) + " ms");
     }
 
     /**
@@ -84,11 +84,11 @@ public class Reader {
         genes.forEach(_g -> geneMap.put(_g.gene_id, _g));
 //        Functions.filter_unclear(genes).forEach(_g -> geneMap.put(_g.gene_id, _g));
 
-        System.out.println("---------");
-        System.out.println("Filter check:");
-        System.out.println("Input:\t" + genes.size());
-        System.out.println("Filter:\t" + geneMap.keySet().size());
-        System.out.println("---------");
+//        System.out.println("---------");
+//        System.out.println("Filter check:");
+//        System.out.println("Input:\t" + genes.size());
+//        System.out.println("Filter:\t" + geneMap.keySet().size());
+//        System.out.println("---------");
     }
 
     private void readExpressionFile(File expressionFile) {
@@ -184,12 +184,12 @@ public class Reader {
                 counterEntry[0]++;
 
             });
-            System.out.println("---------");
-            System.out.println("Mapping check:");
-            System.out.println("Etries:\t" + counterLine[0]);
-            System.out.println("Valid Entries:\t" + counterEntry[0]);
-            System.out.println("Unique Entries:\t" + geneToGO.keySet().size());
-            System.out.println("---------");
+//            System.out.println("---------");
+//            System.out.println("Mapping check:");
+//            System.out.println("Etries:\t" + counterLine[0]);
+//            System.out.println("Valid Entries:\t" + counterEntry[0]);
+//            System.out.println("Unique Entries:\t" + geneToGO.keySet().size());
+//            System.out.println("---------");
 
         } catch (IOException e) {
             throw new RuntimeException("Error during parsing of " + ensemblMapping.getAbsolutePath(), e);
