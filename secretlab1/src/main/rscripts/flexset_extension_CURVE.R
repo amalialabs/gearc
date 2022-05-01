@@ -27,7 +27,7 @@ penalty <- 0.0
 idx_current_gene <- idx_last_flex
 while (bonus > penalty) {
     idx_current_gene <- idx_current_gene + 1
-    bonus <- dnorm(idx_current_gene, 0, SD)
+    bonus <- dnorm(idx_current_gene, 0, 5000)
     penalty <- abs(genes[idx_current_gene, 3]-z)
 }
 
