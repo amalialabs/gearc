@@ -15,7 +15,7 @@ if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
 fi
 
 OPTIONS=
-LONGOPTS=outdir:,genelist:,obo:,mapping:
+LONGOPTS=outdir:,genelist:,obo:,mapping:,n:
 
 
 # -regarding ! and PIPESTATUS see above

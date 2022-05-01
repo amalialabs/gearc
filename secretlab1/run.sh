@@ -15,7 +15,7 @@ if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
 fi
 
 OPTIONS=
-LONGOPTS=outdir:,genelist:,obo:,mapping:
+LONGOPTS=outdir:,genelist:,obo:,mapping:,n:
 
 
 # -regarding ! and PIPESTATUS see above
@@ -50,6 +50,10 @@ while true; do
         ;;
       --mapping)
         mapping="$2"
+        shift 2
+        ;;
+      --n)
+        n="$2"
         shift 2
         ;;
       --)
@@ -91,7 +95,11 @@ if [[ "$outdir" != "" ]]; then
   outdirCall="--out $outdirPath"
 fi
 
+if [[ "$n" != "" ]]; then
+  nCall="--n $n"
+fi
+
 ## for docker users replace here podman with 'docker'
 ## for windows users replace here podman with 'winpty docker'
 podman run --pull=always $obo $mapping -v $outdir:/out/ -v $genelistPath:$genelistPath --rm -it hadziahmetovic/secretlab1 secretlab \
-  $genelistCall $oboCall $mappingCall $outdirCall
+  $genelistCall $oboCall $mappingCall $outdirCall $nCall
