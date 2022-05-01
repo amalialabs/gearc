@@ -16,10 +16,15 @@ public class Reader {
     HashMap<String, Set<String>> geneToGO = new HashMap<>();
     HashMap<String, String> geneID2Name = new HashMap<>();
     HashMap<String, String> geneName2ID = new HashMap<>();
+    double FDR_cutoff;
+    double FC_cutoff;
 
     //fixme ~~specify and rely on ensembl mappingFile~~; updates may contain more options
     // - also add mutable root -> perform for each root at the same time? maybe not, but add full call with all plots and per root
-    public Reader(File expressionFile, File mappingFile, File oboFile, String root) {
+    public Reader(File expressionFile, File mappingFile, File oboFile, String root, double FDR_cutoff, double FC_cutoff) {
+        this.FDR_cutoff = FDR_cutoff;
+        this.FC_cutoff = FC_cutoff;
+
         System.out.println("\nObo: starting");
         long time = System.currentTimeMillis();
         GO.goNodes = readOboFile(oboFile, root);
@@ -68,7 +73,7 @@ public class Reader {
                     double fc = Double.parseDouble(elems[1]);
                     double fdr = Double.parseDouble(elems[2]);
 
-                    Gene g = new Gene(gene_id, geneID2Name.get(gene_id), fc, fdr);
+                    Gene g = new Gene(gene_id, geneID2Name.get(gene_id), fc, fdr, this.FDR_cutoff, this.FC_cutoff);
                     genes.add(g);
                 }
             });
@@ -230,7 +235,7 @@ public class Reader {
         File oboFile = new File("/home/birinci/Projects/secretlab/data/go.obo");
         String root = "biological_process";
 
-        Reader r = new Reader(expression, mappingEnsembl, oboFile, root);
+        Reader r = new Reader(expression, mappingEnsembl, oboFile, root, 0.01, 1.0);
 
         GO.getGoNodes().values().forEach(_node -> {
             if (_node.getGenes() != null && _node.getGenes().size() > 3000) {

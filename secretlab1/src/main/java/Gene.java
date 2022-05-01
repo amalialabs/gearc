@@ -5,28 +5,32 @@ public class Gene {
     double weighted_score;
     double fdr;
     double fc;
+    double FDR_cutoff;
+    double FC_cutoff;
     boolean is_significant;
     boolean unclear;
     boolean not_signif;
     public enum corresponding_set {SIG_CORE, FLEX, SIGNON_CORE};
     corresponding_set set;
 
-    public Gene(String gene_id, double fc, double fdr) {
+    public Gene(String gene_id, double fc, double fdr, double FDR_cutoff, double FC_cutoff) {
         this.gene_id = gene_id;
+        this.FDR_cutoff=FDR_cutoff;
+        this.FC_cutoff=FC_cutoff;
         this.fc = fc;
         this.fdr = fdr;
-        this.is_significant = Math.abs(fc) >= Functions.FC_cutoff && fdr <= Functions.FDR_cutoff;
-        this.not_signif = Math.abs(fc) < Functions.FC_cutoff && fdr > Functions.FDR_cutoff;
+        this.is_significant = Math.abs(fc) >= FC_cutoff && fdr <= FDR_cutoff;
+        this.not_signif = Math.abs(fc) < FC_cutoff && fdr > FDR_cutoff;
         this.unclear = !is_significant && !not_signif;
     }
 
-    public Gene(String gene_id, String gene_name, double fc, double fdr) {
+    public Gene(String gene_id, String gene_name, double fc, double fdr, double FDR_cutoff, double FC_cutoff) {
         this.gene_id = gene_id;
         this.gene_name = gene_name;
         this.fdr = fdr;
         this.fc = fc;
-        this.is_significant = Math.abs(fc) >= Functions.FC_cutoff && fdr <= Functions.FDR_cutoff;
-        this.not_signif = Math.abs(fc) < Functions.FC_cutoff && fdr > Functions.FDR_cutoff;
+        this.is_significant = Math.abs(fc) >= FC_cutoff && fdr <= FDR_cutoff;
+        this.not_signif = Math.abs(fc) < FC_cutoff && fdr > FDR_cutoff;
         this.unclear = !is_significant && !not_signif;
     }
 

@@ -42,18 +42,20 @@ public class Handler {
             throw new RuntimeException("Could not display help page.", e);
         }
 
+        double FDR_cutoff = (double) params.valueOf("FDR");
+        double FC_cutoff = (double) params.valueOf("FC");
+        System.out.println(FDR_cutoff + "  " + FC_cutoff);
+
         GO gos = null;
         File obo = new File((String) params.valueOf("obo"));
         File mapping = new File((String) params.valueOf("mapping"));
         File expression = new File((String) params.valueOf("genelist"));
         String root = (String) params.valueOf("root");
-        Reader r = new Reader(expression, mapping, obo, root);
+        Reader r = new Reader(expression, mapping, obo, root, FDR_cutoff, FC_cutoff);
 
         String outdir = (String) params.valueOf("out");
 
-        double FDR_cutoff = (double) params.valueOf("FDR");
-        double FC_cutoff = (double) params.valueOf("FC");
-        System.out.println(FDR_cutoff + "  " + FC_cutoff);
+
         Functions.score_genes(new HashSet<>(r.geneMap.values()), FDR_cutoff, FC_cutoff);
 
         Enum expected_change = (Enum) params.valueOf("expectedChange");
