@@ -51,7 +51,9 @@ public class Handler {
 
         String outdir = (String) params.valueOf("out");
 
-        Functions.score_genes(new HashSet<>(r.geneMap.values()));
+        double FDR_cutoff = (double) params.valueOf("FDR");
+        double FC_cutoff = (double) params.valueOf("FC");
+        Functions.score_genes(new HashSet<>(r.geneMap.values()), FDR_cutoff, FC_cutoff);
 
         Enum expected_change = (Enum) params.valueOf("expectedChange");
         Functions.assign_genes_to_sets(new HashSet<>(r.geneMap.values()), expected_change);
@@ -84,7 +86,7 @@ public class Handler {
         HashMap<Node, Double> standard_node2fdr = en_standard.enrich(allGenes, gos);  //standard enrichment way
 
 
-        Result result = new Result((double) params.valueOf("FDR"));  //alternative
+        Result result = new Result(FDR_cutoff);  //alternative
         int numIter = (int) params.valueOf("n");
         for (int i = 0; i < numIter; i++) {
             Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), 0.2);
@@ -102,7 +104,7 @@ public class Handler {
 
         Set<Node> robust_gos = result.getXquantileGOnodes(0.95);
 
-        Plots plots = new Plots(outdir, r.allGenes.values(), robust_gos, (double) params.valueOf("FDR"), (double) params.valueOf("FC"), result, standard_node2fdr);
+        Plots plots = new Plots(outdir, r.allGenes.values(), robust_gos, (double) FDR_cutoff, FC_cutoff, result, standard_node2fdr);
         System.out.println("plotting unclear_genes_BARPLOT");
         plots.unclear_genes_BARPLOT(r.allGenes.values());
         System.out.println("plotting sig_genes_VOLCANO");

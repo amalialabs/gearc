@@ -14,7 +14,7 @@ public class Functions {
     @param set of gene objects (gene, FC, FDR)
     @return double[] interval with lower and upper bound
      */
-    public static double[] define_FDR_and_FC_cutoff_interval(Set<Gene> gene2FDRandFC, String type) {
+    public static double[] define_FDR_and_FC_cutoff_interval(Set<Gene> gene2FDRandFC, String type, double FDR_cutoff, double FC_cutoff) {
         int num_sig_genes = (int) gene2FDRandFC.stream().filter(_gene -> _gene.is_significant).count();
         int num_nonsig_genes = (int) gene2FDRandFC.stream().filter(_gene -> !_gene.is_significant).count();
         int num_one_percent_ontop = Math.max((int) (0.01 * num_sig_genes), 5); //LATER at least 5? more genes
@@ -41,7 +41,7 @@ public class Functions {
     @param set of gene object (gene, FC, FDR)
     @return same set without entries of unclear genes
      */
-    public static Set<Gene> filter_unclear(Set<Gene> gene2FCandFDR) {
+    public static Set<Gene> filter_unclear(Set<Gene> gene2FCandFDR, double FDR_cutoff, double FC_cutoff) {
         Set<Gene> sig_genes = gene2FCandFDR.stream().
                 filter(gene -> gene.fdr <= FDR_cutoff && Math.abs(gene.fc) >= FC_cutoff).
                 collect(Collectors.toSet());
@@ -57,10 +57,10 @@ public class Functions {
     @return same set with now computed values
     LATER remove return??
      */
-    public static Set<Gene> score_genes(Set<Gene> gene2FCandFDR) {
-        double[] FDR_interval = define_FDR_and_FC_cutoff_interval(gene2FCandFDR, "FDR");
+    public static Set<Gene> score_genes(Set<Gene> gene2FCandFDR, double FDR_cutoff, double FC_cutoff) {
+        double[] FDR_interval = define_FDR_and_FC_cutoff_interval(gene2FCandFDR, "FDR", FDR_cutoff, FC_cutoff);
         double fdr_interval_width = FDR_interval[1]-FDR_interval[0];
-        double[] FC_interval = define_FDR_and_FC_cutoff_interval(gene2FCandFDR, "FC");
+        double[] FC_interval = define_FDR_and_FC_cutoff_interval(gene2FCandFDR, "FC", FDR_cutoff, FC_cutoff);
         double fc_interval_width = FC_interval[1]-FC_interval[0];
         gene2FCandFDR.forEach(_obj -> {
             if (_obj.fdr <= FDR_interval[1] && Math.abs(_obj.fc) >= FC_interval[0]) {
