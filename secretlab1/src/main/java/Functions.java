@@ -30,7 +30,9 @@ public class Functions {
         double upper_bound = type.equals("FDR") ? sorted_genes.get(idx_extended).fdr : sorted_genes.get(idx_extended).fc;
         double diff_to_center = type.equals("FDR") ? Math.abs(FDR_cutoff-upper_bound) : Math.abs(FC_cutoff-upper_bound); //centered interval around FDR_cutoff
         double lower_bound = type.equals("FDR") ? FDR_cutoff-diff_to_center : FC_cutoff-diff_to_center;
+        //FIXME URGENT check! intevals are wrong and negative especially FDR
         lower_bound = Math.max(0, lower_bound);
+        upper_bound = Math.min(1.0, upper_bound);
         double[] interval = {lower_bound, upper_bound}; //LATER maybe we have to round it to x.xxx
         return interval;
     }
