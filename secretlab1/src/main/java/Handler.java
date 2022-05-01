@@ -53,6 +53,7 @@ public class Handler {
 
         double FDR_cutoff = (double) params.valueOf("FDR");
         double FC_cutoff = (double) params.valueOf("FC");
+        System.out.println(FDR_cutoff + "  " + FC_cutoff);
         Functions.score_genes(new HashSet<>(r.geneMap.values()), FDR_cutoff, FC_cutoff);
 
         Enum expected_change = (Enum) params.valueOf("expectedChange");
