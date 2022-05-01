@@ -20,6 +20,7 @@ public class Handler {
         accepts("FDR").withRequiredArg().ofType(double.class).defaultsTo(0.01).describedAs("adjusted p-value cutoff");
         acceptsAll( asList( "h", "?" ), "show help" ).forHelp();
         accepts("html");
+        accepts("n").withRequiredArg().ofType(Integer.class).defaultsTo(5).describedAs("number of enrichment iterations");
         accepts("root").withRequiredArg().ofType(String.class).defaultsTo("biological_process").describedAs("GO DAG root");
         accepts("mapping").withRequiredArg().ofType(String.class).defaultsTo("/data/goa_human_ensembl.tsv").describedAs("ENSEMBL gene mapping");
         accepts("obo").withRequiredArg().ofType(String.class).defaultsTo("/data/go.obo").describedAs("GO DAG");
@@ -84,7 +85,8 @@ public class Handler {
 
 
         Result result = new Result((double) params.valueOf("FDR"));  //alternative
-        for (int i = 0; i < 5; i++) {
+        int numIter = (int) params.valueOf("n");
+        for (int i = 0; i < numIter; i++) {
             Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), 0.2);
             result.gather_runs(en.enrich(sampled, gos), false);
         }
@@ -92,7 +94,7 @@ public class Handler {
         double percent = Functions.extend_flex_set(new HashSet<>(r.geneMap.values())); //alternative, will do only if percent > 0,2
         System.out.println(percent);
         if (percent > 0.2) {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < numIter; i++) {
                 Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), percent);
                 result.gather_runs(en.enrich(sampled, gos), true);
             }
