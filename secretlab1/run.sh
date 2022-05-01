@@ -15,7 +15,7 @@ if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
 fi
 
 OPTIONS=
-LONGOPTS=outdir:,genelist:,obo:,mapping:,n:
+LONGOPTS=outdir:,genelist:,obo:,mapping:,root:,expectedChange:,n:,FDR:,FC:
 
 
 # -regarding ! and PIPESTATUS see above
@@ -30,9 +30,15 @@ if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
 fi
 # read getopt’s output this way to handle the quoting right:
 eval set -- "$PARSED"
+genelist=
 obo=
 mapping=
 outdir=
+n=
+FDR=
+FC=
+root=
+expectedChange=
 # now enjoy the options in order and nicely split until we see --
 while true; do
     case "$1" in
@@ -56,6 +62,22 @@ while true; do
         n="$2"
         shift 2
         ;;
+      --root)
+        root="$2"
+        shift 2
+        ;;
+      --FDR)
+        FDR="$2"
+        shift 2
+        ;;
+      --FC)
+        FC="$2"
+        shift 2
+        ;;
+      --expectedChange)
+        expectedChange="$2"
+        shift 2
+        ;;
       --)
         shift
         break
@@ -65,6 +87,11 @@ while true; do
         ;;
     esac
 done
+
+if [[ "$genelist" == "" ]] ; then
+    echo STDERR "no genelist provided. Program will exit."
+    exit 0
+fi
 
 # handle non-option arguments
 if [[ $# -ne 0 ]]; then
@@ -101,7 +128,28 @@ if [[ "$n" != "" ]]; then
   nCall="--n $n"
 fi
 
+rootCall=
+FDRCall=
+FCCall=
+expectedChangeCall=
+
+if [[ "$root" != "" ]]; then
+  rootCall="--root $root"
+fi
+
+if [[ "$FDR" != "" ]]; then
+  FDRCall="--FDR $FDR"
+fi
+
+if [[ "$FC" != "" ]]; then
+  FCCall="--FC $FC"
+fi
+
+if [[ "$expectedChange" != "" ]]; then
+  expectedChangeCall="--expectedChange $expectedChange"
+fi
+
 ## for docker users replace here podman with 'docker'
 ## for windows users replace here podman with 'winpty docker'
 podman run --pull=always $obo $mapping -v $outdir:/out/ -v $genelistPath:$genelistPath --rm -it hadziahmetovic/secretlab1 secretlab \
-  $genelistCall $oboCall $mappingCall $outdirCall $nCall
+  $genelistCall $oboCall $mappingCall $outdirCall $nCall $rootCall $FDRCall $FCCall $expectedChangeCall
