@@ -4,9 +4,6 @@ import java.util.stream.Collectors;
 
 public class Functions {
 
-    public static double FDR_cutoff = 0.05; //LATER where will it be defined?
-    public static double FC_cutoff = 1;
-
     /*
     calculates FDR and FC interval based on input distribution
     takes minimum of #genes to extend upper bound (either from sig genes up or from non-sig genes down),
@@ -29,9 +26,11 @@ public class Functions {
         }
         int idx_last_sig_gene = (int) gene2FDRandFC.stream().filter(_gene -> _gene.is_significant).count(); //1-based
         int idx_extended = idx_last_sig_gene + Math.min(num_one_percent_ontop , num_five_percent) - 1; //wieder 0-based
+        idx_extended = Math.min(idx_extended, sorted_genes.size()-1);
         double upper_bound = type.equals("FDR") ? sorted_genes.get(idx_extended).fdr : sorted_genes.get(idx_extended).fc;
         double diff_to_center = type.equals("FDR") ? Math.abs(FDR_cutoff-upper_bound) : Math.abs(FC_cutoff-upper_bound); //centered interval around FDR_cutoff
         double lower_bound = type.equals("FDR") ? FDR_cutoff-diff_to_center : FC_cutoff-diff_to_center;
+        lower_bound = Math.max(0, lower_bound);
         double[] interval = {lower_bound, upper_bound}; //LATER maybe we have to round it to x.xxx
         return interval;
     }
@@ -111,7 +110,7 @@ public class Functions {
         int idx_last_flex = sorted_genes.stream().
                 filter(_g -> _g.set == Gene.corresponding_set.FLEX || _g.set == Gene.corresponding_set.SIG_CORE).
                 collect(Collectors.toSet()).size();
-        Gaussian gauss = new Gaussian();  //LATER maybe adapt mean and sd
+        Gaussian gauss = new Gaussian(0, 5000);  //LATER maybe adapt mean and sd
         double z = sorted_genes.get(idx_last_flex).weighted_score;
         double bonus = 1.0;
         double penalty = 0.0;

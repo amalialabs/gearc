@@ -19,13 +19,15 @@ idx_last_flex <- nrow(subset(genes, genes$geneset=="SIG_CORE" | genes$geneset=="
 
 genes <- genes[order(genes$weighted_score, decreasing=TRUE),]
 
+SD <- 5000
+
 z <- genes[idx_last_flex, 3]
 bonus <- 1.0
 penalty <- 0.0
 idx_current_gene <- idx_last_flex
 while (bonus > penalty) {
     idx_current_gene <- idx_current_gene + 1
-    bonus <- dnorm(idx_current_gene)
+    bonus <- dnorm(idx_current_gene, 0, SD)
     penalty <- abs(genes[idx_current_gene, 3]-z)
 }
 
@@ -33,11 +35,12 @@ idx_profitable_extension <- idx_current_gene - 1
 
 
 ggplot(data.frame(x=c(0, nrow(genes))), aes(x)) +
-  stat_function(fun=dnorm, n=101, args=list(mean=0, sd=1)) + ylab("") +
+  stat_function(fun=dnorm, n=101, args=list(mean=0, sd=SD)) + ylab("") +
   scale_y_continuous(breaks=NULL) +
-  geom_point(aes(idx_profitable_extension, dnorm(idx_profitable_extension), col="red")) +
+  geom_point(aes(idx_profitable_extension, dnorm(idx_profitable_extension, 0, SD), col="red")) +
   xlab("distance") + ylab("bonus") +
-  geom_point(aes(0.2*nrow(genes), dnorm(0.2*nrow(genes)), col="blue"))
+  geom_point(aes(0.2*nrow(genes), dnorm(0.2*nrow(genes), 0, SD), col="blue")) +
+  scale_color_identity()
 ggsave(paste0(outdir, .Platform$file.sep, "flexset_extension_CURVE.pdf"), width=10, height=10)
 
 
