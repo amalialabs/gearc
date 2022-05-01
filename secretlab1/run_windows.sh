@@ -33,6 +33,7 @@ eval set -- "$PARSED"
 obo=
 mapping=
 outdir=
+n=
 # now enjoy the options in order and nicely split until we see --
 while true; do
     case "$1" in
@@ -50,6 +51,10 @@ while true; do
         ;;
       --mapping)
         mapping="$2"
+        shift 2
+        ;;
+      --n)
+        n="$2"
         shift 2
         ;;
       --)
@@ -93,8 +98,13 @@ if [[ "$outdir" != "" ]]; then
   outCall="--out /$outdirPath"
 fi
 
+if [[ "$n" != "" ]]; then
+  nCall="--n $n"
+fi
+
+
 winpty docker run --pull=always $genelist $obo $mapping $outTmp --rm -it hadziahmetovic/secretlab1 secretlab \
-  $genelistCall $oboCall $mappingCall $outCall
+  $genelistCall $oboCall $mappingCall $outCall $nCall
 
 
 # ATTENTION!!! git bash must have enabled symlinks, look in c/programdata/git/config for [core] -> symlinks=true
