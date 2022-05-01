@@ -75,6 +75,9 @@ fi
 
 mappingCall=
 oboCall=
+outCall=
+nCall=
+outTmp=
 
 if [[ "$mapping" != "" ]]; then
   mappingPath=$(echo $(readlink -f $mapping) | sed 's/\/\\/g')

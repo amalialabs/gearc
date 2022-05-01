@@ -74,6 +74,8 @@ fi
 
 mappingCall=
 oboCall=
+nCall=
+outdirCall=
 
 if [[ "$mapping" != "" ]]; then
   mappingPath=`readlink -f $mapping`;
