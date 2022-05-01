@@ -12,6 +12,8 @@ if (length(args)==0) {
 genes <- read.csv(args[1], sep="\t", header=TRUE)
 outdir <- args[2]
 
+genes <- subset(genes, genes$is_unclear == "false")
+
 genes <- genes[,c(1,4,5,7)]
 genes$geneset <- factor(genes$geneset, levels=c("SIG_CORE", "FLEX", "SIGNON_CORE"))
 
@@ -25,7 +27,7 @@ z <- genes[idx_last_flex, 3]
 bonus <- 1.0
 penalty <- 0.0
 idx_current_gene <- idx_last_flex
-while (bonus > penalty) {
+while (bonus > penalty && idx_current_gene < nrow(genes)) {
     idx_current_gene <- idx_current_gene + 1
     bonus <- dnorm(idx_current_gene, 0, 5000)
     penalty <- abs(genes[idx_current_gene, 3]-z)
