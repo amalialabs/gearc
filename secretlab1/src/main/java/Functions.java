@@ -61,8 +61,8 @@ public class Functions {
         double fdr_interval_width = FDR_interval[1]-FDR_interval[0];
         double[] FC_interval = define_FDR_and_FC_cutoff_interval(gene2FCandFDR, "FC", FDR_cutoff, FC_cutoff);
         double fc_interval_width = FC_interval[1]-FC_interval[0];
-        System.out.println(FDR_interval);
-        System.out.println(FC_interval);
+        System.out.println(FDR_interval[0] + "   " + FDR_interval[1]);
+        System.out.println(FC_interval[0] + "    " + FC_interval[1]);
         gene2FCandFDR.forEach(_obj -> {
             if (_obj.fdr <= FDR_interval[1] && Math.abs(_obj.fc) >= FC_interval[0]) {
                 double fdr_score = _obj.fdr<=FDR_interval[0] ? 1.0 : (_obj.fdr - FDR_interval[0]) / fdr_interval_width;
