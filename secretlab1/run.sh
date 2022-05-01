@@ -17,6 +17,22 @@ fi
 OPTIONS=
 LONGOPTS=outdir:,genelist:,obo:,mapping:,root:,expectedChange:,n:,FDR:,FC:
 
+usage () {
+    cat <<HELP_USAGE
+$0  --genelist <file> [--obo <file>] [--mapping <file>] [--n <integer>] [--root <GO root>] [--FDR <float>] [--FC <float>] [--expectedChange <LOW|AVERAGE|HIGH>]
+
+    --genelist <file>
+      The genelist should be in the format of gene_id, log2 fold change, and fdr.
+      If you have a different format you may use the reformatGeneList.sh script in
+      order to get the desired input format.
+
+    [--obo <file>]
+      obo file containing the GO DAG structure. Use only if you want to use a customized ontology.
+      Make sure the format corresponds to the obo specification as used by Gene Ontology.
+
+    [--mapping <file>]
+HELP_USAGE
+}
 
 # -regarding ! and PIPESTATUS see above
 # -temporarily store output to be able to check for errors
@@ -90,6 +106,7 @@ done
 
 if [[ "$genelist" == "" ]] ; then
     echo STDERR "no genelist provided. Program will exit."
+    usage
     exit 0
 fi
 
