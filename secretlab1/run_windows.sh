@@ -17,6 +17,49 @@ fi
 OPTIONS=
 LONGOPTS=outdir:,genelist:,obo:,mapping:,root:,expectedChange:,n:,FDR:,FC:
 
+usage () {
+    cat <<HELP_USAGE
+$0  --genelist <file> [--obo <file>] [--mapping <file>] [--n <integer>] [--root <GO root>] [--FDR <float>] [--FC <float>] [--expectedChange <LOW|AVERAGE|HIGH>]
+
+    --genelist <file>
+      The genelist should be in the format of gene_id, log2 fold change, and fdr.
+      If you have a different format you may use the reformatGeneList.sh script in
+      order to get the desired input format.
+
+    [--obo <file>]
+      obo file containing the GO DAG structure. Use only if you want to use a customized ontology.
+      Make sure the format corresponds to the obo specification as used by Gene Ontology.
+
+    [--mapping <file>]
+      mapping file containing Gene to GO Node mappings. Use only if you want to use a customized gene network.
+      The mapping extracted from Ensembl and external references to GO. File format is a tsv with the columns:
+      ensembl_id, hgnc, and pipe (|) separated GO_ids.
+
+
+    [--n <integer>]
+      set the number of iterations for the subsampling.
+
+
+    [--root <GO root>]
+      select the GO root for which the analysis should be performed. Includes biological_process,
+      molecular_function, and cellular_component.
+
+
+    [--FDR <float>]
+      select FDR cutoff for the classification of significance.
+
+
+    [--FC <float>]
+      select FC cutoff for the classification of significance.
+
+    [--expectedChange <LOW|AVERAGE|HIGH>]
+      default: AVERAGE. Select the parameter based on the expected differences in your data. Viral infections or stress
+      induction generally result in HIGH changes. AVERAGE changes are to be expected from time series or general changes
+      between different tissues. LOW changes are expected from minor alterations such as specific knock outs (KO) where only
+      specific networks are affected.
+HELP_USAGE
+}
+
 # -regarding ! and PIPESTATUS see above
 # -temporarily store output to be able to check for errors
 # -activate quoting/enhanced mode (e.g. by writing out “--options”)
@@ -89,12 +132,14 @@ done
 
 if [[ "$genelist" == "" ]] ; then
     echo STDERR "no genelist provided. Program will exit."
+    usage
     exit 0
 fi
 
 # handle non-option arguments
 if [[ $# -ne 0 ]]; then
     echo "$0: empty flag detected, is this intentional?!"
+    usage
     #exit 4
 fi
 
