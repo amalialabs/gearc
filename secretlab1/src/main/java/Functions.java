@@ -1,8 +1,12 @@
 import org.apache.commons.math3.analysis.function.Gaussian;
+
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Functions {
+
+    static DecimalFormat df = new DecimalFormat("#.###");
 
     /*
     calculates FDR and FC interval based on input distribution
@@ -12,28 +16,45 @@ public class Functions {
     @return double[] interval with lower and upper bound
      */
     public static double[] define_FDR_and_FC_cutoff_interval(Set<Gene> gene2FDRandFC, String type, double FDR_cutoff, double FC_cutoff) {
-        int num_sig_genes = (int) gene2FDRandFC.stream().filter(_gene -> _gene.is_significant).count();
-        int num_nonsig_genes = (int) gene2FDRandFC.stream().filter(_gene -> !_gene.is_significant).count();
+        Set<Gene> tmp = gene2FDRandFC.stream().filter(_g -> !_g.unclear).collect(Collectors.toSet());
+        int num_sig_genes = 0;
+        int num_nonsig_genes = 0;
+        if (type.equals("FDR")) {
+            num_sig_genes = (int) tmp.stream().filter(_gene -> !_gene.unclear && _gene.fdr<=FDR_cutoff).count();
+            num_nonsig_genes = (int) tmp.stream().filter(_gene -> !_gene.unclear && _gene.fdr>FDR_cutoff).count();
+        } else {
+            num_sig_genes = (int) tmp.stream().filter(_gene -> !_gene.unclear && Math.abs(_gene.fc)>=FC_cutoff).count();
+            num_nonsig_genes = (int) tmp.stream().filter(_gene -> !_gene.unclear && Math.abs(_gene.fc)<FC_cutoff).count();
+        }
         int num_one_percent_ontop = Math.max((int) (0.01 * num_sig_genes), 5); //LATER at least 5? more genes
         int num_five_percent = (int) (0.05 * num_nonsig_genes);
         ArrayList<Gene> sorted_genes;
         if (type.equals("FDR")) {
-            sorted_genes = (ArrayList<Gene>) gene2FDRandFC.stream().
-                    sorted(Comparator.comparing(Gene::get_FDR_value)).collect(Collectors.toList()); //TODO check if it is really ascending
+            sorted_genes = (ArrayList<Gene>) tmp.stream().
+                    sorted(Comparator.comparing(Gene::get_FDR_value)).collect(Collectors.toList());
         } else { //FC
-            sorted_genes = (ArrayList<Gene>) gene2FDRandFC.stream().
-                    sorted(Comparator.comparing(Gene::get_FC_value)).collect(Collectors.toList());
+            sorted_genes = (ArrayList<Gene>) tmp.stream().sorted(Comparator.comparing(Gene::get_abs_FC_value)).
+                            collect(Collectors.toList());
+            Collections.reverse(sorted_genes);
         }
-        int idx_last_sig_gene = (int) gene2FDRandFC.stream().filter(_gene -> _gene.is_significant).count(); //1-based
-        int idx_extended = idx_last_sig_gene + Math.min(num_one_percent_ontop , num_five_percent) - 1; //wieder 0-based
-        idx_extended = Math.min(idx_extended, sorted_genes.size()-1);
-        double upper_bound = type.equals("FDR") ? sorted_genes.get(idx_extended).fdr : sorted_genes.get(idx_extended).fc;
-        double diff_to_center = type.equals("FDR") ? Math.abs(FDR_cutoff-upper_bound) : Math.abs(FC_cutoff-upper_bound); //centered interval around FDR_cutoff
-        double lower_bound = type.equals("FDR") ? FDR_cutoff-diff_to_center : FC_cutoff-diff_to_center;
-        //FIXME URGENT check! intevals are wrong and negative especially FDR
-        lower_bound = Math.max(0, lower_bound);
-        upper_bound = Math.min(1.0, upper_bound);
-        double[] interval = {lower_bound, upper_bound}; //LATER maybe we have to round it to x.xxx
+        int idx_last_sig_gene = num_sig_genes-1;
+        int idx_extended = idx_last_sig_gene + Math.min(num_one_percent_ontop , num_five_percent);
+
+        double diff_to_center = type.equals("FDR") ? Math.abs(FDR_cutoff-sorted_genes.get(idx_extended).fdr) : Math.abs(FC_cutoff-sorted_genes.get(idx_extended).fc); //centered interval around cutoff
+        double upper_bound = type.equals("FDR") ? sorted_genes.get(idx_extended).fdr : FC_cutoff+diff_to_center;
+        double lower_bound = type.equals("FDR") ? FDR_cutoff-diff_to_center : sorted_genes.get(idx_extended).fc;
+        if (type.equals("FDR")) {
+            assert lower_bound > 0.0 && upper_bound <= 1.0 && upper_bound > FDR_cutoff && lower_bound < FDR_cutoff;
+        } else {
+            assert lower_bound > 0.0 && upper_bound > FC_cutoff && lower_bound < FC_cutoff;
+        }
+        String temp = df.format(lower_bound);
+        temp = temp.replace(",", ".");
+        lower_bound = Double.parseDouble(temp);
+        temp = df.format(upper_bound);
+        temp = temp.replace(",", ".");
+        upper_bound = Double.parseDouble(temp);
+        double[] interval = {lower_bound, upper_bound};
         return interval;
     }
 

@@ -42,6 +42,8 @@ public class Gene {
         return this.fc;
     }
 
+    public double get_abs_FC_value() {return Math.abs(this.fc);}
+
     public double get_weighted_score() {
         return this.weighted_score;
     }
