@@ -34,9 +34,10 @@ nodes_standard$type <- "standard"
 nodes_standard <- subset(nodes_standard, nodes_standard$FDR <= fdr)
 
 n <- rbind(nodes, nodes_ext, nodes_standard)
+mn <- max(-log10(n$FDR))
 
-
-ggplot(n, aes(x=type, y=-log10(FDR)), fill=type) + geom_boxplot() + ylab("-log10(FDR)") + xlab("")
+ggplot(n, aes(x=type, y=-log10(FDR)), fill=type) + geom_boxplot() + ylab("-log10(FDR)") +
+	xlab("") + ylim(0,mn)
 ggsave(paste0(outdir, .Platform$file.sep, "gos_standard_vs_robust_vs_extended_BARPLOT.pdf"), width=10, height=10)
 
 

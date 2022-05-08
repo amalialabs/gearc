@@ -37,8 +37,8 @@ idx_profitable_extension <- idx_current_gene - 1
 
 
 ggplot(data.frame(x=c(0, nrow(genes))), aes(x)) +
-  stat_function(fun=dnorm, n=101, args=list(mean=0, sd=SD)) + ylab("") +
-  scale_y_continuous(breaks=NULL) +
+  stat_function(fun=dnorm, n=101, args=list(mean=0, sd=SD)) +
+  #scale_y_continuous(breaks=NULL) +
   geom_point(aes(idx_profitable_extension, dnorm(idx_profitable_extension, 0, SD), col="red")) +
   xlab("distance") + ylab("bonus") +
   geom_point(aes(0.2*nrow(genes), dnorm(0.2*nrow(genes), 0, SD), col="blue")) +

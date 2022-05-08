@@ -30,7 +30,9 @@ n <- rbind(nodes, nodes_ext)
 
 
 
-ggplot(n, aes(x=-log10(mean), y=-log10(quant)), fill=type) + geom_jitter() + ylab("-log10(FDR 95%)") + xlab("-log10(FDR mean)")
+ggplot(n, aes(x=-log10(mean), y=-log10(quant)), fill=type) + geom_jitter() +
+	ylab("-log10(0.95 FDR quantile)") + xlab("-log10(mean FDR)") +
+	geom_abline(col="red")
 ggsave(paste0(outdir, .Platform$file.sep, "gos_mean_vs_quantile_JITTER.pdf"), width=10, height=10)
 
 

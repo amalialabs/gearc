@@ -16,5 +16,6 @@ outdir <- args[2]
 
 genes <- subset(genes, genes$is_unclear == "false")
 
-ggplot(genes, aes(x=geneset, fill=geneset)) + geom_bar() + ylab("# genes") + xlab("")
+ggplot(genes, aes(x=geneset, fill=geneset)) + geom_bar() + ylab("# genes") + xlab("") +
+	theme(legend.position="none")
 ggsave(paste0(outdir, .Platform$file.sep, "genes_categories_BARPLOT.pdf"), width=10, height=10)

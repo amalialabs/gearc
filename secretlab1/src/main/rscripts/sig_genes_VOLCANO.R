@@ -12,8 +12,6 @@ if (length(args)==0) {
 
 
 genes <- read.csv(args[1], sep="\t", header=TRUE)
-#fdr <- args[2]
-#fc <- args[3]
 outdir <- args[2]
 
 genes <- subset(genes, genes$is_unclear == "false")

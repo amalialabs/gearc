@@ -54,7 +54,7 @@ num_first_gene <- max(num_sig_genes - num_five_percent_nonsig, 1)
 
 ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
     geom_hline(yintercept=idx, col="red") + geom_point(aes(num_first_gene, genes[num_first_gene, 2], col="blue")) +
-    geom_point(aes(num_last_gene, genes[num_last_gene, 2], col="blue"))
+    geom_point(aes(num_last_gene, genes[num_last_gene, 2], col="blue")) + scale_color_identity()
 ggsave(paste0(outdir, .Platform$file.sep, "fc_cutoff_finding_five_percent_nonsiggenes_ontop_CUMULATIVE.pdf"), width=10, height=10)
 
 

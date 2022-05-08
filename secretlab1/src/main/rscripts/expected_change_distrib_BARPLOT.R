@@ -17,7 +17,7 @@ genes <- subset(genes, genes$is_unclear=="false")
 
 genes <- genes[,c(1,2)]
 
-genes$geneset <- factor(genes$geneset, levels=c("SIG_CORE", "NONSIG_CORE", "FLEX"))
+genes$geneset <- factor(genes$geneset, levels=c("SIG_CORE", "SIGNON_CORE", "FLEX"))
 
 
 ggplot(genes, aes(geneset)) + geom_bar() + ylab("# genes") + xlab("expected change distribution")

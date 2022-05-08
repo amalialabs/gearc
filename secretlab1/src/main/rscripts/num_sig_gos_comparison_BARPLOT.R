@@ -37,7 +37,7 @@ g <- subset(g, g$FDR <= 0.05)
 g$type <- factor(g$type, levels=c("standard", "robust", "robust + extended"))
 
 
-ggplot(g, aes(type)) + geom_bar() + ylab("# genes") + xlab("enrichment type")
+ggplot(g, aes(type)) + geom_bar(width=0.5) + ylab("# genes") + xlab("enrichment type")
 ggsave(paste0(outdir, .Platform$file.sep, "num_sig_gos_comparison_BARPLOT.pdf"), width=10, height=10)
 
 
