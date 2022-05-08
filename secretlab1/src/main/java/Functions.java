@@ -40,9 +40,9 @@ public class Functions {
         int idx_last_sig_gene = num_sig_genes-1;
         int idx_extended = idx_last_sig_gene + Math.min(num_one_percent_ontop , num_five_percent);
 
-        double diff_to_center = type.equals("FDR") ? Math.abs(FDR_cutoff-sorted_genes.get(idx_extended).fdr) : Math.abs(FC_cutoff-sorted_genes.get(idx_extended).fc); //centered interval around cutoff
+        double diff_to_center = type.equals("FDR") ? Math.abs(FDR_cutoff-sorted_genes.get(idx_extended).fdr) : Math.abs(FC_cutoff-Math.abs(sorted_genes.get(idx_extended).fc)); //centered interval around cutoff
         double upper_bound = type.equals("FDR") ? sorted_genes.get(idx_extended).fdr : FC_cutoff+diff_to_center;
-        double lower_bound = type.equals("FDR") ? FDR_cutoff-diff_to_center : sorted_genes.get(idx_extended).fc;
+        double lower_bound = type.equals("FDR") ? FDR_cutoff-diff_to_center : Math.abs(sorted_genes.get(idx_extended).fc);
         if (type.equals("FDR")) {
             assert lower_bound > 0.0 && upper_bound <= 1.0 && upper_bound > FDR_cutoff && lower_bound < FDR_cutoff;
         } else {
