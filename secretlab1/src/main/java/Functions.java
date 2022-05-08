@@ -91,7 +91,7 @@ public class Functions {
                 double fdr_score = _obj.fdr<=FDR_interval[0] ? 1.0 : (_obj.fdr - FDR_interval[0]) / fdr_interval_width;
                 double fc_score = Math.abs(_obj.fc)>=FC_interval[1] ? 1.0 : (Math.abs(_obj.fc) - FC_interval[0]) / fc_interval_width;
                 _obj.weighted_score = 0.5*(fdr_score+fc_score);
-                System.out.println(fdr_score + " " + fc_score + " " + _obj.weighted_score);
+                System.out.println(_obj.weighted_score);
             } else {
                 _obj.weighted_score = 0.0;
             }
