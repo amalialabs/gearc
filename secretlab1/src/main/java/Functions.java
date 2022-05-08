@@ -94,6 +94,7 @@ public class Functions {
             } else {
                 _obj.weighted_score = 0.0;
             }
+            System.out.println(_obj.weighted_score);
         });
         return gene2FCandFDR;
     }
