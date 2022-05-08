@@ -91,7 +91,6 @@ public class Functions {
                 double fdr_score = _obj.fdr<=FDR_interval[0] ? 1.0 : (_obj.fdr - FDR_interval[0]) / fdr_interval_width;
                 double fc_score = Math.abs(_obj.fc)>=FC_interval[1] ? 1.0 : (Math.abs(_obj.fc) - FC_interval[0]) / fc_interval_width;
                 _obj.weighted_score = 0.5*(fdr_score+fc_score);
-                System.out.println(_obj.weighted_score);
             } else {
                 _obj.weighted_score = 0.0;
             }
@@ -132,16 +131,16 @@ public class Functions {
      */
     public static double extend_flex_set(HashSet<Gene> genes2sets) {
         ArrayList<Gene> sorted_genes = (ArrayList<Gene>) genes2sets.stream().
-                sorted(Comparator.comparing(Gene::get_weighted_score)).collect(Collectors.toList()); //TODO chech if ascending
+                sorted(Comparator.comparing(Gene::get_weighted_score)).collect(Collectors.toList());
         int idx_last_flex = sorted_genes.stream().
                 filter(_g -> _g.set == Gene.corresponding_set.FLEX || _g.set == Gene.corresponding_set.SIG_CORE).
-                collect(Collectors.toSet()).size();
-        Gaussian gauss = new Gaussian(0, 5000);  //LATER maybe adapt mean and sd
+                collect(Collectors.toSet()).size()-1;
+        Gaussian gauss = new Gaussian(0, 3000);  //LATER maybe adapt mean and sd
         double z = sorted_genes.get(idx_last_flex).weighted_score;
         double bonus = 1.0;
         double penalty = 0.0;
         int idx_current_gene = idx_last_flex;
-        while (bonus >= penalty) {
+        while (bonus > penalty) {
             idx_current_gene = idx_current_gene + 1;
             bonus = gauss.value(idx_current_gene);
             penalty = Math.abs(sorted_genes.get(idx_current_gene).weighted_score-z);
