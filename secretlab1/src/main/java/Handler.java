@@ -80,7 +80,7 @@ public class Handler {
         int numGenesTotal = genesTotal.size();
         int deGenes = genesSignif.size();
         int numGenesTotalFiltered = genesTotalFiltered.size();
-        System.out.println(numGenesTotalFiltered + "\t" + deGenes);
+        System.out.println(numGenesTotalFiltered + "\t" + deGenes); //TODO
         Enrichment en = new Enrichment(numGenesTotalFiltered, deGenes);
 
         Set<Gene> allGenes = new HashSet<>();
@@ -97,7 +97,7 @@ public class Handler {
         }
 
         double percent = Functions.extend_flex_set(new HashSet<>(r.geneMap.values())); //alternative, will do only if percent > 0,2
-        System.out.println(percent);
+        System.out.println(percent);       //TODO
         if (percent > 0.2) {
             for (int i = 0; i < numIter; i++) {
                 Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), percent);
