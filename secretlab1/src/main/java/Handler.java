@@ -44,7 +44,7 @@ public class Handler {
 
         double FDR_cutoff = (double) params.valueOf("FDR");
         double FC_cutoff = (double) params.valueOf("FC");
-        System.out.println(FDR_cutoff + "  " + FC_cutoff);
+        System.out.println("FDR " + FDR_cutoff + "  FC " + FC_cutoff);
 
         GO gos = null;
         File obo = new File((String) params.valueOf("obo"));
@@ -80,7 +80,7 @@ public class Handler {
         int numGenesTotal = genesTotal.size();
         int deGenes = genesSignif.size();
         int numGenesTotalFiltered = genesTotalFiltered.size();
-        System.out.println(numGenesTotalFiltered + "\t" + deGenes); //TODO
+        System.out.println("#total genes " + numGenesTotalFiltered + "\tdiff genes " + deGenes); //TODO
         Enrichment en = new Enrichment(numGenesTotalFiltered, deGenes);
 
         Set<Gene> allGenes = new HashSet<>();
@@ -97,7 +97,7 @@ public class Handler {
         }
 
         double percent = Functions.extend_flex_set(new HashSet<>(r.geneMap.values())); //alternative, will do only if percent > 0,2
-        System.out.println(percent);       //TODO
+        System.out.println("extending flex set with " + Functions.df.format(percent)+  "%");       //TODO
         if (percent > 0.2) {
             for (int i = 0; i < numIter; i++) {
                 Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), percent);
