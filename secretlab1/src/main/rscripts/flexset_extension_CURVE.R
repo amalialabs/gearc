@@ -21,28 +21,35 @@ idx_last_flex <- nrow(subset(genes, genes$geneset=="SIG_CORE" | genes$geneset=="
 
 genes <- genes[order(genes$weighted_score, decreasing=TRUE),]
 
-SD <- 5000
+nsig <- nrow(subset(genes, genes$geneset=="SIG_CORE"))
+nflex <- 0.2*nrow(subset(genes, genes$geneset=="FLEX"))
 
-z <- genes[idx_last_flex, 3]
+
+#SD <- 3000
+SD <- 0.8*nrow(genes)/6
+gauss_mean <- nsig
+
+z <- genes[idx_last_flex, 3] + 0.000001
 bonus <- 1.0
 penalty <- 0.0
 idx_current_gene <- idx_last_flex
 while (bonus > penalty && idx_current_gene < nrow(genes)) {
     idx_current_gene <- idx_current_gene + 1
-    bonus <- dnorm(idx_current_gene, 0, 5000)
-    penalty <- abs(genes[idx_current_gene, 3]-z)
+    bonus <- dnorm(idx_current_gene, gauss_mean, SD)
+    penalty <- abs(genes[idx_current_gene, 3]-z)  * (idx_current_gene-idx_last_flex)
 }
 
 idx_profitable_extension <- idx_current_gene - 1
 
-
 ggplot(data.frame(x=c(0, nrow(genes))), aes(x)) +
-  stat_function(fun=dnorm, n=101, args=list(mean=0, sd=SD)) +
-  #scale_y_continuous(breaks=NULL) +
-  geom_point(aes(idx_profitable_extension, dnorm(idx_profitable_extension, 0, SD), col="red")) +
+  stat_function(fun=dnorm, n=101, args=list(mean=gauss_mean, sd=SD)) +
   xlab("distance") + ylab("bonus") +
-  geom_point(aes(0.2*nrow(genes), dnorm(0.2*nrow(genes), 0, SD), col="blue")) +
-  scale_color_identity()
+  geom_point(aes(nsig, dnorm(nsig, gauss_mean, SD), col="blue")) +
+  scale_color_identity() +
+  geom_point(aes(nflex+nsig, dnorm(nflex+nsig, gauss_mean, SD), col="yellow")) +
+  geom_point(aes(nsig+idx_last_flex, dnorm(nsig+idx_last_flex, gauss_mean, SD), col="orange")) +
+  geom_point(aes(idx_profitable_extension, dnorm(idx_profitable_extension, gauss_mean, SD), col="red"))
+
 ggsave(paste0(outdir, .Platform$file.sep, "flexset_extension_CURVE.pdf"), width=10, height=10)
 
 

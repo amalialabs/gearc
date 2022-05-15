@@ -133,17 +133,22 @@ public class Functions {
         ArrayList<Gene> sorted_genes = (ArrayList<Gene>) genes2sets.stream().
                 sorted(Comparator.comparing(Gene::get_weighted_score)).collect(Collectors.toList());
         int idx_last_flex = sorted_genes.stream().
-                filter(_g -> _g.set == Gene.corresponding_set.FLEX || _g.set == Gene.corresponding_set.SIG_CORE).
+                filter(_g -> _g.set == Gene.corresponding_set.FLEX).
                 collect(Collectors.toSet()).size()-1;
-        Gaussian gauss = new Gaussian(0, 3000);  //LATER maybe adapt mean and sd
-        double z = sorted_genes.get(idx_last_flex).weighted_score;
+        int nsig = (int) sorted_genes.stream().filter(_g -> _g.set==Gene.corresponding_set.SIG_CORE).count();
+
+        int gauss_mean = nsig;
+        int SD = (int) Math.round(0.8*sorted_genes.size()/6);
+        Gaussian gauss = new Gaussian(nsig, SD);
+
+        double z = sorted_genes.get(idx_last_flex).weighted_score + 0.000001;
         double bonus = 1.0;
         double penalty = 0.0;
         int idx_current_gene = idx_last_flex;
-        while (bonus > penalty) {
+        while (bonus > penalty && idx_current_gene < sorted_genes.size()-1) {
             idx_current_gene = idx_current_gene + 1;
             bonus = gauss.value(idx_current_gene);
-            penalty = Math.abs(sorted_genes.get(idx_current_gene).weighted_score-z);
+            penalty = Math.abs(sorted_genes.get(idx_current_gene).weighted_score-z) * (idx_current_gene-idx_last_flex);
         }
         int idx_profitable_extension = idx_current_gene - 1;
         double new_percentage = (idx_profitable_extension*1.0) / sorted_genes.size();
