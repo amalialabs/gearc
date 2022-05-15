@@ -17,7 +17,7 @@ genes <- subset(genes, genes$is_unclear == "false")
 genes <- genes[,c(1,4,5,7)]
 genes$geneset <- factor(genes$geneset, levels=c("SIG_CORE", "FLEX", "SIGNON_CORE"))
 
-idx_last_flex <- nrow(subset(genes, genes$geneset=="SIG_CORE" | genes$geneset=="FLEX"))
+idx_last_flex <- nrow(subset(genes, genes$geneset=="FLEX"))
 
 genes <- genes[order(genes$weighted_score, decreasing=TRUE),]
 

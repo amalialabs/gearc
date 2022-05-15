@@ -141,7 +141,7 @@ public class Functions {
         int SD = (int) Math.round(0.8*sorted_genes.size()/6);
         Gaussian gauss = new Gaussian(nsig, SD);
 
-        double z = sorted_genes.get(idx_last_flex).weighted_score + 0.000001;
+        double z = sorted_genes.get(idx_last_flex).weighted_score + 0.000001; //LATER can change to 0.01 and multiply gauss with 10000
         double bonus = 1.0;
         double penalty = 0.0;
         int idx_current_gene = idx_last_flex;
