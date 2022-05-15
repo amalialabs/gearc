@@ -1,10 +1,7 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Plots {
 
@@ -19,6 +16,9 @@ public class Plots {
     Result res;
     HashMap<Node, Double> gos_standard;
 
+    String root;
+    List<String> plotList;
+
     DecimalFormat df = new DecimalFormat("0.####E0");
 
     public Plots(String output_dir, Collection<Gene> genes, Collection<Node> gos, double fdr, double fc, Result res, HashMap<Node, Double> gos_standard) {
@@ -32,8 +32,51 @@ public class Plots {
         this.gotable_standard = output_dir + File.separator + "gos2fdrs_standard.table";
         this.res = res;
         this.gos_standard = gos_standard;
+
+        this.root = new File("/secretlab1/src/main/resources/rscripts").exists() ? "/secretlab1/src/main/resources/rscripts" :
+                getClass().getClassLoader().getResource("/rscripts/").toString();
+        System.out.println(root);
+
+        try {
+            root = output_dir;
+            plotList = Arrays.asList(//TODO replace with resource file scanner
+                    "unclear_genes_BARPLOT.R",
+                    "sig_genes_VOLCANO.R",
+                    "gene_categories_BARPLOT.R",
+                    "genes_scored_CUMULATIVE.R",
+                    "genes_sets_PIECHART.R",
+                    "gos_fdr_mean_quantile_SCATTER.R",
+                    "selected_GOs_FDR_BOXPLOT.R",
+                    "selected_GOs_rob_vs_extend_BOXPLOT.R",
+                    "gos_quantile_vs_mean_JITTER.R",
+                    "gos_standard_vs_robust_vs_extended_BARPLOT.R",
+                    "gos_standard_vs_robust_vs_extended_VENN.R",
+                    "fdr_cutoff_finding_CUMULATIVE.R",
+                    "fc_cutoff_finding_CUMULATIVE.R",
+                    "flexset_extension_CURVE.R",
+                    "num_sig_gos_comparison_BARPLOT.R",
+                    "expected_change_distrib_BARPLOT.R");
+
+            preprocess();
+        } catch (Exception e) {
+            throw new RuntimeException("", e);
+        }
+
+
         createGeneTable(genes);
         createGOTable(gos);
+    }
+
+    private void preprocess(){
+        for (String filename : plotList) {
+            try (PrintWriter pw = new PrintWriter(new File(out_dir, filename))) {
+                String result = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("rscripts/" + filename)))
+                        .lines().collect(Collectors.joining("\n"));
+                pw.write(result + "\n");
+            } catch (IOException e) {
+                throw new RuntimeException("", e);
+            }
+        }
     }
 
     //LATER change all script params to reading automatically from /out/ in build so that all gene/go tables are not a param anymore
@@ -97,7 +140,7 @@ public class Plots {
     }
 
     public void unclear_genes_BARPLOT(Collection<Gene> genes) {
-        String rcommand = "/secretlab1/src/main/rscripts/unclear_genes_BARPLOT.R";
+        String rcommand = root + File.separator + "unclear_genes_BARPLOT.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
             p.waitFor();
@@ -109,7 +152,7 @@ public class Plots {
     }
 
     public void sig_genes_VOLCANO() {
-        String rcommand = "/secretlab1/src/main/rscripts/sig_genes_VOLCANO.R";
+        String rcommand = root + File.separator + "sig_genes_VOLCANO.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
             //Process p = new ProcessBuilder("Rscript", rcommand, String.valueOf(this.FDR_cutoff), String.valueOf(this.FC_cutoff), genetable_path, out_dir).inheritIO().start();
@@ -122,7 +165,7 @@ public class Plots {
     }
 
     public void gene_categories_BARPLOT() {
-        String rcommand = "/secretlab1/src/main/rscripts/gene_categories_BARPLOT.R";
+        String rcommand = root + File.separator + "gene_categories_BARPLOT.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
             p.waitFor();
@@ -134,7 +177,7 @@ public class Plots {
     }
 
     public void weighted_genes_CUMULATIVE() {
-        String rcommand = "/secretlab1/src/main/rscripts/genes_scored_CUMULATIVE.R";
+        String rcommand = root + File.separator + "genes_scored_CUMULATIVE.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
             p.waitFor();
@@ -146,7 +189,7 @@ public class Plots {
     }
 
     public void genes_set_PIECHART() {
-        String rcommand = "/secretlab1/src/main/rscripts/genes_sets_PIECHART.R";
+        String rcommand = root + File.separator + "genes_sets_PIECHART.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
             p.waitFor();
@@ -158,7 +201,7 @@ public class Plots {
     }
 
     public void go_fdrs_mean_vs_quantile_SCATTER() {
-        String rcommand = "/secretlab1/src/main/rscripts/gos_fdr_mean_quantile_SCATTER.R";
+        String rcommand = root + File.separator + "gos_fdr_mean_quantile_SCATTER.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, String.valueOf(0.95), out_dir).inheritIO().start();
             p.waitFor();
@@ -170,7 +213,7 @@ public class Plots {
     }
 
     public void selected_gos_fdr_distrib_BOXPLOT() {
-        String rcommand = "/secretlab1/src/main/rscripts/selected_GOs_FDR_BOXPLOT.R";
+        String rcommand = root + File.separator + "selected_GOs_FDR_BOXPLOT.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, out_dir).inheritIO().start();
             p.waitFor();
@@ -182,7 +225,7 @@ public class Plots {
     }
 
     public void selected_gos_rob_vs_extend_BOXPLOT() {
-        String rcommand = "/secretlab1/src/main/rscripts/selected_GOs_rob_vs_extend_BOXPLOT.R";
+        String rcommand = root + File.separator + "selected_GOs_rob_vs_extend_BOXPLOT.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, out_dir).inheritIO().start();
             p.waitFor();
@@ -194,7 +237,7 @@ public class Plots {
     }
 
     public void gos_quantile_vs_mean_fdr_JITTER() {
-        String rcommand = "/secretlab1/src/main/rscripts/gos_quantile_vs_mean_JITTER.R";
+        String rcommand = root + File.separator + "gos_quantile_vs_mean_JITTER.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, out_dir).inheritIO().start();
             p.waitFor();
@@ -206,7 +249,7 @@ public class Plots {
     }
 
     public void gos_standard_vs_robust_vs_extended_BARPLOT() {
-        String rcommand = "/secretlab1/src/main/rscripts/gos_standard_vs_robust_vs_extended_BARPLOT.R";
+        String rcommand = root + File.separator + "gos_standard_vs_robust_vs_extended_BARPLOT.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, gotable_standard, out_dir).inheritIO().start();
             p.waitFor();
@@ -218,7 +261,7 @@ public class Plots {
     }
 
     public void gos_standard_vs_robust_vs_extended_VENN() {
-        String rcommand = "/secretlab1/src/main/rscripts/gos_standard_vs_robust_vs_extended_VENN.R";
+        String rcommand = root + File.separator + "gos_standard_vs_robust_vs_extended_VENN.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, gotable_standard, out_dir).inheritIO().start();
             p.waitFor();
@@ -230,7 +273,7 @@ public class Plots {
     }
 
     public void fdr_cutoff_finding_CUMULATIVE() {
-        String rcommand = "/secretlab1/src/main/rscripts/fdr_cutoff_finding_CUMULATIVE.R";
+        String rcommand = root + File.separator + "fdr_cutoff_finding_CUMULATIVE.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
             p.waitFor();
@@ -243,7 +286,7 @@ public class Plots {
 
     public void fc_cutoff_finding_CUMULATIVE() {
         //LATER check y-axe >= 0
-        String rcommand = "/secretlab1/src/main/rscripts/fc_cutoff_finding_CUMULATIVE.R";
+        String rcommand = root + File.separator + "fc_cutoff_finding_CUMULATIVE.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
             p.waitFor();
@@ -255,7 +298,7 @@ public class Plots {
     }
 
     public void flexset_extension_CURVE() {
-        String rcommand = "/secretlab1/src/main/rscripts/flexset_extension_CURVE.R";
+        String rcommand = root + File.separator + "flexset_extension_CURVE.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
             p.waitFor();
@@ -267,7 +310,7 @@ public class Plots {
     }
 
     public void num_sig_gos_BARPLOT() {
-        String rcommand = "/secretlab1/src/main/rscripts/num_sig_gos_comparison_BARPLOT.R";
+        String rcommand = root + File.separator + "num_sig_gos_comparison_BARPLOT.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, gotable_path, gotable_extend_path, gotable_standard, out_dir).inheritIO().start();
             p.waitFor();
@@ -279,7 +322,7 @@ public class Plots {
     }
 
     public void expected_change_BARPLOT() {
-        String rcommand = "/secretlab1/src/main/rscripts/expected_change_distrib_BARPLOT.R";
+        String rcommand = root + File.separator + "expected_change_distrib_BARPLOT.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
             p.waitFor();
