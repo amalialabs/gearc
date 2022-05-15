@@ -138,8 +138,8 @@ public class Functions {
         int nsig = (int) sorted_genes.stream().filter(_g -> _g.set==Gene.corresponding_set.SIG_CORE).count();
 
         int gauss_mean = nsig;
-        int SD = (int) Math.round(0.96*sorted_genes.size()/7);  //LATER possible too:0.96*numgenes/7 7=#sd weil einseitig, kommt aufs selbe raus
-        Gaussian gauss = new Gaussian(nsig, SD);
+        int SD = (int) Math.round(0.997*sorted_genes.size()/7);
+        Gaussian gauss = new Gaussian(gauss_mean, SD);
 
         double z = sorted_genes.get(idx_last_flex).weighted_score + 0.000001; //LATER can change to 0.01 and multiply gauss with 10000
         double bonus = 1.0;

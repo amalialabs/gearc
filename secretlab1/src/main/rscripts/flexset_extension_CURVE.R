@@ -26,7 +26,7 @@ nflex <- 0.2*nrow(subset(genes, genes$geneset=="FLEX"))
 
 
 #SD <- 3000
-SD <- 0.96*nrow(genes)/7
+SD <- 0.997*nrow(genes)/7
 gauss_mean <- nsig
 
 z <- genes[idx_last_flex, 3] + 0.000001
