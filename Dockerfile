@@ -25,6 +25,6 @@ ADD data data/
 RUN cd secretlab1 && mvn clean package
 RUN cd /secretlab1/target && mkdir libs && for file in `find /root/.m2/repository/ -name "*.jar"`; do cp $file libs/; done
 
-RUN echo -e '#!/bin/bash \n java -cp "/secretlab1/target/libs/*":/secretlab1/target/ Handler "$@"' > /usr/bin/secretlab && \
+#RUN echo -e '#!/bin/bash \n java -cp "/secretlab1/target/libs/*":/secretlab1/target/ Handler "$@"' > /usr/bin/secretlab && \
+RUN echo -e '#!/bin/bash \n java -jar /secretlab1/target/secretlab-1-1.0-SNAPSHOT.jar "$@"' > /usr/bin/secretlab && \
     chmod +x /usr/bin/secretlab
-
