@@ -17,7 +17,7 @@ num_cols2 <- ncol(nodes_ext)
 
 nodes <- nodes[order(nodes[,num_cols]),]
 nodes <- nodes[1:2,]
-nodes_ext <- subset(ne, ne$V1 %in% nodes$V1)
+nodes_ext <- subset(nodes_ext, nodes_ext$V1 %in% nodes$V1)
 nodes_ext <- nodes_ext[1:2,]
 
 nodes <- reshape2::melt(nodes, id.vars=c(1,2), variable.name="FDR")

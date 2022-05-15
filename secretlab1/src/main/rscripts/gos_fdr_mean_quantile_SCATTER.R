@@ -19,7 +19,7 @@ c <- paste0("V", (round(((num_cols-2)*quantile))+2))
 
 gos$mean <- apply(gos[,3:num_cols], 1, mean)
 
-ggplot(gos, aes_string(x=-log10("mean"), y=-log10(c))) + geom_jitter() +
+ggplot(gos, aes_string(x="mean", y=c)) + geom_jitter() +
 ylab(paste0("-log10(", quantile , " FDR quantile)")) + xlab("-log10(mean FDR)") +
 	geom_abline(col="red", lty=2)
 ggsave(paste0(outdir, .Platform$file.sep, "gos_mean_vs_quantile_fdr_SCATTER.pdf"), width=10, height=10)

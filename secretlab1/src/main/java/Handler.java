@@ -97,7 +97,7 @@ public class Handler {
         }
 
         double percent = Functions.extend_flex_set(new HashSet<>(r.geneMap.values())); //alternative, will do only if percent > 0,2
-        System.out.println("extending flex set with " + Functions.df.format(percent)+  "%");       //TODO
+        System.out.println("extending flex set up to " + Functions.df.format(percent*100)+  "%");       //TODO
         if (percent > 0.2) {
             for (int i = 0; i < numIter; i++) {
                 Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), percent);
