@@ -2,6 +2,7 @@
 #/usr/bin/Rscript
 
 library(ggplot2)
+library(gridExtra)
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -27,34 +28,80 @@ num_five_percent_nonsig <- round(0.05 * num_nonsig_genes)
 
 num_extend <- min(num_one_percent_sig, num_five_percent_nonsig)
 
-num_last_gene <- min(num_sig_genes + num_extend, nrow(genes))
-num_diff_to_center <- num_last_gene - num_sig_genes
-num_first_gene <- max(num_sig_genes - num_extend, 1)
+genes$absfc <- abs(genes$log2FC)
+genes <- genes[order(genes$absfc, decreasing=TRUE),]
+fcext <- genes[num_sig_genes+num_extend,4]
+
+percent_extm <- nrow(subset(genes, genes$log2FC<=-fcext))/nrow(genes)
+tmp <- subset(genes, genes$log2FC<=-fcext)
+extmfc <- tmp[nrow(tmp), 2]
+percent_ext <- nrow(subset(genes, genes$log2FC<=fcext))/nrow(genes)
+tmp <- subset(genes, genes$log2FC>=fcext)
+extfc <- tmp[nrow(tmp),2]
+
+p1 <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
+	geom_vline(xintercept=c(-1,1), col="red") +
+	geom_point(aes(extmfc, percent_extm, col="blue")) +
+	geom_point(aes(extfc, percent_ext, col="blue")) +
+	scale_color_identity()
+
+p2 <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
+	geom_vline(xintercept=c(-1,1), col="red") +
+	geom_point(aes(extmfc, percent_extm, col="blue")) +
+	geom_point(aes(extfc, percent_ext, col="blue")) +
+	scale_color_identity() + coord_cartesian(xlim=c(-2,2))
 
 
-ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
-    geom_hline(yintercept=idx, col="red") + geom_point(aes(num_first_gene, genes[num_first_gene, 2], col="blue")) +
-    geom_point(aes(num_last_gene, genes[num_last_gene, 2], col="blue"))
-ggsave(paste0(outdir, .Platform$file.sep, "fc_cutoff_finding_CUMULATIVE.pdf"), width=10, height=10)
+num_extend <- num_one_percent_sig
+fcext <- genes[num_sig_genes+num_extend,4]
+
+percent_extm <- nrow(subset(genes, genes$log2FC<=-fcext))/nrow(genes)
+tmp <- subset(genes, genes$log2FC<=-fcext)
+extmfc <- tmp[nrow(tmp), 2]
+percent_ext <- nrow(subset(genes, genes$log2FC<=fcext))/nrow(genes)
+tmp <- subset(genes, genes$log2FC>=fcext)
+extfc <- tmp[nrow(tmp),2]
 
 
-num_last_gene <- min(num_sig_genes + num_one_percent_sig, nrow(genes))
-num_first_gene <- max(num_sig_genes - num_one_percent_sig, 1)
+p3 <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
+	geom_vline(xintercept=c(-1,1), col="red") +
+	geom_point(aes(extmfc, percent_extm, col="blue")) +
+	geom_point(aes(extfc, percent_ext, col="blue")) +
+	scale_color_identity()
 
-ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
-    geom_hline(yintercept=idx, col="red") + geom_point(aes(num_first_gene, genes[num_first_gene, 2], col="blue")) +
-    geom_point(aes(num_last_gene, genes[num_last_gene, 2], col="blue"))
-ggsave(paste0(outdir, .Platform$file.sep, "fc_cutoff_finding_one_percent_siggenes_ontop_CUMULATIVE.pdf"), width=10, height=10)
-
-
-
-
-num_last_gene <- min(num_sig_genes + num_five_percent_nonsig, nrow(genes))
-num_first_gene <- max(num_sig_genes - num_five_percent_nonsig, 1)
-
-ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
-    geom_hline(yintercept=idx, col="red") + geom_point(aes(num_first_gene, genes[num_first_gene, 2], col="blue")) +
-    geom_point(aes(num_last_gene, genes[num_last_gene, 2], col="blue")) + scale_color_identity()
-ggsave(paste0(outdir, .Platform$file.sep, "fc_cutoff_finding_five_percent_nonsiggenes_ontop_CUMULATIVE.pdf"), width=10, height=10)
+p4 <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
+	geom_vline(xintercept=c(-1,1), col="red") +
+	geom_point(aes(extmfc, percent_extm, col="blue")) +
+	geom_point(aes(extfc, percent_ext, col="blue")) +
+	scale_color_identity() + coord_cartesian(xlim=c(-2,2))
 
 
+
+num_extend <- num_five_percent_nonsig
+fcext <- genes[num_sig_genes+num_extend,4]
+
+percent_extm <- nrow(subset(genes, genes$log2FC<=-fcext))/nrow(genes)
+tmp <- subset(genes, genes$log2FC<=-fcext)
+extmfc <- tmp[nrow(tmp), 2]
+percent_ext <- nrow(subset(genes, genes$log2FC<=fcext))/nrow(genes)
+tmp <- subset(genes, genes$log2FC>=fcext)
+extfc <- tmp[nrow(tmp),2]
+
+
+p5 <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
+	geom_vline(xintercept=c(-1,1), col="red") +
+	geom_point(aes(extmfc, percent_extm, col="blue")) +
+	geom_point(aes(extfc, percent_ext, col="blue")) +
+	scale_color_identity()
+
+p6 <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
+	geom_vline(xintercept=c(-1,1), col="red") +
+	geom_point(aes(extmfc, percent_extm, col="blue")) +
+	geom_point(aes(extfc, percent_ext, col="blue")) +
+	scale_color_identity() + coord_cartesian(xlim=c(-2,2))
+
+
+
+
+plots <- list(p1, p2, p3, p4, p5, p6)
+ggsave(paste0(outdir, .Platform$file.sep, "fc_cutoff_finding_all_CUMULATIVE.pdf"), marrangeGrob(grobs = plots, nrow=1, ncol=1), device = "pdf")
