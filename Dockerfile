@@ -11,6 +11,7 @@ RUN Rscript -e "install.packages('reshape2', repos='http://cran.rstudio.com/')"
 RUN Rscript -e "install.packages('tidyr', repos='http://cran.rstudio.com/')"
 RUN Rscript -e "install.packages('VennDiagram', repos='http://cran.rstudio.com/')"
 RUN Rscript -e "install.packages('data.table', repos='http://cran.rstudio.com/')"
+RUN Rscript -e "install.packages('gridExtra', repos='http://cran.rstudio.com/')"
 #reshape2, VennDiagram, tidyr, data.table
 
 RUN apk add maven
