@@ -210,7 +210,7 @@ p3 <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	geom_point(aes(extfc2, percent_ext2, col="blue3")) +
 	scale_color_identity() +
 	annotate("text", x=-5, y=0.5, label=paste0("new interval =  +-[", extfc, ",", extfc2, "]")) +
-	ggtitle(paste0("FC cutoff finding with 5% nonsig-genes on top (",
+	ggtitle(paste0("FC cutoff finding with 5% nonsig-genes on top (+",
 				   num_extend, ")"))
 
 p3b <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
