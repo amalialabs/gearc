@@ -19,7 +19,7 @@ genes <- subset(genes, genes$is_unclear == "false")
 
 genes <- genes[,c(1,2,6)]
 
-fdrcutoff <- 0.05 #* nrow(genes)
+fdrcutoff <- 0.01 #* nrow(genes)
 num_sig_genes <- nrow(subset(genes, genes$is_sig == "true"))
 num_nonsig_genes <- nrow(subset(genes, genes$is_sig == "false"))
 num_one_percent_sig <- max(round(0.01 * num_sig_genes), 5)
@@ -45,17 +45,17 @@ p1 <- ggplot(genes, aes(FDR)) + stat_ecdf(geom="step") + ylab("% genes") + xlab(
 	geom_point(aes(sec, secp, col="blue")) +
 	annotate("text", x=0.5, y=0.25, label=paste0("new interval = [", first, ", ", sec, "]")) +
 	scale_color_identity() +
-	ggtitle(paste0("FDR cutoff finding (min of 1% sig-genes and 5% nonsig-genes) (", num_extend, ")"))
+	ggtitle(paste0("FDR cutoff finding (min of 1% sig-genes and 5% nonsig-genes) (+", num_extend, ")"))
 
 
 p1b <- ggplot(genes, aes(FDR)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("FDR") +
 	geom_vline(xintercept=fdrcutoff, col="red") +
 	geom_point(aes(first, firstp, col="blue")) +
 	geom_point(aes(sec, secp, col="blue")) +
-	coord_cartesian(xlim=c(0,0.1)) +
+	coord_cartesian(xlim=c(0,round(sec, 1)+0.1)) +
 	annotate("text", x=0.025, y=0.5, label=paste0("new interval = [", first, ", ", sec, "]")) +
 	scale_color_identity() +
-	ggtitle(paste0("FDR cutoff finding (min of 1% sig-genes and 5% nonsig-genes) (", num_extend, "), zoomed"))
+	ggtitle(paste0("FDR cutoff finding (min of 1% sig-genes and 5% nonsig-genes) (+", num_extend, "), zoomed"))
 
 
 
@@ -76,8 +76,8 @@ p2 <- ggplot(genes, aes(FDR)) + stat_ecdf(geom="step") + ylab("% genes") + xlab(
 	geom_point(aes(first, firstp, col="darkblue")) +
 	geom_point(aes(sec, secp, col="darkblue")) +
 	geom_vline(xintercept=fdrcutoff, col="red") +
-	annotate("text", x=0.025, y=0.5, label=paste0("new interval = [", first, ", ", sec, "]")) +
-	ggtitle(paste0("FDR cutoff finding with 1% sig-genes (", num_extend, ")"))
+	annotate("text", x=0.25, y=0.75, label=paste0("new interval = [", first, ", ", sec, "]")) +
+	ggtitle(paste0("FDR cutoff finding with 1% sig-genes on top (+", num_extend, ")"))
 
 
 p2b <- ggplot(genes, aes(FDR)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("FDR") +
@@ -85,9 +85,9 @@ p2b <- ggplot(genes, aes(FDR)) + stat_ecdf(geom="step") + ylab("% genes") + xlab
 	geom_point(aes(first, firstp, col="darkblue")) +
 	geom_point(aes(sec, secp, col="darkblue")) +
 	geom_vline(xintercept=fdrcutoff, col="red") +
-	coord_cartesian(xlim=c(0,0.1)) +
+	coord_cartesian(xlim=c(0,round(sec, 1)+0.1)) +
 	annotate("text", x=0.025, y=0.5, label=paste0("new interval = [", first, ", ", sec, "]")) +
-	ggtitle(paste0("FDR cutoff finding with 1% sig-genes (", num_extend, "), zoomed"))
+	ggtitle(paste0("FDR cutoff finding with 1% sig-genes on top (+", num_extend, "), zoomed"))
 
 
 num_extend <- num_five_percent_nonsig
@@ -107,8 +107,8 @@ p3 <- ggplot(genes, aes(FDR)) + stat_ecdf(geom="step") + ylab("% genes") + xlab(
 	geom_point(aes(first, firstp, col="darkblue")) +
 	geom_point(aes(sec, secp, col="darkblue")) +
 	geom_vline(xintercept=fdrcutoff, col="red") +
-	annotate("text", x=0.025, y=0.5, label=paste0("new interval = [", first, ", ", sec, "]")) +
-	ggtitle(paste0("FDR cutoff finding with 5% nonsig-genes (", num_extend, ")"))
+	annotate("text", x=0.25, y=0.75, label=paste0("new interval = [", first, ", ", sec, "]")) +
+	ggtitle(paste0("FDR cutoff finding with 5% nonsig-genes on top (+", num_extend, ")"))
 
 
 
@@ -117,9 +117,9 @@ p3b <- ggplot(genes, aes(FDR)) + stat_ecdf(geom="step") + ylab("% genes") + xlab
 	geom_point(aes(first, firstp, col="darkblue")) +
 	geom_point(aes(sec, secp, col="darkblue")) +
 	geom_vline(xintercept=fdrcutoff, col="red") +
-	coord_cartesian(xlim=c(0,0.1)) +
+	coord_cartesian(xlim=c(0,round(sec, 1)+0.1)) +
 	annotate("text", x=0.025, y=0.5, label=paste0("new interval = [", first, ", ", sec, "]")) +
-	ggtitle(paste0("FDR cutoff finding with 5% nonsig-genes (", num_extend, "), zoomed"))
+	ggtitle(paste0("FDR cutoff finding with 5% nonsig-genes on top (+", num_extend, "), zoomed"))
 
 
 

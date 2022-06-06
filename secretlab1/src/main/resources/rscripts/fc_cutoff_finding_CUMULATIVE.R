@@ -65,8 +65,8 @@ p1 <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	geom_point(aes(extmfc2, percent_extm2, col="blue")) +
 	geom_point(aes(extfc2, percent_ext2, col="blue3")) +
 	scale_color_identity() +
-	annotate("text", x=-5, y=0.5, label=paste0("new interval =  |[", extfc, ",", extfc2, "]|")) +
-	ggtitle(paste0("FC cutoff finding (min of 1% sig-genes and 5% nonsig-genes) (",
+	annotate("text", x=-5, y=0.5, label=paste0("new interval =  +-[", extfc, ",", extfc2, "]")) +
+	ggtitle(paste0("FC cutoff finding (min of 1% sig-genes and 5% nonsig-genes) (+",
 				   num_extend, ")"))
 
 p1b <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
@@ -76,10 +76,10 @@ p1b <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + x
 	geom_point(aes(extmfc2, percent_extm2, col="blue")) +
 	geom_point(aes(extfc2, percent_ext2, col="blue3")) +
 	scale_color_identity() +
-	annotate("text", x=-5, y=0.5, label=paste0("new cutoff = +- ", extfc)) +
-	ggtitle(paste0("FC cutoff finding (min of 1% sig-genes and 5% nonsig-genes) (",
+	#annotate("text", x=-5, y=0.5, label=paste0("new cutoff = +- ", extfc)) +
+	ggtitle(paste0("FC cutoff finding (min of 1% sig-genes and 5% nonsig-genes) (+",
 				   num_extend, "), zoomed")) +
-	coord_cartesian(xlim=c(-1.1, 1.1))
+	coord_cartesian(xlim=c(round(extmfc, 1)-0.1, round(extfc2, 1)+0.1))
 
 pa <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
 	geom_vline(xintercept=-1, col="red") +
@@ -88,7 +88,7 @@ pa <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	scale_color_identity() +
 	annotate("text", x=-1.05, y=0.5, label=paste0("[", extmfc, ",", extmfc2, "]")) +
 	ggtitle("left interval zoomed") +
-	coord_cartesian(xlim=c(-1.1, -0.9))
+	coord_cartesian(xlim=c(round(extmfc, 1)-0.1, round(extmfc2, 1)+0.1))
 
 pb <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
 	geom_vline(xintercept=1, col="red") +
@@ -97,10 +97,10 @@ pb <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	scale_color_identity() +
 	annotate("text", x=1.05, y=0.5, label=paste0("[", extfc, ",", extfc2, "]")) +
 	ggtitle("right interval zoomed") +
-	coord_cartesian(xlim=c(0.9, 1.1))
+	coord_cartesian(xlim=c(round(extfc, 1)-0.1, round(extfc2, 1)+0.1))
 
 p1x <- grid.arrange(pa, pb, ncol=2, top=paste0("FC cutoff finding
-            (min of 1% sig-genes and 5% nonsig-genes) (", num_extend, ")"))
+            (min of 1% sig-genes and 5% nonsig-genes) (+", num_extend, ")"))
 
 
 
@@ -136,8 +136,8 @@ p2 <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	geom_point(aes(extmfc2, percent_extm2, col="blue")) +
 	geom_point(aes(extfc2, percent_ext2, col="blue3")) +
 	scale_color_identity() +
-	annotate("text", x=-5, y=0.5, label=paste0("new interval =  |[", extfc, ",", extfc2, "]|")) +
-	ggtitle(paste0("FC cutoff finding with 1% sig-genes (",
+	annotate("text", x=-5, y=0.5, label=paste0("new interval =  +-[", extfc, ",", extfc2, "]")) +
+	ggtitle(paste0("FC cutoff finding with 1% sig-genes on top (+",
 				   num_extend, ")"))
 
 p2b <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
@@ -147,10 +147,10 @@ p2b <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + x
 	geom_point(aes(extmfc2, percent_extm2, col="blue")) +
 	geom_point(aes(extfc2, percent_ext2, col="blue3")) +
 	scale_color_identity() +
-	annotate("text", x=-5, y=0.5, label=paste0("new cutoff = +- ", extfc)) +
-	ggtitle(paste0("FC cutoff finding with 1% sig-genes (",
+	#annotate("text", x=-5, y=0.5, label=paste0("new cutoff = +- ", extfc)) +
+	ggtitle(paste0("FC cutoff finding with 1% sig-genes on top (+",
 				   num_extend, "), zoomed")) +
-	coord_cartesian(xlim=c(-1.1, 1.1))
+	coord_cartesian(xlim=c(round(extmfc, 1)-0.1, round(extfc2, 1)+0.1))
 
 pc <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
 	geom_vline(xintercept=-1, col="red") +
@@ -159,7 +159,7 @@ pc <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	scale_color_identity() +
 	annotate("text", x=-1.05, y=0.5, label=paste0("[", extmfc, ",", extmfc2, "]")) +
 	ggtitle("left interval zoomed") +
-	coord_cartesian(xlim=c(-1.1, -0.9))
+	coord_cartesian(xlim=c(round(extmfc, 1)-0.1, round(extmfc2, 1)+0.1))
 
 pd <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
 	geom_vline(xintercept=1, col="red") +
@@ -168,10 +168,10 @@ pd <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	scale_color_identity() +
 	annotate("text", x=1.05, y=0.5, label=paste0("[", extfc, ",", extfc2, "]")) +
 	ggtitle("right interval zoomed") +
-	coord_cartesian(xlim=c(0.9, 1.1))
+	coord_cartesian(xlim=c(round(extfc, 1)-0.1, round(extfc2, 1)+0.1))
 
 p2x <- grid.arrange(pc, pd, ncol=2, top=paste0("FC cutoff finding
-            with 1% sig-genes (", num_extend, ")"))
+            with 1% sig-genes on top (+", num_extend, ")"))
 
 
 
@@ -209,8 +209,8 @@ p3 <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	geom_point(aes(extmfc2, percent_extm2, col="blue")) +
 	geom_point(aes(extfc2, percent_ext2, col="blue3")) +
 	scale_color_identity() +
-	annotate("text", x=-5, y=0.5, label=paste0("new interval =  |[", extfc, ",", extfc2, "]|")) +
-	ggtitle(paste0("FC cutoff finding with 5% nonsig-genes (",
+	annotate("text", x=-5, y=0.5, label=paste0("new interval =  +-[", extfc, ",", extfc2, "]")) +
+	ggtitle(paste0("FC cutoff finding with 5% nonsig-genes on top (",
 				   num_extend, ")"))
 
 p3b <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
@@ -220,10 +220,10 @@ p3b <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + x
 	geom_point(aes(extmfc2, percent_extm2, col="blue")) +
 	geom_point(aes(extfc2, percent_ext2, col="blue3")) +
 	scale_color_identity() +
-	annotate("text", x=-5, y=0.5, label=paste0("new cutoff = +- ", extfc)) +
-	ggtitle(paste0("FC cutoff finding with 5% nonsig-genes (",
+	#annotate("text", x=-5, y=0.5, label=paste0("new cutoff = +- ", extfc)) +
+	ggtitle(paste0("FC cutoff finding with 5% nonsig-genes on top (+",
 				   num_extend, "), zoomed")) +
-	coord_cartesian(xlim=c(-1.1, 1.1))
+	coord_cartesian(xlim=c(round(extmfc, 1)-0.1, round(extfc2, 1)+0.1))
 
 pe <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
 	geom_vline(xintercept=-1, col="red") +
@@ -232,7 +232,7 @@ pe <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	scale_color_identity() +
 	annotate("text", x=-1.05, y=0.5, label=paste0("[", extmfc, ",", extmfc2, "]")) +
 	ggtitle("left interval zoomed") +
-	coord_cartesian(xlim=c(-1.1, -0.9))
+	coord_cartesian(xlim=c(round(extmfc, 1)-0.1, round(extmfc2, 1)+0.1))
 
 pf <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
 	geom_vline(xintercept=1, col="red") +
@@ -241,14 +241,15 @@ pf <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	scale_color_identity() +
 	annotate("text", x=1.05, y=0.5, label=paste0("[", extfc, ",", extfc2, "]")) +
 	ggtitle("right interval zoomed") +
-	coord_cartesian(xlim=c(0.9, 1.1))
+	coord_cartesian(xlim=c(round(extfc, 1)-0.1, round(extfc2, 1)+0.1))
 
 p3x <- grid.arrange(pe, pf, ncol=2, top=paste0("FC cutoff finding
-            with 5% nonsig-genes (", num_extend, ")"))
+            with 5% nonsig-genes on top (+", num_extend, ")"))
 
 
 plots <- list(p1, p1b, p1x, p2, p2b, p2x, p3, p3b, p3x)
-ggsave(paste0(outdir, .Platform$file.sep, "fc_cutoff_finding_all_CUMULATIVE.pdf"), marrangeGrob(grobs = plots, nrow=1, ncol=1), device = "pdf")
+ggsave(paste0(outdir, .Platform$file.sep, "fc_cutoff_finding_all_CUMULATIVE.pdf"),
+	   marrangeGrob(grobs = plots, nrow=1, ncol=1), device = "pdf", width=14, height=12)
 
 
 
@@ -351,5 +352,6 @@ p6 <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	ggtitle(paste0("FC cutoff finding with 5% nonsig-genes ("), num_extend, "), zoomed")
 
 plots <- list(p1, p2, p3, p4, p5, p6)
-ggsave(paste0(outdir, .Platform$file.sep, "fc_cutoff_finding_all_CUMULATIVE.pdf"), marrangeGrob(grobs = plots, nrow=1, ncol=1), device = "pdf")
+ggsave(paste0(outdir, .Platform$file.sep, "fc_cutoff_finding_all_CUMULATIVE.pdf"),
+	   marrangeGrob(grobs = plots, nrow=1, ncol=1), device = "pdf")
 }
