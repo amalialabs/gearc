@@ -17,8 +17,8 @@ public class Functions {
      */
     public static double[] define_FDR_and_FC_cutoff_interval(Set<Gene> gene2FDRandFC, String type, double FDR_cutoff, double FC_cutoff) {
         Set<Gene> tmp = gene2FDRandFC.stream().filter(_g -> !_g.unclear).collect(Collectors.toSet());
-        int num_sig_genes = 0;
-        int num_nonsig_genes = 0;
+        int num_sig_genes;
+        int num_nonsig_genes;
         if (type.equals("FDR")) {
             num_sig_genes = (int) tmp.stream().filter(_gene -> !_gene.unclear && _gene.fdr<=FDR_cutoff).count();
             num_nonsig_genes = (int) tmp.stream().filter(_gene -> !_gene.unclear && _gene.fdr>FDR_cutoff).count();
