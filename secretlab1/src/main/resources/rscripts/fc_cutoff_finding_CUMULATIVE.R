@@ -86,7 +86,7 @@ pa <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	geom_point(aes(extmfc, percent_extm, col="blue")) +
 	geom_point(aes(extmfc2, percent_extm2, col="blue")) +
 	scale_color_identity() +
-	annotate("text", x=-1.05, y=0.5, label=paste0("[", extmfc, ",", extmfc2, "]")) +
+	annotate("text", x=-1.05, y=0.5, label=paste0("[", extmfc2, ",", extmfc, "]")) +
 	ggtitle("left interval zoomed") +
 	coord_cartesian(xlim=c(round(extmfc, 1)-0.1, round(extmfc2, 1)+0.1))
 
@@ -157,7 +157,7 @@ pc <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xl
 	geom_point(aes(extmfc, percent_extm, col="blue")) +
 	geom_point(aes(extmfc2, percent_extm2, col="blue")) +
 	scale_color_identity() +
-	annotate("text", x=-1.05, y=0.5, label=paste0("[", extmfc, ",", extmfc2, "]")) +
+	annotate("text", x=-1.05, y=0.5, label=paste0("[", extmfc2, ",", extmfc, "]")) +
 	ggtitle("left interval zoomed") +
 	coord_cartesian(xlim=c(round(extmfc, 1)-0.1, round(extmfc2, 1)+0.1))
 
@@ -223,16 +223,16 @@ p3b <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + x
 	#annotate("text", x=-5, y=0.5, label=paste0("new cutoff = +- ", extfc)) +
 	ggtitle(paste0("FC cutoff finding with 5% nonsig-genes on top (+",
 				   num_extend, "), zoomed")) +
-	coord_cartesian(xlim=c(round(extmfc, 1)-0.1, round(extfc2, 1)+0.1))
+	coord_cartesian(xlim=c(round(extmfc2, 1)-0.1, round(extfc2, 1)+0.1))
 
 pe <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
 	geom_vline(xintercept=-1, col="red") +
 	geom_point(aes(extmfc, percent_extm, col="blue")) +
 	geom_point(aes(extmfc2, percent_extm2, col="blue")) +
 	scale_color_identity() +
-	annotate("text", x=-1.05, y=0.5, label=paste0("[", extmfc, ",", extmfc2, "]")) +
+	annotate("text", x=-1.05, y=0.5, label=paste0("[", extmfc2, ",", extmfc, "]")) +
 	ggtitle("left interval zoomed") +
-	coord_cartesian(xlim=c(round(extmfc, 1)-0.1, round(extmfc2, 1)+0.1))
+	coord_cartesian(xlim=c(round(extmfc2, 1)-0.1, round(extmfc, 1)+0.1))
 
 pf <- ggplot(genes, aes(log2FC)) + stat_ecdf(geom="step") + ylab("% genes") + xlab("log2FC") +
 	geom_vline(xintercept=1, col="red") +

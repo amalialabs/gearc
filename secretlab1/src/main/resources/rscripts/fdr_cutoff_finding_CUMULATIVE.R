@@ -124,6 +124,7 @@ p3b <- ggplot(genes, aes(FDR)) + stat_ecdf(geom="step") + ylab("% genes") + xlab
 
 
 plots <- list(p1,p1b,p2,p2b,p3,p3b)
-ggsave(paste0(outdir, .Platform$file.sep, "fdr_cutoff_finding_all_CUMULATIVE.pdf"), marrangeGrob(grobs = plots, nrow=1, ncol=1), device = "pdf")
+ggsave(paste0(outdir, .Platform$file.sep, "fdr_cutoff_finding_all_CUMULATIVE.pdf"),
+	   marrangeGrob(grobs = plots, nrow=1, ncol=1), device = "pdf")
 
 
