@@ -31,7 +31,7 @@ public class Plots {
         this.gotable_path = output_dir + File.separator + "gos2fdrs.table";
         this.gotable_extend_path = output_dir + File.separator + "gos2fdrs_extended.table";
         this.gotable_standard = output_dir + File.separator + "gos2fdrs_standard.table";
-        this.ranktable_path = output_dir + File.separator + "rank_differences.table";
+        this.ranktable_path = output_dir + File.separator + "rank_differences.table";  //FIXME Armin hier brauch ich die table
         this.res = res;
         this.gos_standard = gos_standard;
 

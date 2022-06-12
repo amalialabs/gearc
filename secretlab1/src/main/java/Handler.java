@@ -108,6 +108,8 @@ public class Handler {
         Set<Node> robust_gos = result.getXquantileGOnodes(0.95);
 
         Plots plots = new Plots(outdir, r.allGenes.values(), robust_gos, FDR_cutoff, FC_cutoff, result, standard_node2fdr);
+        System.out.println("plotting de scores rank plot");
+        plots.de_scores_rank();
         System.out.println("plotting unclear_genes_BARPLOT");
         plots.unclear_genes_BARPLOT(r.allGenes.values());
         System.out.println("plotting sig_genes_VOLCANO");
