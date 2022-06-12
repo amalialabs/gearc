@@ -8,6 +8,7 @@ public class Plots {
     double FDR_cutoff;
     double FC_cutoff;
     String out_dir;
+    String ranktable_path;
     String genetable_path;
     String gos;
     String gotable_path;
@@ -30,6 +31,7 @@ public class Plots {
         this.gotable_path = output_dir + File.separator + "gos2fdrs.table";
         this.gotable_extend_path = output_dir + File.separator + "gos2fdrs_extended.table";
         this.gotable_standard = output_dir + File.separator + "gos2fdrs_standard.table";
+        this.ranktable_path = output_dir + File.separator + "rank_differences.table";
         this.res = res;
         this.gos_standard = gos_standard;
 
@@ -325,6 +327,18 @@ public class Plots {
         String rcommand = root + File.separator + "expected_change_distrib_BARPLOT.R";
         try {
             Process p = new ProcessBuilder("Rscript", rcommand, genetable_path, out_dir).inheritIO().start();
+            p.waitFor();
+        } catch (IOException e) {
+            throw new RuntimeException("could not read/find Rscript ", e);
+        } catch (InterruptedException i) {
+            throw new RuntimeException("could not run subprocess ", i);
+        }
+    }
+
+    public void de_scores_rank() {
+        String rcommand = root + File.separator + "de_scores_rank_PLOT.R";
+        try {
+            Process p = new ProcessBuilder("Rscript", rcommand, ranktable_path, out_dir).inheritIO().start();
             p.waitFor();
         } catch (IOException e) {
             throw new RuntimeException("could not read/find Rscript ", e);
