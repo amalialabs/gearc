@@ -105,7 +105,7 @@ public class Functions {
      */
     public static Set<Gene> assign_genes_to_sets(Set<Gene> gene2weightedscore, Enum expected_change) {
         ArrayList<Gene> sorted_genes = (ArrayList<Gene>) gene2weightedscore.stream().
-                sorted(Comparator.comparing(Gene::get_weighted_score)).collect(Collectors.toList()); //TODO chech if ascending
+                sorted(Comparator.comparing(Gene::get_weighted_score).reversed()).collect(Collectors.toList()); //TODO chech if ascending
         int sig_core;
         int flex;
         if (expected_change == Handler.expected_change.AVERAGE) { //30%-40%-30%
