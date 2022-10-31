@@ -146,4 +146,29 @@ public class Result {
             throw new RuntimeException("could not init file ", e);
         }
     }
+
+    public void writeRankDifferences(HashMap<Node, Double> standardGOs, Set<Node> robustGO, String outDir) {
+        Map<Node, Double> robustGOs = robustGO.stream().collect(Collectors.toMap(Node::getSelf, Node::getBhFDR));
+
+        List<Node> standard = standardGOs.entrySet().stream().sorted(Comparator.comparingDouble(Map.Entry::getValue))
+                .map(Map.Entry::getKey).collect(Collectors.toList());
+        List<Node> robust = robustGOs.entrySet().stream().sorted(Comparator.comparingDouble(Map.Entry::getValue))
+                .map(Map.Entry::getKey).collect(Collectors.toList());
+        Set<Node> joint = new HashSet<>();
+        joint.addAll(standard);
+        joint.retainAll(robust);
+
+        File f = new File(outDir, "GO_rank_diff.tsv");
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+            bw.write("GOnode\tstandard_FDR\trobust_FDR\tstandard_Rank\trobust_Rank\trank_diff\n");
+            for (Node n : joint) {
+                bw.write(n.node_id + "\t" + format(standardGOs.get(n)) + format(robustGOs.get(n))
+                        + standard.indexOf(n) + robust.indexOf(n) + (standard.indexOf(n) - robust.indexOf(n)) + "\n");
+            }
+            bw.close();
+        } catch (IOException e) {
+            throw new RuntimeException("could not init file ", e);
+        }
+    }
 }

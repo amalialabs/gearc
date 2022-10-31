@@ -146,6 +146,7 @@ public class Handler {
         if (params.has("out")) {
             result.writeRobustGOs(robust_gos, outdir);
             result.writeStandardGOs(standard_node2fdr, outdir);
+            result.writeRankDifferences(standard_node2fdr, robust_gos, outdir);
         } else {
             result.printRobustGOs(robust_gos);
             result.printStandardGOs(standard_node2fdr);

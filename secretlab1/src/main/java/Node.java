@@ -96,4 +96,9 @@ public class Node {
                 ", genes=" + genes +
                 '}';
     }
+
+    public Node getSelf() {
+        return this;
+    }
+
 }
