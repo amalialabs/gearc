@@ -163,8 +163,8 @@ public class Result {
             BufferedWriter bw = new BufferedWriter(new FileWriter(f));
             bw.write("GOnode\tstandard_FDR\trobust_FDR\tstandard_Rank\trobust_Rank\trank_diff\n");
             for (Node n : joint) {
-                bw.write(n.node_id + "\t" + format(standardGOs.get(n)) + format(robustGOs.get(n))
-                        + standard.indexOf(n) + robust.indexOf(n) + (standard.indexOf(n) - robust.indexOf(n)) + "\n");
+                bw.write(n.node_id + "\t" + format(standardGOs.get(n)) + "\t" + format(robustGOs.get(n))
+                        + "\t" + standard.indexOf(n) + "\t" + robust.indexOf(n) + "\t" + (standard.indexOf(n) - robust.indexOf(n)) + "\n");
             }
             bw.close();
         } catch (IOException e) {
