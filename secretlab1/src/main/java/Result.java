@@ -65,12 +65,11 @@ public class Result {
     @return list of robust GO nodes to specified quantile
      */
     public Set<Node> getXquantileGOnodes(double quantile) {
-        double FDR_cutoff = 0.05; //LATER may be defined by user too
         Node node = GOnode2FDRruns.entrySet().iterator().next().getKey();
         int num_runs = GOnode2FDRruns.get(node).size();
-        int position = (int) quantile*num_runs;
+        int min_num_sig = (int) Math.round(num_runs * quantile);
         Set<Node> robustGOs = GOnode2FDRruns.keySet().stream().
-                filter(_go -> GOnode2FDRruns.get(_go).get(position)<=FDR_cutoff).
+                filter(_go -> GOnode2FDRruns.get(_go).stream().filter(_r -> _r<= this.FDR_cutoff).count()>=min_num_sig).
                 collect(Collectors.toSet());
         return(robustGOs);
     }
