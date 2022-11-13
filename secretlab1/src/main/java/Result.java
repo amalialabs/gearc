@@ -101,7 +101,7 @@ public class Result {
         BufferedWriter bw;
         try {
             bw = new BufferedWriter(new FileWriter(f));
-            bw.write("GOnode\tmeanFDR\n");
+            bw.write("GOnode\tquantileFDR\n");
             for (Node n : robustGOs) {
                 bw.write(n.node_id + "\t" + format(getMeanFDRofGO(n)) + "\n");
             }
