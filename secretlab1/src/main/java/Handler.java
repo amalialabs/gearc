@@ -20,6 +20,7 @@ public class Handler {
         accepts("FDR").withRequiredArg().ofType(double.class).defaultsTo(0.01).describedAs("adjusted p-value cutoff");
         acceptsAll( asList( "h", "?" ), "show help" ).forHelp();
         accepts("html");
+        accepts("quantile").withRequiredArg().ofType(double.class).defaultsTo(0.95).describedAs("desired robustness of GO enrichment results");
         accepts("n").withRequiredArg().ofType(Integer.class).defaultsTo(5).describedAs("number of enrichment iterations");
         accepts("root").withRequiredArg().ofType(String.class).defaultsTo("biological_process").describedAs("GO DAG root");
         accepts("mapping").withRequiredArg().ofType(String.class).defaultsTo("/data/goa_human_ensembl.tsv").describedAs("ENSEMBL gene mapping");
@@ -104,8 +105,8 @@ public class Handler {
                 result.gather_runs(en.enrich(sampled, gos), true);
             }
         }
-
-        Set<Node> robust_gos = result.getXquantileGOnodes(0.95);
+        double quantile = (double) params.valueOf("quantile");
+        Set<Node> robust_gos = result.getXquantileGOnodes(quantile);
 
         Plots plots = new Plots(outdir, r.allGenes.values(), robust_gos, FDR_cutoff, FC_cutoff, result, standard_node2fdr);
         System.out.println("plotting de scores rank plot");
@@ -144,7 +145,8 @@ public class Handler {
         plots.num_sig_gos_BARPLOT();
 
         if (params.has("out")) {
-            result.writeRobustGOs(robust_gos, outdir);
+            result.writeRobustGOs(robust_gos, outdir, quantile);
+            result.writeMeanGOs(robust_gos, outdir);
             result.writeStandardGOs(standard_node2fdr, outdir);
             result.writeRankDifferences(standard_node2fdr, robust_gos, outdir);
         } else {

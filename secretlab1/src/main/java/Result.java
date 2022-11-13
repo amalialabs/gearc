@@ -85,6 +85,13 @@ public class Result {
         return(sum/fdrs.size());
     }
 
+    public double getWorstFDRofGO(Node GO, double quantile) {
+        ArrayList<Double> fdrs = GOnode2FDRruns.get(GO);
+        Collections.sort(fdrs);
+        double worst_quantile_fdr = fdrs.get((int) Math.round(quantile*fdrs.size()));
+        return(worst_quantile_fdr);
+    }
+
     /*
     prints robust GOs of a specified quantile
     @param list of GOs of quantile
@@ -96,12 +103,27 @@ public class Result {
         System.out.println(robustGOs.size() + " GOs in total.");
     }
 
-    public void writeRobustGOs(Set<Node> robustGOs, String outdir) {
-        File f = new File(outdir + File.separator + "robust_GOs.tsv");
+    public void writeRobustGOs(Set<Node> robustGOs, String outdir, double quantile) {
+        File f = new File(outdir + File.separator + "robust_GOs_worstQuantileFDR.tsv");
         BufferedWriter bw;
         try {
             bw = new BufferedWriter(new FileWriter(f));
             bw.write("GOnode\tquantileFDR\n");
+            for (Node n : robustGOs) {
+                bw.write(n.node_id + "\t" + format(getWorstFDRofGO(n, quantile)) + "\n");
+            }
+            bw.close();
+        } catch (IOException e) {
+            throw new RuntimeException("could not init file ", e);
+        }
+    }
+
+    public void writeMeanGOs(Set<Node> robustGOs, String outdir) {
+        File f = new File(outdir + File.separator + "robust_GOs_meanFDR.tsv");
+        BufferedWriter bw;
+        try {
+            bw = new BufferedWriter(new FileWriter(f));
+            bw.write("GOnode\tmeanFDR\n");
             for (Node n : robustGOs) {
                 bw.write(n.node_id + "\t" + format(getMeanFDRofGO(n)) + "\n");
             }
