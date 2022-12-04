@@ -1,3 +1,5 @@
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -229,20 +231,105 @@ public class Reader {
         notPropagated.addAll(GO.getGoNodes().get(n.node_id).getParentNodes());
     }
 
+    void findParents(List<Node> nodes, Set<String> search) {
+        for (Node n : nodes) {
+            System.out.println(n.node_id + "\t" + depthCheck(n) + "\t" + n.node_name + "\t" + StringUtils.join(iterativeParentSearch(n, search), ", "));
+        }
+    }
+
+    Set<String> iterativeParentSearch(Node n, Set<String> search) {
+        Set<String> result = new HashSet<>();
+        for (Node parent : GO.getGoNodes().get(n.node_id).getParentNodes()) {
+            if(search.contains(parent.getNode_id())) {
+                result.add(parent.node_id);
+                result.addAll(iterativeParentSearch(parent, search));
+            }
+        }
+        return result;
+    }
+
+    HashMap<Node, Integer> go2depth = new HashMap<>();
+    int depthCheck(Node n) {
+        if (go2depth.get(n) != null) {
+            return go2depth.get(n);
+        }
+        if (n.node_name.equals("biological_process")) {
+            go2depth.put(n, 0);
+            return 0;
+        }
+        int min = 1000;
+        for (Node p : GO.getGoNodes().get(n.node_id).parentNodes) {
+            if (go2depth.get(p) == null) {
+                go2depth.put(p, depthCheck(p));
+            }
+            if (min > go2depth.get(p)) {
+                min = go2depth.get(p);
+            }
+        }
+        go2depth.put(n, min + 1);
+        return min+1;
+    }
+
     public static void main(String[] args) {
-        File expression = new File("/home/birinci/Projects/secretlab/data/empires.out");
-        File mappingEnsembl = new File("/home/birinci/Projects/secretlab/data/goa_human_ensembl.tsv");
-        File oboFile = new File("/home/birinci/Projects/secretlab/data/go.obo");
+        //TODO remove paths
+        File expression = new File("/mnt/raidinput2/tmp/hadziahmetovic/GSE/results_reduced/rep2_mock8_wt8/diff_exp_outs/DESeq_hisat.reformatted");
+        File mappingEnsembl = new File("/mnt/raidinput2/tmp/hadziahmetovic/GSE130342/gse/secretlab/data/goa_human_ensembl.tsv");
+        File oboFile = new File("/mnt/raidinput2/tmp/hadziahmetovic/GSE130342/gse/secretlab/data/go.obo");
         String root = "biological_process";
 
         Reader r = new Reader(expression, mappingEnsembl, oboFile, root, 0.01, 1.0);
 
-        GO.getGoNodes().values().forEach(_node -> {
-            if (_node.getGenes() != null && _node.getGenes().size() > 3000) {
-                System.out.println(_node.node_id);
-                System.out.println(_node.getNode_name());
-                System.out.println(_node.getGenes().size());
+        List<Node> nodes = new ArrayList<>();
+        Set<String> search = new HashSet<>();
+
+        try (Stream<String> stream = Files.lines(Paths.get("/mnt/raidinput2/tmp/hadziahmetovic/GSE/gse_result_reduced_high/rep2_mock12_wt12_DESeq_hisat/standard.only"))) {
+            stream.forEach(_line -> {
+                search.add(_line);
+                nodes.add(GO.getGoNodes().get(_line));
+            });
+        } catch (IOException e) {
+            throw new RuntimeException("", e);
+        }
+
+        try (PrintWriter pw = new PrintWriter(new File("/mnt/raidinput2/tmp/hadziahmetovic/GSE/gse_result_reduced_high/rep2_mock12_wt12_DESeq_hisat/standard.only.eval"))) {
+            for (Node n : nodes) {
+                pw.println(n.node_id + "\t" + r.depthCheck(n) + "\t" + n.node_name + "\t" + StringUtils.join(r.iterativeParentSearch(n, search), ", "));
             }
-        });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+        System.out.println("\n");
+
+        nodes.clear();
+        search.clear();
+
+        try (Stream<String> stream = Files.lines(Paths.get("/mnt/raidinput2/tmp/hadziahmetovic/GSE/gse_result_reduced_high/rep2_mock12_wt12_DESeq_hisat/robust.only"))) {
+            stream.forEach(_line -> {
+                search.add(_line);
+                nodes.add(GO.getGoNodes().get(_line));
+            });
+        } catch (IOException e) {
+            throw new RuntimeException("", e);
+        }
+
+        try (PrintWriter pw = new PrintWriter(new File("/mnt/raidinput2/tmp/hadziahmetovic/GSE/gse_result_reduced_high/rep2_mock12_wt12_DESeq_hisat/robust.only.eval"))) {
+            for (Node n : nodes) {
+                pw.println(n.node_id + "\t" + r.depthCheck(n) + "\t" + n.node_name + "\t" + StringUtils.join(r.iterativeParentSearch(n, search), ","));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+//        GO.getGoNodes().values().forEach(_node -> {
+//            if (_node.getGenes() != null && _node.getGenes().size() > 3000) {
+//                System.out.println(_node.node_id);
+//                System.out.println(_node.getNode_name());
+//                System.out.println(_node.getGenes().size());
+//            }
+//        });
     }
 }

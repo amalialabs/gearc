@@ -108,41 +108,55 @@ public class Handler {
         double quantile = (double) params.valueOf("quantile");
         Set<Node> robust_gos = result.getXquantileGOnodes(quantile);
 
-        Plots plots = new Plots(outdir, r.allGenes.values(), robust_gos, FDR_cutoff, FC_cutoff, result, standard_node2fdr);
-        System.out.println("plotting de scores rank plot");
-        plots.de_scores_rank();
-        System.out.println("plotting unclear_genes_BARPLOT");
-        plots.unclear_genes_BARPLOT(r.allGenes.values());
-        System.out.println("plotting sig_genes_VOLCANO");
-        plots.sig_genes_VOLCANO();
-        System.out.println("plotting gene_categories_BARPLOT");
-        plots.gene_categories_BARPLOT();
-        System.out.println("plotting weigthed_genes_CUMULATIVE");
-        plots.weighted_genes_CUMULATIVE();
-        System.out.println("plotting genes_sets_PIECHART");
-        plots.genes_set_PIECHART();
-        System.out.println("plotting go_fdrs_mean_vs_quantiole_SCATTER");
-        plots.go_fdrs_mean_vs_quantile_SCATTER();
-        System.out.println("plotting selected_gos_fdr_distrib_BOXPLOT");
-        plots.selected_gos_fdr_distrib_BOXPLOT();
-        System.out.println("plotting selected_gos_rob_vs_extend_BOXPLOT");
-        plots.selected_gos_rob_vs_extend_BOXPLOT();
-        System.out.println("plotting gos_quntile_vs_mean_fdr_JITTER");
-        plots.gos_quantile_vs_mean_fdr_JITTER();
-        System.out.println("plotting gos_standard_vs_robust_vs_extend_BARPLOT");
-        plots.gos_standard_vs_robust_vs_extended_BARPLOT();
-        System.out.println("plotting gos_standard_vs_robust_vs_extend_VENN");
-        plots.gos_standard_vs_robust_vs_extended_VENN();
-        System.out.println("plotting fdr cutoff finding");
-        plots.fdr_cutoff_finding_CUMULATIVE();
-        System.out.println("plotting fc cutoff finding");
-        plots.fc_cutoff_finding_CUMULATIVE();
-        System.out.println("plotting flexset extension");
-        plots.flexset_extension_CURVE();
-        System.out.println("plotting expected change distrib");
-        plots.expected_change_BARPLOT();
-        System.out.println("plotting num sig gos comparison");
-        plots.num_sig_gos_BARPLOT();
+//        Plots plots = new Plots(outdir, r.allGenes.values(), robust_gos, FDR_cutoff, FC_cutoff, result, standard_node2fdr);
+//        System.out.println("plotting de scores rank plot");
+//        plots.de_scores_rank();
+//        System.out.println("plotting unclear_genes_BARPLOT");
+//        plots.unclear_genes_BARPLOT(r.allGenes.values());
+//        System.out.println("plotting sig_genes_VOLCANO");
+//        plots.sig_genes_VOLCANO();
+//        System.out.println("plotting gene_categories_BARPLOT");
+//        plots.gene_categories_BARPLOT();
+//        System.out.println("plotting weigthed_genes_CUMULATIVE");
+//        plots.weighted_genes_CUMULATIVE();
+//        System.out.println("plotting genes_sets_PIECHART");
+//        plots.genes_set_PIECHART();
+//        System.out.println("plotting go_fdrs_mean_vs_quantiole_SCATTER");
+//        plots.go_fdrs_mean_vs_quantile_SCATTER();
+//        System.out.println("plotting selected_gos_fdr_distrib_BOXPLOT");
+//        plots.selected_gos_fdr_distrib_BOXPLOT();
+//        System.out.println("plotting selected_gos_rob_vs_extend_BOXPLOT");
+//        plots.selected_gos_rob_vs_extend_BOXPLOT();
+//        System.out.println("plotting gos_quntile_vs_mean_fdr_JITTER");
+//        plots.gos_quantile_vs_mean_fdr_JITTER();
+//        System.out.println("plotting gos_standard_vs_robust_vs_extend_BARPLOT");
+//        plots.gos_standard_vs_robust_vs_extended_BARPLOT();
+//        System.out.println("plotting gos_standard_vs_robust_vs_extend_VENN");
+//        plots.gos_standard_vs_robust_vs_extended_VENN();
+//        System.out.println("plotting fdr cutoff finding");
+//        plots.fdr_cutoff_finding_CUMULATIVE();
+//        System.out.println("plotting fc cutoff finding");
+//        plots.fc_cutoff_finding_CUMULATIVE();
+//        System.out.println("plotting flexset extension");
+//        plots.flexset_extension_CURVE();
+//        System.out.println("plotting expected change distrib");
+//        plots.expected_change_BARPLOT();
+//        System.out.println("plotting num sig gos comparison");
+//        plots.num_sig_gos_BARPLOT();
+
+
+        for (Node n : result.GOnode2FDRruns.keySet()) {
+            if (n.node_id.equals("GO:0009100")) {
+                System.out.println(n);
+                System.out.println(n.genes.size());
+                System.out.println(standard_node2fdr.get(n));
+
+                System.out.println(result.FDR_cutoff);
+                System.out.println(result.GOnode2FDRruns.get(n).stream().filter(_r -> _r <= result.FDR_cutoff).count());
+                result.GOnode2FDRruns.get(n).stream().filter(_r -> _r > result.FDR_cutoff).forEach(System.out::println);
+            }
+        }
+
 
         if (params.has("out")) {
             result.writeRobustGOs(robust_gos, outdir, quantile);

@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 public class EnsemblGOMapping {
 
     public static void main(String[] args) {
+        //TODO change paths
         File geneIDsFile = new File("/home/birinci/Downloads/Homo_sapiens.GRCh38.106.gtf.geneIDs");
         EnsemblGOMapping egm = new EnsemblGOMapping(new File("/home/birinci/Downloads/"), 106, getGeneIDs(geneIDsFile));
 //        getGO("ENSG00000170152").stream().forEach(_go -> System.out.println(_go));
