@@ -37,7 +37,7 @@ public class Plots {
 
         this.root = new File("/secretlab1/src/main/resources/rscripts").exists() ? "/secretlab1/src/main/resources/rscripts" :
                 getClass().getClassLoader().getResource("/rscripts/").toString();
-        System.out.println(root);
+//        System.out.println(root);
 
         try {
             root = output_dir;
