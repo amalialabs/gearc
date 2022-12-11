@@ -59,21 +59,6 @@ public class Functions {
     }
 
     /*
-    filters unclear genes, leaving only significantly regulated or non-regulated genes
-    @param set of gene object (gene, FC, FDR)
-    @return same set without entries of unclear genes
-     */
-    public static Set<Gene> filter_unclear(Set<Gene> gene2FCandFDR, double FDR_cutoff, double FC_cutoff) {
-        Set<Gene> sig_genes = gene2FCandFDR.stream().
-                filter(gene -> gene.fdr <= FDR_cutoff && Math.abs(gene.fc) >= FC_cutoff).
-                collect(Collectors.toSet());
-        sig_genes.addAll(gene2FCandFDR.stream().filter(_gene -> _gene.fdr > FDR_cutoff &&
-                Math.abs(_gene.fc) < FC_cutoff).collect(Collectors.toSet())); // Gene wo nur 1 sig ist von FDR/FC fliegen raus
-        //LATER Gergely: FDR(Gene in [-1,1])<=0.05
-        return sig_genes;
-    }
-
-    /*
     computes weighted score per gene based on FDR and FC
     @param set of gene object (gene, FC, FDR)
     @return same set with now computed values

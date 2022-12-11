@@ -45,7 +45,7 @@ public class Handler {
 
         double FDR_cutoff = (double) params.valueOf("FDR");
         double FC_cutoff = (double) params.valueOf("FC");
-        System.out.println("FDR " + FDR_cutoff + "  FC " + FC_cutoff);
+        System.out.println("FDR cutoff: " + FDR_cutoff + "\nFC cutoff: " + FC_cutoff);
 
         GO gos = null;
         File obo = new File((String) params.valueOf("obo"));
@@ -81,7 +81,7 @@ public class Handler {
         int numGenesTotal = genesTotal.size();
         int deGenes = genesSignif.size();
         int numGenesTotalFiltered = genesTotalFiltered.size();
-        System.out.println("#total genes " + numGenesTotalFiltered + "\tdiff genes " + deGenes); //TODO
+        System.out.println("#used genes: " + numGenesTotalFiltered + "\tof which diff genes: " + deGenes);
         Enrichment en = new Enrichment(numGenesTotalFiltered, deGenes);
 
         Set<Gene> allGenes = new HashSet<>();
@@ -97,66 +97,20 @@ public class Handler {
             result.gather_runs(en.enrich(sampled, gos), false);
         }
 
-        double percent = Functions.extend_flex_set(new HashSet<>(r.geneMap.values())); //alternative, will do only if percent > 0,2
-        System.out.println("extending flex set up to " + Functions.df.format(percent*100)+  "%");       //TODO
-        if (percent > 0.2) {
-            for (int i = 0; i < numIter; i++) {
-                Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), percent);
-                result.gather_runs(en.enrich(sampled, gos), true);
-            }
-        }
+//        double percent = Functions.extend_flex_set(new HashSet<>(r.geneMap.values())); //alternative, will do only if percent > 0,2
+//        System.out.println("extending flex set up to " + Functions.df.format(percent*100)+  "%");       //TODO
+//        if (percent > 0.2) {
+//            for (int i = 0; i < numIter; i++) {
+//                Set<Gene> sampled = Functions.sample_genes(new HashSet<>(r.geneMap.values()), percent);
+//                result.gather_runs(en.enrich(sampled, gos), true);
+//            }
+//        }
+
         double quantile = (double) params.valueOf("quantile");
         Set<Node> robust_gos = result.getXquantileGOnodes(quantile);
 
         Plots plots = new Plots(outdir, r.allGenes.values(), robust_gos, FDR_cutoff, FC_cutoff, result, standard_node2fdr);
-        System.out.println("plotting de scores rank plot");
-        plots.de_scores_rank();
-        System.out.println("plotting unclear_genes_BARPLOT");
-        plots.unclear_genes_BARPLOT(r.allGenes.values());
-        System.out.println("plotting sig_genes_VOLCANO");
-        plots.sig_genes_VOLCANO();
-        System.out.println("plotting gene_categories_BARPLOT");
-        plots.gene_categories_BARPLOT();
-        System.out.println("plotting weigthed_genes_CUMULATIVE");
-        plots.weighted_genes_CUMULATIVE();
-        System.out.println("plotting genes_sets_PIECHART");
-        plots.genes_set_PIECHART();
-        System.out.println("plotting go_fdrs_mean_vs_quantiole_SCATTER");
-        plots.go_fdrs_mean_vs_quantile_SCATTER();
-        System.out.println("plotting selected_gos_fdr_distrib_BOXPLOT");
-        plots.selected_gos_fdr_distrib_BOXPLOT();
-        System.out.println("plotting selected_gos_rob_vs_extend_BOXPLOT");
-        plots.selected_gos_rob_vs_extend_BOXPLOT();
-        System.out.println("plotting gos_quntile_vs_mean_fdr_JITTER");
-        plots.gos_quantile_vs_mean_fdr_JITTER();
-        System.out.println("plotting gos_standard_vs_robust_vs_extend_BARPLOT");
-        plots.gos_standard_vs_robust_vs_extended_BARPLOT();
-        System.out.println("plotting gos_standard_vs_robust_vs_extend_VENN");
-        plots.gos_standard_vs_robust_vs_extended_VENN();
-        System.out.println("plotting fdr cutoff finding");
-        plots.fdr_cutoff_finding_CUMULATIVE();
-        System.out.println("plotting fc cutoff finding");
-        plots.fc_cutoff_finding_CUMULATIVE();
-        System.out.println("plotting flexset extension");
-        plots.flexset_extension_CURVE();
-        System.out.println("plotting expected change distrib");
-        plots.expected_change_BARPLOT();
-        System.out.println("plotting num sig gos comparison");
-        plots.num_sig_gos_BARPLOT();
-
-
-        for (Node n : result.GOnode2FDRruns.keySet()) {
-            if (n.node_id.equals("GO:0009100")) {
-                System.out.println(n);
-                System.out.println(n.genes.size());
-                System.out.println(standard_node2fdr.get(n));
-
-                System.out.println(result.FDR_cutoff);
-                System.out.println(result.GOnode2FDRruns.get(n).stream().filter(_r -> _r <= result.FDR_cutoff).count());
-                result.GOnode2FDRruns.get(n).stream().filter(_r -> _r > result.FDR_cutoff).forEach(System.out::println);
-            }
-        }
-
+        plots.runPlots(r);
 
         if (params.has("out")) {
             result.writeRobustGOs(robust_gos, outdir, quantile);

@@ -25,7 +25,7 @@ public class Enrichment {
 
         HashMap<Node, Double> node2FDR = new HashMap<>();
 
-        // lATER vielleicht beschränkt man die nodes bzgl Anzahl Gene also nodes mit #genes > x und < y
+        // LATER vielleicht beschränkt man die nodes bzgl Anzahl Gene also nodes mit #genes > x und < y
         for (Node node : gos.getGoNodes().values()) {
             double pvalue = 1.0;
             if (node.getGenes() != null && node.getRelevantGenesSize() != 0) {

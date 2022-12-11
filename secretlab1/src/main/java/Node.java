@@ -7,7 +7,6 @@ public class Node {
     String node_name;
     Set<Gene> genes;
     Integer geneSize;
-//    Set<String> geneIds;
     double enrichment_score;
     double bhFDR;
     Set<String> parents;
@@ -100,5 +99,4 @@ public class Node {
     public Node getSelf() {
         return this;
     }
-
 }

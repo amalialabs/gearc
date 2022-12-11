@@ -69,6 +69,26 @@ public class Plots {
         createGOTable(gos);
     }
 
+    void runPlots(Reader r) {
+        de_scores_rank();
+        unclear_genes_BARPLOT(r.allGenes.values());
+        sig_genes_VOLCANO();
+        gene_categories_BARPLOT();
+        weighted_genes_CUMULATIVE();
+        genes_set_PIECHART();
+        go_fdrs_mean_vs_quantile_SCATTER();
+        selected_gos_fdr_distrib_BOXPLOT();
+        selected_gos_rob_vs_extend_BOXPLOT();
+        gos_quantile_vs_mean_fdr_JITTER();
+        gos_standard_vs_robust_vs_extended_BARPLOT();
+        gos_standard_vs_robust_vs_extended_VENN();
+        fdr_cutoff_finding_CUMULATIVE();
+        fc_cutoff_finding_CUMULATIVE();
+        flexset_extension_CURVE();
+        expected_change_BARPLOT();
+        num_sig_gos_BARPLOT();
+    }
+
     //TODO eval if scripts needed
 //    private void preprocess(){
 //        for (String filename : plotList) {
