@@ -90,17 +90,17 @@ public class Plots {
     }
 
     //TODO eval if scripts needed
-//    private void preprocess(){
-//        for (String filename : plotList) {
-//            try (PrintWriter pw = new PrintWriter(new File(out_dir, filename))) {
-//                String result = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("rscripts/" + filename)))
-//                        .lines().collect(Collectors.joining("\n"));
-//                pw.write(result + "\n");
-//            } catch (IOException e) {
-//                throw new RuntimeException("", e);
-//            }
-//        }
-//    }
+    private void preprocess(){
+        for (String filename : plotList) {
+            try (PrintWriter pw = new PrintWriter(new File(out_dir, filename))) {
+                String result = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("rscripts/" + filename)))
+                        .lines().collect(Collectors.joining("\n"));
+                pw.write(result + "\n");
+            } catch (IOException e) {
+                throw new RuntimeException("", e);
+            }
+        }
+    }
 
     //LATER change all script params to reading automatically from /out/ in build so that all gene/go tables are not a param anymore
     public void createGeneTable(Collection<Gene> genes) {

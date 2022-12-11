@@ -21,7 +21,7 @@ public class Handler {
         acceptsAll( asList( "h", "?" ), "show help" ).forHelp();
         accepts("html");
         accepts("quantile").withRequiredArg().ofType(double.class).defaultsTo(0.95).describedAs("desired robustness of GO enrichment results");
-        accepts("n").withRequiredArg().ofType(Integer.class).defaultsTo(5).describedAs("number of enrichment iterations");
+        accepts("n").withRequiredArg().ofType(Integer.class).defaultsTo(50).describedAs("number of enrichment iterations");
         accepts("root").withRequiredArg().ofType(String.class).defaultsTo("biological_process").describedAs("GO DAG root");
         accepts("mapping").withRequiredArg().ofType(String.class).defaultsTo("/data/goa_human_ensembl.tsv").describedAs("ENSEMBL gene mapping");
         accepts("obo").withRequiredArg().ofType(String.class).defaultsTo("/data/go.obo").describedAs("GO DAG");
