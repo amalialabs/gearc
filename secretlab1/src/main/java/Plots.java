@@ -59,7 +59,7 @@ public class Plots {
                     "num_sig_gos_comparison_BARPLOT.R",
                     "expected_change_distrib_BARPLOT.R");
 
-            preprocess();
+//            preprocess();
         } catch (Exception e) {
             throw new RuntimeException("", e);
         }
@@ -69,20 +69,20 @@ public class Plots {
         createGOTable(gos);
     }
 
-    private void preprocess(){
-        for (String filename : plotList) {
-            try (PrintWriter pw = new PrintWriter(new File(out_dir, filename))) {
-                String result = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("rscripts/" + filename)))
-                        .lines().collect(Collectors.joining("\n"));
-                pw.write(result + "\n");
-            } catch (IOException e) {
-                throw new RuntimeException("", e);
-            }
-        }
-    }
+    //TODO eval if scripts needed
+//    private void preprocess(){
+//        for (String filename : plotList) {
+//            try (PrintWriter pw = new PrintWriter(new File(out_dir, filename))) {
+//                String result = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("rscripts/" + filename)))
+//                        .lines().collect(Collectors.joining("\n"));
+//                pw.write(result + "\n");
+//            } catch (IOException e) {
+//                throw new RuntimeException("", e);
+//            }
+//        }
+//    }
 
     //LATER change all script params to reading automatically from /out/ in build so that all gene/go tables are not a param anymore
-
     public void createGeneTable(Collection<Gene> genes) {
         try {
             File dir = new File(this.out_dir);
@@ -107,13 +107,7 @@ public class Plots {
             if (!dir.exists()) {
                 dir.mkdirs();
             }
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(this.out_dir, File.separator + "gos.table")));
-            bw.write("nodeID\tnodeName\tenrichScore\tstandardFDR\n");
-            for (Node go : gos) {
-                bw.write(go.node_id + "\t" + go.node_name + "\t" + go.enrichment_score + "\t" + df.format(go.bhFDR) + "\n");
-            }
-            bw.close();
-            bw = new BufferedWriter(new FileWriter(new File(this.out_dir, File.separator + "gos2fdrs.table")));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(this.out_dir, File.separator + "gos2fdrs.table")));
             for (Node go : gos) {
                 bw.write(go.node_id + "\t" + go.node_name);
                 for (double fdr : res.GOnode2FDRruns.get(go)) {
@@ -122,15 +116,16 @@ public class Plots {
                 bw.write("\n");
             }
             bw.close();
-            bw = new BufferedWriter(new FileWriter(new File(this.out_dir, File.separator + "gos2fdrs_extended.table")));
-            for (Node go : gos) {
-                bw.write(go.node_id + "\t" + go.node_name);
-                for (double fdr : res.GOnode2FDRrunsExtend.get(go)) {
-                    bw.write("\t" + df.format(fdr));
-                }
-                bw.write("\n");
-            }
-            bw.close();
+            //TODO add later
+//            bw = new BufferedWriter(new FileWriter(new File(this.out_dir, File.separator + "gos2fdrs_extended.table")));
+//            for (Node go : gos) {
+//                bw.write(go.node_id + "\t" + go.node_name);
+//                for (double fdr : res.GOnode2FDRrunsExtend.get(go)) {
+//                    bw.write("\t" + df.format(fdr));
+//                }
+//                bw.write("\n");
+//            }
+//            bw.close();
             bw = new BufferedWriter(new FileWriter(new File(this.out_dir, File.separator + "gos2fdrs_standard.table")));
             for (Node go : gos_standard.keySet()) {
                 bw.write(go.node_id + "\t" + go.node_name + "\t" + df.format(gos_standard.get(go)) + "\n");
