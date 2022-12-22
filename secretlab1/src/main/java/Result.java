@@ -1,7 +1,6 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -192,6 +191,29 @@ public class Result {
             bw.close();
         } catch (IOException e) {
             throw new RuntimeException("could not init file ", e);
+        }
+    }
+
+    public void writeDepthFiles(Reader r, HashMap<Node, Double> standardGOs, Set<Node> robustGO, String outDir) {
+        String root = "biological_process";
+
+        Set<String> search = robustGO.stream().map(_x -> _x.node_id).collect(Collectors.toSet());
+        try (PrintWriter pw = new PrintWriter(new File(outDir, "robust.eval"))) {
+            for (Node n : robustGO) {
+                pw.println(n.node_id + "\t" + r.depthCheck(n, root) + "\t" + n.node_name + "\t" + StringUtils.join(r.iterativeParentSearch(n, search), ", "));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        search = standardGOs.entrySet().stream().filter(_n -> _n.getValue() <= FDR_cutoff).map(_x -> _x.getKey().node_id).collect(Collectors.toSet());
+
+        try (PrintWriter pw = new PrintWriter(new File(outDir, "standard.eval"))) {
+            for (Node n : standardGOs.entrySet().stream().filter(_n -> _n.getValue() <= FDR_cutoff).map(Map.Entry::getKey).collect(Collectors.toSet())) {
+                pw.println(n.node_id + "\t" + r.depthCheck(n, root) + "\t" + n.node_name + "\t" + StringUtils.join(r.iterativeParentSearch(n, search), ", "));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
