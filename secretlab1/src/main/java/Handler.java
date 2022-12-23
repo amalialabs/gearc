@@ -109,7 +109,7 @@ public class Handler {
         double quantile = (double) params.valueOf("quantile");
         Set<Node> robust_gos = result.getXquantileGOnodes(quantile);
 
-        Plots plots = new Plots(outdir, r.allGenes.values(), robust_gos, FDR_cutoff, FC_cutoff, result, standard_node2fdr);
+        Plots plots = new Plots(outdir, r.allGenes.values(), result.GOnode2FDRruns.keySet(), FDR_cutoff, FC_cutoff, result, standard_node2fdr);
         plots.runPlots(r);
 
         if (params.has("out")) {
