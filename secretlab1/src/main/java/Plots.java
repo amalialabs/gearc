@@ -59,7 +59,7 @@ public class Plots {
                     "num_sig_gos_comparison_BARPLOT.R",
                     "expected_change_distrib_BARPLOT.R");
 
-//            preprocess();
+            preprocess();
         } catch (Exception e) {
             throw new RuntimeException("", e);
         }
