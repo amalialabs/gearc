@@ -84,20 +84,25 @@ public class Plots {
         gos_standard_vs_robust_vs_extended_VENN();
         fdr_cutoff_finding_CUMULATIVE();
         fc_cutoff_finding_CUMULATIVE();
-        flexset_extension_CURVE();
+//        flexset_extension_CURVE();
         expected_change_BARPLOT();
-        num_sig_gos_BARPLOT();
+//        num_sig_gos_BARPLOT();
     }
 
     //TODO eval if scripts needed
-    private void preprocess(){
+    private void preprocess() {
         for (String filename : plotList) {
-            try (PrintWriter pw = new PrintWriter(new File(out_dir, filename))) {
-                String result = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("rscripts/" + filename)))
-                        .lines().collect(Collectors.joining("\n"));
-                pw.write(result + "\n");
-            } catch (IOException e) {
-                throw new RuntimeException("", e);
+            if (!filename.contains("selected") && !filename.contains("flex") &&
+                    !filename.contains("gene_sets_PIECHART") && !filename.contains("expected_change_distrib") &&
+            !filename.contains("gos_quantile_vs_mean") && !filename.contains("go_robust_vs_extended") &&
+            !filename.contains("num_sig_gos_comparison")) {
+                try (PrintWriter pw = new PrintWriter(new File(out_dir, filename))) {
+                    String result = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("rscripts/" + filename)))
+                            .lines().collect(Collectors.joining("\n"));
+                    pw.write(result + "\n");
+                } catch (IOException e) {
+                    throw new RuntimeException("", e);
+                }
             }
         }
     }

@@ -115,7 +115,7 @@ public class Handler {
         if (params.has("out")) {
             result.writeRobustGOs(robust_gos, outdir, quantile);
             result.writeMeanGOs(robust_gos, outdir);
-            result.writeStandardGOs(standard_node2fdr, outdir);
+//            result.writeStandardGOs(standard_node2fdr, outdir);
             result.writeRankDifferences(standard_node2fdr, robust_gos, outdir);
             result.writeDepthFiles(r,standard_node2fdr,robust_gos,outdir);
         } else {
