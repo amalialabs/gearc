@@ -77,11 +77,11 @@ public class Plots {
         weighted_genes_CUMULATIVE();
         genes_set_PIECHART();
         go_fdrs_mean_vs_quantile_SCATTER();
-        selected_gos_fdr_distrib_BOXPLOT();
-        selected_gos_rob_vs_extend_BOXPLOT();
-        gos_quantile_vs_mean_fdr_JITTER();
-        gos_standard_vs_robust_vs_extended_BARPLOT();
-        gos_standard_vs_robust_vs_extended_VENN();
+//        selected_gos_fdr_distrib_BOXPLOT();
+//        selected_gos_rob_vs_extend_BOXPLOT();
+//        gos_quantile_vs_mean_fdr_JITTER();
+//        gos_standard_vs_robust_vs_extended_BARPLOT();
+//        gos_standard_vs_robust_vs_extended_VENN();
         fdr_cutoff_finding_CUMULATIVE();
         fc_cutoff_finding_CUMULATIVE();
 //        flexset_extension_CURVE();
