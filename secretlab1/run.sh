@@ -195,5 +195,5 @@ fi
 
 ## for docker users replace here podman with 'docker'
 ## for windows users replace here podman with 'winpty docker'
-podman run --pull=always $obo $mapping -v $outdir:$outdir -v $genelistPath:$genelistPath --rm hadziahmetovic/secretlab1 secretlab \
+podman run --pull=always $obo $mapping -v $outdir:$outdir -v $genelistPath:$genelistPath --rm amalialabs/gearc secretlab \
   $genelistCall $oboCall $mappingCall $outdirCall $nCall $rootCall $FDRCall $FCCall $expectedChangeCall

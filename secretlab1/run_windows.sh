@@ -197,7 +197,7 @@ if [[ "$expectedChange" != "" ]]; then
 fi
 
 
-winpty docker run --pull=always $genelist $obo $mapping $outTmp --rm -it hadziahmetovic/secretlab1 secretlab \
+winpty docker run --pull=always $genelist $obo $mapping $outTmp --rm -it amalialabs/gearc secretlab \
   $genelistCall $oboCall $mappingCall $outCall $nCall $rootCall $FDRCall $FCCall $expectedChangeCall
 
 
