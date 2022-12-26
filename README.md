@@ -117,6 +117,6 @@ ENSG00000204592 -1.390  0.000e+00
 ```
 
 ### Mapping
-wget http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.106.gtf.gz
-gunzip Homo_sapiens.GRCh38.106.gtf.gz
-cat Homo_sapiens.GRCh38.103.gtf | grep -P "\tgene\t" | sed 's/^.*gene_id "//' | sed 's/"; gene_.*$//' | sort -u > Homo_sapiens.GRCh38.103.gtf.geneIDs
+    wget http://ftp.ensembl.org/pub/current_gtf/homo_sapiens/Homo_sapiens.GRCh38.106.gtf.gz
+    gunzip Homo_sapiens.GRCh38.106.gtf.gz
+    cat Homo_sapiens.GRCh38.103.gtf | grep -P "\tgene\t" | sed 's/^.*gene_id "//' | sed 's/"; gene_.*$//' | sort -u > Homo_sapiens.GRCh38.103.gtf.geneIDs
